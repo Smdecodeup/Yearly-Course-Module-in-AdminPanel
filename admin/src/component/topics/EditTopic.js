@@ -1,8 +1,16 @@
+import { Image, MusicNote, YouTube } from '@material-ui/icons'
 import React, { useState } from 'react'
 import Dropzone from 'react-dropzone'
 import { useNavigate } from 'react-router-dom'
-import { YouTube, Image, MusicNote } from '@material-ui/icons'
+import 'froala-editor/css/froala_style.min.css';
+import 'froala-editor/css/froala_editor.pkgd.min.css';
+import { Editor } from 'react-draft-wysiwyg'
+
 const EditTopic = () => {
+
+    const [induction, setInduction] = useState(false)
+    const [technique, setTechnique] = useState(false)
+    const [language, setLanguage] = useState(false)
     const [topicData, setTopicData] = useState({
         module: '',
         topicName: '',
@@ -11,13 +19,35 @@ const EditTopic = () => {
         img: [],
         video: [],
         audio: [],
-        audio_sug: []
+        audio_sug: [],
+        inductionName: '',
+        inductionCode: '',
+        TechniqueName: '',
+        TechniqueCode: '',
+        languageName: '',
+        languageCode: '',
+        Defination: '',
+        Example: '',
+        Induction: '',
+        Techniques: '',
+        Pattern: '',
+        key: ''
     })
     const [error, setError] = useState({
         module: '',
         topicName: '',
         TopicType: '',
         Description: '',
+        inductionName: '',
+        inductionCode: '',
+        Defination: '',
+        Example: '',
+        Techniques: '',
+        Induction: '',
+        TechniqueName: '',
+        TechniqueCode: '',
+        Pattern: '',
+        key: ""
     })
     const navigate = useNavigate()
 
@@ -40,20 +70,61 @@ const EditTopic = () => {
             isvalid = true
             topicError.TopicType = "Please select topic type."
         }
+        if (!topicData.inductionName) {
+            isvalid = true
+            topicError.inductionName = "Please enter induction name."
+        }
+        if (!topicData.inductionCode) {
+            isvalid = true
+            topicError.inductionCode = "Please enter induction code."
+        }
+        if (!topicData.TechniqueName) {
+            isvalid = true
+            topicError.TechniqueName = "Please enter Technique name."
+        }
+        if (!topicData.TechniqueCode) {
+            isvalid = true
+            topicError.TechniqueCode = "Please enter Technique code."
+        }
+        if (!topicData.languageName) {
+            isvalid = true
+            topicError.languageName = "Please enter language pattern name."
+        }
+        if (!topicData.languageCode) {
+            isvalid = true
+            topicError.languageCode = "Please enter language pattern code."
+        }
+        if (!topicData.Defination) {
+            isvalid = true
+            topicError.Defination = "Please enter language pattern Defination."
+        }
+        if (!topicData.Example) {
+            isvalid = true
+            topicError.Example = "Please enter language pattern Example."
+        }
+        if (!topicData.Pattern) {
+            isvalid = true
+            topicError.Pattern = "Please enter language pattern Type."
+        }
+        if (!topicData.key) {
+            isvalid = true
+            topicError.key = "Please add key reminders.."
+        }
         setError(topicError)
         return isvalid
     }
 
     const handleAddSubmit = (e) => {
         e.preventDefault();
-        if (validate(topicData)) {
+        if (!validate(topicData)) {
+            console.log(error);
         }
         setTopicData(topicData)
+        console.log(topicData, "topicData");
     }
     const onChangeHandle = (e) => {
         const { name, value } = e.target
         setTopicData({ ...topicData, [name]: value })
-        console.log(topicData.topicName, "topicData");
         switch (name) {
             case "module":
                 value === '' ? setError({ ...error, module: 'Please select module.' }) : setError({ ...error, module: '' });
@@ -64,10 +135,66 @@ const EditTopic = () => {
             case "topicName":
                 value === '' ? setError({ ...error, topicName: 'Please enter topic name.' }) : setError({ ...error, topicName: '' });
                 break;
+            case "inductionName":
+                value === '' ? setError({ ...error, inductionName: 'Please enter induction name.' }) : setError({ ...error, inductionName: '' });
+                break;
+            case "inductionCode":
+                value === '' ? setError({ ...error, inductionCode: 'Please enter induction code.' }) : setError({ ...error, inductionCode: '' });
+                break;
+            case "TechniqueName":
+                value === '' ? setError({ ...error, TechniqueName: 'Please enter Technique name.' }) : setError({ ...error, TechniqueName: '' });
+                break;
+            case "TechniqueCode":
+                value === '' ? setError({ ...error, TechniqueCode: 'Please enter Technique code.' }) : setError({ ...error, TechniqueCode: '' });
+                break;
+            case "languageName":
+                value === '' ? setError({ ...error, languageName: 'Please enter language patterns name.' }) : setError({ ...error, languageName: '' });
+                break;
+            case "languageCode":
+                value === '' ? setError({ ...error, languageCode: 'Please enter language patterns code.' }) : setError({ ...error, languageCode: '' });
+                break;
+            case "Defination":
+                value === '' ? setError({ ...error, Defination: 'Please enter language patterns Defination.' }) : setError({ ...error, Defination: '' });
+                break;
+            case "Example":
+                value === '' ? setError({ ...error, Example: 'Please enter language patterns Example.' }) : setError({ ...error, Example: '' });
+                break;
+            case "Pattern":
+                value === '' ? setError({ ...error, Pattern: 'Please enter language patterns Type.' }) : setError({ ...error, Pattern: '' });
+                break;
+            case "key":
+                value === '' ? setError({ ...error, key: 'Please add key reminders.' }) : setError({ ...error, key: '' });
+                break;
+        }
+    }
+
+    const topicOption = ["Course Content", "Induction", "Techniques", "Language Patterns"];
+    const onChangeselect = (e) => {
+        const { name, value } = e.target
+        setTopicData({ ...topicData, [name]: value })
+        switch (name) {
             case "TopicType":
                 value === '' ? setError({ ...error, TopicType: 'Please select topic type.' }) : setError({ ...error, TopicType: '' });
                 break;
         }
+        if (value === 'Induction') {
+            setInduction(true)
+        } else {
+            setInduction(false)
+        }
+        if (value !== "Techniques") {
+            setTechnique(false)
+
+        } else {
+            setTechnique(true)
+        }
+        if (value === "Language Patterns") {
+            setLanguage(true)
+
+        } else {
+            setLanguage(false)
+        }
+
     }
     const handleBack = () => {
         navigate('/topic')
@@ -122,15 +249,15 @@ const EditTopic = () => {
                                                 <div className="mb-4">
                                                     <label htmlFor='TopicType' className="cstm-label">Topic Type</label>
                                                     <select
-                                                        onChange={onChangeHandle}
-                                                        className="cstm-select"
+                                                        onChange={onChangeselect}
+                                                        className="cstm-input"
                                                         placeholder="select Module"
                                                         name="TopicType"
                                                         value={topicData.TopicType}
                                                         required="">
-                                                        <option>Course Content</option>
-                                                        <option>Induction</option>
-                                                        <option>Techniques</option>
+                                                        {topicOption && topicOption.map((item) => (
+                                                            <option>{item}</option>
+                                                        ))}
                                                     </select>
                                                     {error.TopicType && <span className="error-message"> {error.TopicType} </span>}
                                                 </div>
@@ -149,6 +276,253 @@ const EditTopic = () => {
                                                     {error.Description && <span className="error-message"> {error.Description} </span>}
                                                 </div>
                                             </div>
+                                            {induction &&
+                                                <>
+                                                    <div className="col-lg-6">
+                                                        <div className="mb-4">
+                                                            <label htmlFor='induction' className="cstm-label">Induction Name</label>
+                                                            <input
+                                                                type="text"
+                                                                value={topicData.inductionName}
+                                                                onChange={onChangeHandle}
+                                                                className="cstm-input"
+                                                                placeholder="Enter Induction Name"
+                                                                name="inductionName"
+                                                                required="" />
+                                                            {error.inductionName && <span className="error-message"> {error.inductionName} </span>}
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-lg-6">
+                                                        <div className="mb-4">
+                                                            <label htmlFor='induction' className="cstm-label">Induction Code</label>
+                                                            <input
+                                                                type="text"
+                                                                onKeyPress={(event) => {
+                                                                    if (!/[0-9]/.test(event.key)) {
+                                                                        event.preventDefault();
+                                                                    }
+                                                                }}
+                                                                value={topicData.inductionCode}
+                                                                onChange={onChangeHandle}
+                                                                className="cstm-input"
+                                                                placeholder="Enter Induction Code"
+                                                                name="inductionCode"
+                                                                required="" />
+                                                            {error.inductionCode && <span className="error-message"> {error.inductionCode} </span>}
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-lg-12">
+                                                        <div className="mb-4">
+                                                            <label htmlFor='img' className="cstm-label">Upload Sign Language Images</label>
+                                                            <div className="dropzone col-lg-12" >
+                                                                <Dropzone accept={"image/jpeg, image/png"} onDrop={e => console.log(e)}>
+                                                                    {({ getRootProps, getInputProps }) => (
+                                                                        <section>
+                                                                            <div  {...getRootProps()}>
+                                                                                <input {...getInputProps()} />
+                                                                                <Image />
+                                                                                <h4>Drag & Drop or Click to add Image</h4>
+                                                                                <p>Please use JPEG,PNG formate of Image</p>
+                                                                            </div>
+                                                                        </section>
+                                                                    )}
+                                                                </Dropzone>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </>
+                                            }
+                                            {technique &&
+                                                <>
+                                                    <div className="col-lg-6">
+                                                        <div className="mb-4">
+                                                            <label htmlFor='TechniqueName' className="cstm-label">Technique Name</label>
+                                                            <input
+                                                                type="text"
+                                                                value={topicData.TechniqueName}
+                                                                onChange={onChangeHandle}
+                                                                className="cstm-input"
+                                                                placeholder="Enter Technique Name"
+                                                                name="TechniqueName"
+                                                                required="" />
+                                                            {error.TechniqueName && <span className="error-message"> {error.TechniqueName} </span>}
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-lg-6">
+                                                        <div className="mb-4">
+                                                            <label htmlFor='TechniqueCode' className="cstm-label">Technique Code</label>
+                                                            <input
+                                                                type="text"
+                                                                onKeyPress={(event) => {
+                                                                    if (!/[0-9]/.test(event.key)) {
+                                                                        event.preventDefault();
+                                                                    }
+                                                                }}
+                                                                value={topicData.TechniqueCode}
+                                                                onChange={onChangeHandle}
+                                                                className="cstm-input"
+                                                                placeholder="Enter Technique Code"
+                                                                name="TechniqueCode"
+                                                                required="" />
+                                                            {error.TechniqueCode && <span className="error-message"> {error.TechniqueCode} </span>}
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-lg-12">
+                                                        <div className="mb-4">
+                                                            <label htmlFor='img' className="cstm-label">Upload Sign Language Images</label>
+                                                            <div className="dropzone col-lg-12" >
+                                                                <Dropzone accept={"image/jpeg, image/png"} onDrop={e => console.log(e)}>
+                                                                    {({ getRootProps, getInputProps }) => (
+                                                                        <section>
+                                                                            <div  {...getRootProps()}>
+                                                                                <input {...getInputProps()} />
+                                                                                <Image />
+                                                                                <h4>Drag & Drop or Click to add Image</h4>
+                                                                                <p>Please use JPEG,PNG formate of Image</p>
+                                                                            </div>
+                                                                        </section>
+                                                                    )}
+                                                                </Dropzone>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </>
+                                            }
+                                            {language &&
+                                                <>
+                                                    <div className="col-lg-6">
+                                                        <div className="mb-4">
+                                                            <label htmlFor='languageName' className="cstm-label">Language Patterns Name</label>
+                                                            <input
+                                                                type="text"
+                                                                value={topicData.languageName}
+                                                                onChange={onChangeHandle}
+                                                                className="cstm-input"
+                                                                placeholder="Enter language patterns name."
+                                                                name="languageName"
+                                                                required="" />
+                                                            {error.languageName && <span className="error-message"> {error.languageName} </span>}
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-lg-6">
+                                                        <div className="mb-4">
+                                                            <label htmlFor='languageCode' className="cstm-label">Language Patterns Code</label>
+                                                            <input
+                                                                type="text"
+                                                                onKeyPress={(event) => {
+                                                                    if (!/[0-9]/.test(event.key)) {
+                                                                        event.preventDefault();
+                                                                    }
+                                                                }}
+                                                                value={topicData.languageCode}
+                                                                onChange={onChangeHandle}
+                                                                className="cstm-input"
+                                                                placeholder="Enter language patterns code"
+                                                                name="languageCode"
+                                                                required="" />
+                                                            {error.languageCode && <span className="error-message"> {error.languageCode} </span>}
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-lg-12">
+                                                        <div className="mb-4">
+                                                            <label htmlFor='Defination' className="cstm-label">Language Patterns Defination</label>
+                                                            <input
+                                                                type="text"
+                                                                value={topicData.Defination}
+                                                                onChange={onChangeHandle}
+                                                                className="cstm-input"
+                                                                placeholder="Write Defination"
+                                                                name="Defination"
+                                                                required="" />
+                                                            {error.Defination && <span className="error-message"> {error.Defination} </span>}
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-lg-12">
+                                                        <div className="mb-4">
+                                                            <label htmlFor='Example' className="cstm-label">Language Patterns Example</label>
+                                                            <input
+                                                                type="text"
+                                                                value={topicData.Example}
+                                                                onChange={onChangeHandle}
+                                                                className="cstm-input"
+                                                                placeholder="Write Example"
+                                                                name="Example"
+                                                                required="" />
+                                                            {error.Example && <span className="error-message"> {error.Example} </span>}
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-lg-12">
+                                                        <div className="mb-4">
+                                                            <label htmlFor='Pattern' className="cstm-label">Pattern Type</label>
+                                                            <select
+                                                                onChange={onChangeHandle}
+                                                                className="cstm-input"
+                                                                placeholder="select Pattern Type"
+                                                                name="Pattern"
+                                                                value={topicData.Pattern}
+                                                                required="">
+                                                                <option>Pattern 1</option>
+                                                                <option>Pattern 1</option>
+                                                                <option>Pattern 1</option>
+                                                            </select>
+                                                            {error.Pattern && <span className="error-message"> {error.Pattern} </span>}
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-lg-6">
+                                                        <div className="mb-4">
+                                                            <label htmlFor='Techniques' className="cstm-label">Select Techniques</label>
+                                                            <select
+                                                                onChange={onChangeHandle}
+                                                                className="cstm-input"
+                                                                placeholder="select Techniques"
+                                                                name="Techniques"
+                                                                value={topicData.Techniques}
+                                                                required="">
+                                                                <option>Techniques 1</option>
+                                                                <option>Techniques 1</option>
+                                                                <option>Techniques 1</option>
+                                                            </select>
+                                                            {error.Techniques && <span className="error-message"> {error.Techniques} </span>}
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-lg-6">
+                                                        <div className="mb-4">
+                                                            <label htmlFor='Induction' className="cstm-label">Select Induction</label>
+                                                            <select
+                                                                onChange={onChangeHandle}
+                                                                className="cstm-input"
+                                                                placeholder="select Induction"
+                                                                name="Induction"
+                                                                value={topicData.Induction}
+                                                                required="">
+                                                                <option>Induction 1</option>
+                                                                <option>Induction 1</option>
+                                                                <option>Induction 1</option>
+                                                            </select>
+                                                            {error.Induction && <span className="error-message"> {error.Induction} </span>}
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-lg-12">
+                                                        <div className="mb-4">
+                                                            <label htmlFor='img' className="cstm-label">Upload Sign Language Images</label>
+                                                            <div className="dropzone col-lg-12" >
+                                                                <Dropzone accept={"image/jpeg, image/png"} onDrop={e => console.log(e)}>
+                                                                    {({ getRootProps, getInputProps }) => (
+                                                                        <section>
+                                                                            <div  {...getRootProps()}>
+                                                                                <input {...getInputProps()} />
+                                                                                <Image />
+                                                                                <h4>Drag & Drop or Click to add Image</h4>
+                                                                                <p>Please use JPEG,PNG formate of Image</p>
+                                                                            </div>
+                                                                        </section>
+                                                                    )}
+                                                                </Dropzone>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </>
+                                            }
                                             <div className="col-lg-12">
                                                 <div className="mb-4">
                                                     <label htmlFor='video' className="cstm-label">Upload Videos</label>
@@ -176,7 +550,7 @@ const EditTopic = () => {
                                                             {({ getRootProps, getInputProps }) => (
                                                                 <section>
                                                                     <div  {...getRootProps()}>
-                                                                        <input  {...getInputProps()} />
+                                                                        <input {...getInputProps()} />
                                                                         <Image />
                                                                         <h4>Drag & Drop or Click to add Image</h4>
                                                                         <p>Please use JPEG,PNG formate of Image</p>
@@ -191,8 +565,10 @@ const EditTopic = () => {
                                                 <div className="mb-4">
                                                     <label htmlFor='audio' className="cstm-label">Upload Audio</label>
                                                     <div className="dropzone col-lg-12" >
-                                                        <Dropzone accept={"audio/mp3"} onDrop={e => console.log(e)}>
+                                                        <Dropzone accept={"audio/mp3"}
+                                                            onDrop={e => console.log(e)}>
                                                             {({ getRootProps, getInputProps }) => (
+
                                                                 <section>
                                                                     <div  {...getRootProps()}>
                                                                         <input   {...getInputProps()} />
@@ -225,6 +601,22 @@ const EditTopic = () => {
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div className="col-lg-12" >
+                                                <div className="mb-4">
+                                                    <label htmlFor='key' className="cstm-label">Add Key Reminders</label>
+                                                    <div className='editor'>
+                                                        <Editor
+                                                            value={topicData.key}
+                                                            onChange={onChangeHandle}
+                                                            placeholder='Write Key'
+                                                            toolbarClassName="toolbarClassName"
+                                                            wrapperClassName="wrapperClassName"
+                                                            editorClassName="editorClassName"
+                                                        />
+                                                    </div>
+                                                    {error.key && <span className="error-message"> {error.key} </span>}
+                                                </div>
+                                            </div>
                                             <div className="row">
                                                 <div className="col-lg-12">
                                                     <div className="mb-2">
@@ -241,7 +633,7 @@ const EditTopic = () => {
                         </div>
                     </div>
                 </main>
-            </div>
+            </div >
         </>
     )
 }

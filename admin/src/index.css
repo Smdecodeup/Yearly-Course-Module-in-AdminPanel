@@ -1,5 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap");
 @import 'bootstrap/dist/css/bootstrap.min.css';
+@import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+
 
 h1,
 .h1 {
@@ -47,6 +49,14 @@ h6,
 	text-align: center;
 	padding: 20px;
 	border: 3px grey dashed;
+	width: 100%;
+	margin: auto;
+}
+.editor {
+	text-align: center;
+	padding: 20px;
+	border: 2px rgba(109, 104, 104, 0.336) solid;
+	border-radius: 5px;
 	width: 100%;
 	margin: auto;
 }

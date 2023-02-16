@@ -21,7 +21,7 @@ const Header = () => {
                                     <div className="dropdown dropdown-primary">
                                         <button type="button" className="btn btn-pills dropdown-toggle p-0" data-bs-toggle="dropdown"
                                             aria-haspopup="true" aria-expanded="false">
-                                            <img src={userImg} className="cstm-user-main-photo" alt="" />
+                                            <Link to="/"><img src={userImg} className="cstm-user-main-photo" alt="" /></Link> 
                                             <i className="fi fi-rr-caret-down cstm-icon-mn"></i>
                                         </button>
                                         <div className="dropdown-menu dd-menu dropdown-menu-end csrm-user-dv">

@@ -1,4 +1,5 @@
 import { Route, Routes } from "react-router-dom";
+import Login from "./component/login/Login";
 import ModuleListing from "./component/modules/ModuleListing";
 import Header from "./component/navcomponent/Header";
 import Sidebar from "./component/navcomponent/sidebar";
@@ -11,6 +12,7 @@ function App() {
   return (
     <>
       <Routes>
+        <Route path="/" element={<Login />} />
         <Route path="/module" element={<ModuleListing />} />
         <Route path="/topic" element={<TopicListing />} />
         <Route path="/topic/add-topic" element={<AddTopic />} />
