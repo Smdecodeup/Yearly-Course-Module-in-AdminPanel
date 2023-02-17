@@ -12,7 +12,7 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/Admin" element={<Login />} />
         <Route path="/module" element={<ModuleListing />} />
         <Route path="/topic" element={<TopicListing />} />
         <Route path="/topic/add-topic" element={<AddTopic />} />
