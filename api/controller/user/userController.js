@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require("bcrypt");
-const USER = require("/home/decodeup/Desktop/api/model/user.js");
-
+require('dotenv').config()
+const USER = require("../../model/user");
 
 exports.secure = async function (req, res, next) {
     try {
@@ -9,7 +9,7 @@ exports.secure = async function (req, res, next) {
         if (!token)
             return res.status(401).json({ Status: false, message: "Token not found" });
             
-        var decode = jwt.verify(token, 'Secretkeyhnrhrthtrhtrhtrreg')
+        var decode = jwt.verify(token,process.env.JWT_SECRET_KEY)
         // console.log(decode);
         
         if (!decode || !decode.id)
@@ -29,7 +29,7 @@ exports.secure = async function (req, res, next) {
 
 exports.Login = async function (req, res, next) {
     try {
-        console.log(req.body, "req.body");
+        // console.log(req.body, "req.body");
         if (!req.body.Email)
             return res.status(401).json({ Status: false, message: "please Enter Your Email" });
 
@@ -44,7 +44,7 @@ exports.Login = async function (req, res, next) {
             checkuser.password
         );
         // console.log(verifypass, "verifypass");
-        let token = await jwt.sign({ id: checkuser._id }, 'Secretkeyhnrhrthtrhtrhtrreg')
+        let token = await jwt.sign({ id: checkuser._id },)
         if (verifypass) {
             return res.status(200).json({ Status: true, message: "User login Sucessfully", checkuser, token });
         } else {

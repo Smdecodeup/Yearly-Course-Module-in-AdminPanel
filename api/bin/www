@@ -9,15 +9,18 @@ var debug = require('debug')('api:server');
 var http = require('http');
 const { default: mongoose } = require('mongoose');
 mongoose.set("strictQuery", false);
+require('dotenv').config()
+
+
 /**
  * Get port from environment and store in Express.
  */
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 // mongodb+srv://sm:Ry3khbe5KJOTGPAK@cluster0.qrs1vzi.mongodb.net/
-const dbUrl = `mongodb+srv://sm:pRHukk3vM4Q8FuiQ@cluster0.qrs1vzi.mongodb.net/API?retryWrites=true&w=majority`
+// const dbUrl = `mongodb+srv://sm:pRHukk3vM4Q8FuiQ@cluster0.qrs1vzi.mongodb.net/API?retryWrites=true&w=majority`
 mongoose.set("strictQuery", false);
-mongoose.connect(dbUrl,{})
+mongoose.connect(process.env.MONGO_CONNECTION_URI,{})
 .then(()=>{
   console.log('DB CONNECTED');
 }).catch((error)=>{

@@ -1,4 +1,4 @@
-var MODULE = require('/home/decodeup/Desktop/api/model/module.js')
+var MODULE = require('../../model/module')
 
 exports.createModule = async function (req, res, next) {
     try {
