@@ -1,6 +1,6 @@
+require('dotenv').config()
 const jwt = require('jsonwebtoken');
 const bcrypt = require("bcrypt");
-require('dotenv').config()
 const USER = require("../../model/user");
 
 exports.secure = async function (req, res, next) {
@@ -9,7 +9,7 @@ exports.secure = async function (req, res, next) {
         if (!token)
             return res.status(401).json({ Status: false, message: "Token not found" });
             
-        var decode = jwt.verify(token,process.env.JWT_SECRET_KEY)
+        var decode = jwt.verify(token, process.env.JWT_SECRET_KEY)
         // console.log(decode);
         
         if (!decode || !decode.id)
@@ -44,7 +44,8 @@ exports.Login = async function (req, res, next) {
             checkuser.password
         );
         // console.log(verifypass, "verifypass");
-        let token = await jwt.sign({ id: checkuser._id },)
+        let token = await jwt.sign({ id: checkuser._id },process.env.JWT_SECRET_KEY)
+            console.log(token);
         if (verifypass) {
             return res.status(200).json({ Status: true, message: "User login Sucessfully", checkuser, token });
         } else {
@@ -55,10 +56,3 @@ exports.Login = async function (req, res, next) {
     }
 }   
 
-exports.api = async function (req,res,next){
-    try {
-        res.send({message:"Welcome to yearly-course-module APIs"})
-    } catch (error) {
-        return res.status(500).json({ Status: false, message:err.message });
-    }
-}

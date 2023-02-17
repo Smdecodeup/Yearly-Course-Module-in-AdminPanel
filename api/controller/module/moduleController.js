@@ -57,4 +57,14 @@ exports.deleteModule = async function (req, res, next) {
     }
 };
 
+// Testing Api 
+
+exports.api = async function (req,res,next){
+    try {
+        res.send({message:"Welcome to yearly-course-module APIs"})
+    } catch (error) {
+        return res.status(500).json({ Status: false, message:err.message });
+    }
+}
+
 
