@@ -54,3 +54,11 @@ exports.Login = async function (req, res, next) {
         return res.status(500).json({ Status: false, message: err.message });
     }
 }   
+
+exports.api = async function (req,res,next){
+    try {
+        res.send({message:"Welcome to yearly-course-module APIs"})
+    } catch (error) {
+        return res.status(500).json({ Status: false, message:err.message });
+    }
+}
