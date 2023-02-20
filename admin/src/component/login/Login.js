@@ -1,8 +1,9 @@
 import axios from 'axios'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import logo from '../../assets/images/logo.png'
+import authService from "../../service/auth.service"
 const Login = () => {
 
     const { isLoggedIn } = useSelector(state => state.auth)
@@ -43,17 +44,21 @@ const Login = () => {
     const handleLoginChange = (e) => {
         const { name, value } = e.target
         setLoginData({ ...loginData, [name]: value })
-        if (!loginData.Email) {
-            setError({ ...error, Email: 'Enter Email.' })
-        } else if (!emailRegex.test(loginData.Email)) {
-            setError({ ...error, Email: 'Enter Valid Email' })
-        } else {
-            setError({ ...error, Email: '' })
-        }
         if (!loginData.password) {
-            setError({ ...error, password: "Enter Password" })
+            setError({ ...error, [name]: "Enter Password" })
         } else {
-            setError({ ...error, password: "" })
+            setError({ ...error, [name]: "" })
+        }
+    }
+    const handleEmailOnchange = (e) => {
+        const { name, value } = e.target
+        setLoginData({ ...loginData, [name]: value })
+        if (!loginData.Email) {
+            setError({ ...error, [name]: 'Enter Email.' })
+        } else if (!emailRegex.test(loginData.Email)) {
+            setError({ ...error, [name]: 'Enter Valid Email' })
+        } else {
+            setError({ ...error, [name]: '' })
         }
     }
     const handleLogin = (e) => {
@@ -62,6 +67,7 @@ const Login = () => {
         }
         authUser()
         setLoginData(loginData)
+        
     }
     var API_URL = 'http://localhost:3000/Api/'
 
@@ -69,7 +75,7 @@ const Login = () => {
         return axios.post(API_URL + "users/Login", loginData)
             .then((response) => {
                 if (response.data.Status === true) {
-                    navigate("/")
+                    navigate("/module")
                     localStorage.setItem("auth", JSON.stringify(response.data.checkuser))
                     localStorage.setItem("Authorization", response.data.token)
                     localStorage.setItem("isLoggedIn", true)
@@ -77,9 +83,11 @@ const Login = () => {
                 }
             })
     }
-    if (isLoggedIn) {
-        navigate('/module')
-    }
+    useEffect(() => {
+        if (isLoggedIn) {
+            navigate('/module')
+        }
+    }, [])
     return (
         <>
             <section className="bg-home d-flex bg-light align-items-center cstm-fm-all">
@@ -99,7 +107,7 @@ const Login = () => {
                                             <div className="col-lg-12">
                                                 <div className="mb-4">
                                                     <label htmlFor='Email' className="cstm-label">Email</label>
-                                                    <input onChange={handleLoginChange} value={loginData.Email} type="email" className="cstm-input" placeholder="enter your email address" name="Email" />
+                                                    <input onChange={handleEmailOnchange} value={loginData.Email} type="email" className="cstm-input" placeholder="enter your email address" name="Email" />
                                                 </div>
                                                 {error.Email && <span className="error-message"> {error.Email} </span>}
                                             </div>

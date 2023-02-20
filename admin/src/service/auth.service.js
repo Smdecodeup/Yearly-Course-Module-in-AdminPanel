@@ -1,15 +1,9 @@
-// import axios from "axios"
+import axios from "axios"
 
-// var API_URL = 'http://localhost:3000/Api/'
+var API_URL = 'http://localhost:3000/Api/'
 
-// const authUser = (data) => {
-//     return axios.post(API_URL + "users/Login", data)
-//         .then((response) => {
-//             console.log(response, "res");
-//             if (response.status === true) {
-//                 localStorage.setItem("token", response.token)
-//             }
-//         })
-// }
+const authUser = (data) => {
+    return axios.post(API_URL + "users/Login", data)
+}
 
-// export default authUser;
+export default authUser;

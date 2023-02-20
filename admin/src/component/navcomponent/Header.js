@@ -1,18 +1,21 @@
-import React, { useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react'
+import { Link } from 'react-router-dom';
 import userImg from '../../assets/images/user.png'
 
 const Header = () => {
-    const navigate = useNavigate()
+
+    const [isOpen, setOpen] = useState()
+    const dropDownOpen = () => {
+        setOpen(!isOpen)
+    }
     const handleLogout = () => {
         localStorage.removeItem('Authorization')
         localStorage.removeItem('auth')
         localStorage.removeItem('isLoggedIn')
-        navigate('/')
+        const url = window.location.protocol + "//" + window.location.host
+        window.location.href = url
     }
-    useEffect(() => {
-        navigate('/')
-    },[])
+
     return (
         <>
             <div className="page-wrapper doctris-theme toggled">
@@ -29,9 +32,9 @@ const Header = () => {
                                 </li>
                                 <li className="list-inline-item mb-0 ms-2">
                                     <div className="dropdown dropdown-primary">
-                                        <button type="button" className="btn btn-pills dropdown-toggle p-0" data-bs-toggle="dropdown"
+                                        <button type="button" onClick={dropDownOpen} className="btn btn-pills dropdown-toggle p-0" data-bs-toggle="dropdown"
                                             aria-haspopup="true" aria-expanded="false">
-                                            <img onClick={handleLogout} src={userImg} className="cstm-user-main-photo" alt="" />
+                                            <Link onClick={handleLogout} to="/admin"><img src={userImg} className="cstm-user-main-photo" alt="" /></Link>
                                             <i className="fi fi-rr-caret-down cstm-icon-mn"></i>
                                         </button>
                                         <div className="dropdown-menu dd-menu dropdown-menu-end csrm-user-dv">
