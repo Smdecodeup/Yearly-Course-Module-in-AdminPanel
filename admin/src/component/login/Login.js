@@ -1,64 +1,84 @@
+import axios from 'axios'
 import React, { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import logo from '../../assets/images/logo.png'
-
 const Login = () => {
+
+    const { isLoggedIn } = useSelector(state => state.auth)
     const navigate = useNavigate()
     const [loginData, setLoginData] = useState({
-        email: '',
+        Email: '',
         password: ''
     })
     const [error, setError] = useState({
-        email: '',
+        Email: '',
         password: ''
     })
-
+    const dispatch = useDispatch()
     const emailRegex = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
+
     const validate = (loginData) => {
-        let DataError = {}
-        let isvalid = false
-        if (!loginData.email) {
-            isvalid = true
-            DataError.email = 'Enter  Email';
-        } else if (!emailRegex.test(DataError.email)) {
-            isvalid = true
-            DataError.email = "Enter Valid Email"
-        } else {
-            DataError.email = ''
-        }
+        let formErrors = {}
+        let isValid = false
+
         if (!loginData.password) {
-            isvalid = true
-            DataError.password = "Please Enter Password"
-        } else {
-            DataError.password = ""
+            isValid = true
+            formErrors.password = "Enter Password";
         }
-        setError(DataError)
-        console.log(DataError, "DataError");
-        return isvalid
+        if (!loginData.Email) {
+            isValid = true
+            formErrors.Email = 'Enter  Email';
+        } else if (!emailRegex.test(loginData.Email)) {
+            isValid = true
+            formErrors.Email = "Enter Valid Email"
+        } else {
+            formErrors.Email = ''
+        }
+        setError(formErrors)
+        return isValid
     }
+
+
     const handleLoginChange = (e) => {
         const { name, value } = e.target
         setLoginData({ ...loginData, [name]: value })
-        console.log(loginData.password, "pass");
-        switch (name) {
-            case "password":
-                value === "" ? setError({ ...error, password: 'Please Enter Password' }) : setError({ ...error, password: "" })
-        }
-        if (!loginData.email) {
-            setError({ ...error, email: 'Enter Email.' })
-        } else if (!emailRegex.test(loginData.email)) {
-            setError({ ...error, email: 'Enter Valid Email' })
+        if (!loginData.Email) {
+            setError({ ...error, Email: 'Enter Email.' })
+        } else if (!emailRegex.test(loginData.Email)) {
+            setError({ ...error, Email: 'Enter Valid Email' })
         } else {
-            setError({ ...error, email: '' })
+            setError({ ...error, Email: '' })
+        }
+        if (!loginData.password) {
+            setError({ ...error, password: "Enter Password" })
+        } else {
+            setError({ ...error, password: "" })
         }
     }
-    const handleLogin = () => {
-        if (!validate(loginData)) {
-            navigate("/module")
-            console.log(error, "error");
+    const handleLogin = (e) => {
+        e.preventDefault()
+        if (validate(loginData)) {
         }
+        authUser()
         setLoginData(loginData)
-        console.log(loginData,"jdfh");
+    }
+    var API_URL = 'http://localhost:3000/Api/'
+
+    const authUser = () => {
+        return axios.post(API_URL + "users/Login", loginData)
+            .then((response) => {
+                if (response.data.Status === true) {
+                    navigate("/")
+                    localStorage.setItem("auth", JSON.stringify(response.data.checkuser))
+                    localStorage.setItem("Authorization", response.data.token)
+                    localStorage.setItem("isLoggedIn", true)
+                    dispatch({ type: "LOGIN_SUCCESS", payload: response.data.checkuser })
+                }
+            })
+    }
+    if (isLoggedIn) {
+        navigate('/module')
     }
     return (
         <>
@@ -78,18 +98,18 @@ const Login = () => {
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="mb-4">
-                                                    <label className="cstm-label">Email</label>
-                                                    <input onChange={handleLoginChange} value={loginData.email} type="email" className="cstm-input" placeholder="enter your email address" name="email" required="" />
+                                                    <label htmlFor='Email' className="cstm-label">Email</label>
+                                                    <input onChange={handleLoginChange} value={loginData.Email} type="email" className="cstm-input" placeholder="enter your email address" name="Email" />
                                                 </div>
-                                                {error.email && <span className="error-message"> {error.email} </span>}
+                                                {error.Email && <span className="error-message"> {error.Email} </span>}
                                             </div>
 
                                             <div className="col-lg-12">
                                                 <div className="mb-3">
-                                                    <label className="cstm-label">Password <span className="text-danger">*</span></label>
-                                                    <input onChange={handleLoginChange} type="password" value={loginData.password} name='password' className="cstm-input" placeholder="Password" required="" />
+                                                    <label htmlFor='password' className="cstm-label">Password <span className="text-danger">*</span></label>
+                                                    <input onChange={handleLoginChange} type="password" value={loginData.password} name='password' className="cstm-input" placeholder="Password" />
+                                                    <span className="error-message"> {error.password} </span>
                                                 </div>
-                                                {error.password && <span className="error-message"> {error.password} </span>}
                                             </div>
 
                                             <div className="col-lg-12  mb-4">
@@ -106,7 +126,6 @@ const Login = () => {
                                                     <button onClick={handleLogin} className="cstm-btn1">Sign in</button>
                                                 </div>
                                             </div>
-
                                         </div>
                                     </form>
                                 </div>
