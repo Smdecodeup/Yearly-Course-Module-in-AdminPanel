@@ -23,10 +23,8 @@ exports.secure = async function (req, res, next) {
         next();
     } catch (err) {
         return res.status(500).json({ Status: false, message: 'Token is invalid' });
-
     }
 }
-
 exports.Login = async function (req, res, next) {
     try {
         // console.log(req.body, "req.body");

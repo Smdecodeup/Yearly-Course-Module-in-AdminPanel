@@ -5,6 +5,7 @@ exports.createModule = async function (req, res, next) {
         console.log('jay');
         const createModule = await MODULE.create({...req.body, user: req.userId})
         let data = await MODULE.findById(createModule._id).populate('user')
+        // console.log(data.moduleName);
         return res.status(200).json({ Status: true, message: "create event Sucessfully", data });
     }
     catch (error) {
@@ -57,8 +58,8 @@ exports.deleteModule = async function (req, res, next) {
     }
 };
 
-// Testing Api 
 
+// Testing Api 
 exports.api = async function (req,res,next){
     try {
         res.send({message:"Welcome to yearly-course-module APIs"})
