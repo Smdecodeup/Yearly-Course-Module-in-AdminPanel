@@ -1,11 +1,16 @@
 import { Rating } from '@mui/material';
-import React, { useState } from 'react'
+import moment from 'moment';
+import React, { useEffect, useState } from 'react'
 import { Modal } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
+import moduleService from '../../service/module.service';
+import topicService from '../../service/topic.service';
 
 const TopicListing = () => {
 
     const [deleteOpen, setDelete] = useState(false)
+    const [listingTopicData, setListingTopicData] = useState([])
+    const [listingModuleData, setListingModuleData] = useState([])
     const navigate = useNavigate();
     const onclickAddTopic = (e) => {
         navigate("/topic/add-topic");
@@ -18,6 +23,31 @@ const TopicListing = () => {
     }
     const handleDelete = () => {
     }
+
+    async function topicListingApi() {
+        try {
+            const result = await topicService.topicListingService()
+            if (result.data.Status) {
+                setListingTopicData(result.data.data)
+                console.log(result.data.data, "listData");
+            }
+        } catch (error) {
+
+        }
+    }
+    async function moduleListingApi() {
+        try {
+            const result = await moduleService.moduleListingService()
+            if (result.data.Status === true) {
+                setListingModuleData(result.data.data)
+            }
+        } catch (error) {
+        }
+    }
+    useEffect(() => {
+        topicListingApi()
+        moduleListingApi()
+    }, [])
     return (
         <>
             <div className="page-wrapper doctris-theme toggled">
@@ -39,19 +69,19 @@ const TopicListing = () => {
                                                 </div>
                                             </div>
                                             {/* <div className="col-lg-2"> */}
-                                                <div className="row row ">
-                                                    {/* <div className="mb-4"> */}
-                                                        <select
-                                                            className="cstm-input"
-                                                            placeholder="select Module"
-                                                            name="module"
-                                                            required="">
-                                                            <option>Module 1</option>
-                                                            <option>Module 2</option>
-                                                            <option>Module 3</option>
-                                                        </select>
-                                                    {/* </div> */}
-                                                </div>
+                                            <div className="row row ">
+                                                {/* <div className="mb-4"> */}
+                                                <select
+                                                    className="cstm-input"
+                                                    placeholder="select Module"
+                                                    name="module"
+                                                    required="">
+                                                    {listingModuleData.map((item, i) => (
+                                                        <option>{item.moduleName}</option>
+                                                    ))}
+                                                </select>
+                                                {/* </div> */}
+                                            </div>
                                             {/* </div> */}
                                             <div>
                                                 <button onClick={(e) => onclickAddTopic(e)} className="cstm-btn">Create Topic</button>
@@ -72,43 +102,45 @@ const TopicListing = () => {
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr>
-                                                            <td className="fw-bold">1</td>
-                                                            <td>Cody Fisher</td>
-                                                            <td>Lorem ipsum dolor sit amet consectetur adipisicing elit..........</td>
-                                                            <td><Rating
-                                                                defaultValue={0.5}
-                                                                precision={0.5}
-                                                            /></td>
-                                                            <td>1 Feb, 2023</td>
-                                                            <td>
-                                                                <Link to="/topic/view-topic" className="cstm-eye"><i className="fi fi-rr-eye"></i></Link>
-                                                                <Link to="/topic/edit-topic" className="cstm-chekmank"><i className="fi-rr-pencil"></i></Link>
-                                                                <Link onClick={(e) => toggleDeleteOpen(e)} className="cstm-cross mrn-rt"><i className="fi fi-rr-trash"></i></Link>
-                                                                {deleteOpen &&
-                                                                    <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={deleteOpen} onHide={toggleDeleteClose}>
-                                                                        <div class="modal-content" >
-                                                                            <div class="modal-header border-0 p-4">
-                                                                                <h4 class="modal-title" id="exampleModalLabel1">Delete Module</h4>
-                                                                            </div>
-                                                                            <div class="modal-body p-4 pt-0">
-                                                                                <div class="mb-3">
-                                                                                    <p name="module" >Are you sure to delete this module?</p>
+                                                        {listingTopicData.map((item, i) => (
+                                                            <tr>
+                                                                <td className="fw-bold">{i + 1}</td>
+                                                                <td>{item.topicName}</td>
+                                                                <td>{item.description}</td>
+                                                                <td><Rating
+                                                                    defaultValue={0.5}
+                                                                    precision={0.5}
+                                                                /></td>
+                                                                <td>{moment(item.date).format('Do MMM YYYY')}</td>
+                                                                <td>
+                                                                    <Link to="/topic/view-topic" className="cstm-eye"><i className="fi fi-rr-eye"></i></Link>
+                                                                    <Link to="/topic/edit-topic" className="cstm-chekmank"><i className="fi-rr-pencil"></i></Link>
+                                                                    <Link onClick={(e) => toggleDeleteOpen(e)} className="cstm-cross mrn-rt"><i className="fi fi-rr-trash"></i></Link>
+                                                                    {deleteOpen &&
+                                                                        <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={deleteOpen} onHide={toggleDeleteClose}>
+                                                                            <div class="modal-content" >
+                                                                                <div class="modal-header border-0 p-4">
+                                                                                    <h4 class="modal-title" id="exampleModalLabel1">Delete Module</h4>
                                                                                 </div>
-                                                                                <div className="row">
-                                                                                    <div className="col-lg-12">
-                                                                                        <div className="mb-2">
-                                                                                            <button onClick={handleDelete} className="mr-3 cstm-btn7">Delete</button>
-                                                                                            <button onClick={() => setDelete(false)} className="mr-3 cstm-btn2">Discrad</button>
+                                                                                <div class="modal-body p-4 pt-0">
+                                                                                    <div class="mb-3">
+                                                                                        <p name="module" >Are you sure to delete this module?</p>
+                                                                                    </div>
+                                                                                    <div className="row">
+                                                                                        <div className="col-lg-12">
+                                                                                            <div className="mb-2">
+                                                                                                <button onClick={handleDelete} className="mr-3 cstm-btn7">Delete</button>
+                                                                                                <button onClick={() => setDelete(false)} className="mr-3 cstm-btn2">Discrad</button>
+                                                                                            </div>
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
-                                                                        </div>
-                                                                    </Modal>
-                                                                }
-                                                            </td>
-                                                        </tr>
+                                                                        </Modal>
+                                                                    }
+                                                                </td>
+                                                            </tr>
+                                                        ))}
                                                     </tbody>
                                                 </table>
                                             </div>

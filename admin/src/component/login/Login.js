@@ -16,6 +16,7 @@ const Login = () => {
         Email: '',
         password: ''
     })
+    const [message, setMessage] = useState()
     const dispatch = useDispatch()
     const emailRegex = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
 
@@ -44,10 +45,13 @@ const Login = () => {
     const handleLoginChange = (e) => {
         const { name, value } = e.target
         setLoginData({ ...loginData, [name]: value })
-        if (!loginData.password) {
-            setError({ ...error, [name]: "Enter Password" })
-        } else {
-            setError({ ...error, [name]: "" })
+        switch (name) {
+            case "password":
+                value === "" ? setError({ ...error, password: "Enter Password" }) : setError({ ...error, password: "" })
+                break;
+
+            default:
+                break;
         }
     }
     const handleEmailOnchange = (e) => {
@@ -67,20 +71,24 @@ const Login = () => {
         }
         authUser()
         setLoginData(loginData)
-        
+
     }
+
     var API_URL = 'http://localhost:3000/Api/'
 
     const authUser = () => {
         return axios.post(API_URL + "users/Login", loginData)
             .then((response) => {
-                if (response.data.Status === true) {
+                if (response.data.Status) {
+                    console.log(response.data.message, "login");
                     navigate("/module")
                     localStorage.setItem("auth", JSON.stringify(response.data.checkuser))
                     localStorage.setItem("Authorization", response.data.token)
                     localStorage.setItem("isLoggedIn", true)
                     dispatch({ type: "LOGIN_SUCCESS", payload: response.data.checkuser })
                 }
+            }).catch((err) => {
+                setMessage(err.response.data.message);
             })
     }
     useEffect(() => {
@@ -128,7 +136,7 @@ const Login = () => {
                                                     {/* <a href="#l">Forgot password ?</a> */}
                                                 </div>
                                             </div>
-
+                                            <span className="error-message">{message}</span>
                                             <div className="col-lg-12">
                                                 <div className="d-grid">
                                                     <button onClick={handleLogin} className="cstm-btn1">Sign in</button>

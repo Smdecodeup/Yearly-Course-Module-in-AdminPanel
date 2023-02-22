@@ -1,9 +1,11 @@
 import { Image, MusicNote, YouTube } from '@material-ui/icons'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Editor } from 'react-draft-wysiwyg'
 import { FileUploader } from 'react-drag-drop-files'
 import Dropzone from 'react-dropzone'
 import { useNavigate } from 'react-router-dom'
+import moduleService from '../../service/module.service'
+import topicService from '../../service/topic.service'
 
 const AddTopic = () => {
 
@@ -11,26 +13,27 @@ const AddTopic = () => {
     const [induction, setInduction] = useState(false)
     const [technique, setTechnique] = useState(false)
     const [language, setLanguage] = useState(false)
+    const [moduleList, setModuleList] = useState([])
     const [topicData, setTopicData] = useState({
         module: '',
         topicName: '',
-        TopicType: '',
-        Description: '',
+        topicType: '',
+        description: '',
         img: [],
         video: [],
         audio: [],
         audio_sug: [],
         inductionName: '',
         inductionCode: '',
-        TechniqueName: '',
-        TechniqueCode: '',
-        languageName: '',
-        languageCode: '',
-        Defination: '',
+        techniquesName: '',
+        techniquesCode: '',
+        languagePatternsName: '',
+        languagePatternsCode: '',
+        languagePatternsDefination: '',
         Example: '',
-        Induction: '',
-        Techniques: '',
-        Pattern: '',
+        selectInductions: '',
+        selectTechniques: '',
+        patternsType: '',
         keyReminder: ''
     })
     const [error, setError] = useState({
@@ -125,6 +128,7 @@ const AddTopic = () => {
         e.preventDefault();
         if (!validate(topicData)) {
             console.log(error);
+            createTopicApi()
         }
         setTopicData(topicData)
         console.log(topicData, "topicData");
@@ -207,6 +211,29 @@ const AddTopic = () => {
     const handleBack = () => {
         navigate('/topic')
     }
+async function moduleListingApi(){
+    try {
+        const result = await moduleService.moduleListingService()
+        if(result.data.Status){
+            setModuleList(result.data.data)
+        }
+    } catch (error) {
+        
+    }
+}
+    async function createTopicApi() {
+        try {
+            const result = await topicService.topicCreateService(topicData)
+            if (result.data.Status) {
+                setTopicData(result.data.data)
+            }
+        } catch (error) {
+            
+        }
+    }
+    useEffect(() => {
+        moduleListingApi()
+    })
     return (
         <>
             <div className="page-wrapper doctris-theme toggled">
@@ -232,9 +259,9 @@ const AddTopic = () => {
                                                         name="module"
                                                         value={topicData.module}
                                                         required="">
-                                                        <option>Module 1</option>
-                                                        <option>Module 1</option>
-                                                        <option>Module 1</option>
+                                                        {moduleList.map((item, i) => (
+                                                        <option>{item.moduleName}</option>                                                       
+                                                        ))}
                                                     </select>
                                                     {error.module && <span className="error-message"> {error.module} </span>}
                                                 </div>
@@ -261,7 +288,7 @@ const AddTopic = () => {
                                                         className="cstm-input"
                                                         placeholder="select Module"
                                                         name="TopicType"
-                                                        value={topicData.TopicType}
+                                                        value={topicData.topicType}
                                                         required="">
                                                         {topicOption && topicOption.map((item) => (
                                                             <option>{item}</option>
@@ -272,14 +299,14 @@ const AddTopic = () => {
                                             </div>
                                             <div className="col-lg-12">
                                                 <div className="mb-4">
-                                                    <label htmlFor='Description' className="cstm-label">Description</label>
+                                                    <label htmlFor='description' className="cstm-label">Description</label>
                                                     <input
                                                         type="text"
-                                                        value={topicData.Description}
+                                                        value={topicData.description}
                                                         onChange={onChangeHandle}
                                                         className="cstm-input"
                                                         placeholder="Write Description"
-                                                        name="Description"
+                                                        name="description"
                                                         required="" />
                                                     {error.Description && <span className="error-message"> {error.Description} </span>}
                                                 </div>
@@ -303,7 +330,7 @@ const AddTopic = () => {
                                                     <div className="col-lg-6">
                                                         <div className="mb-4">
                                                             <label htmlFor='induction' className="cstm-label">Induction Code</label>
-                                                            <input  value="I" readOnly={true} />
+                                                            <input value="I" readOnly={true} />
                                                             <input
                                                                 onKeyPress={(event) => {
                                                                     if (!/[0-9]/.test(event.key)) {
@@ -343,14 +370,14 @@ const AddTopic = () => {
                                                 <>
                                                     <div className="col-lg-6">
                                                         <div className="mb-4">
-                                                            <label htmlFor='TechniqueName' className="cstm-label">Technique Name</label>
+                                                            <label htmlFor='techniquesName' className="cstm-label">Technique Name</label>
                                                             <input
                                                                 type="text"
-                                                                value={topicData.TechniqueName}
+                                                                value={topicData.techniquesName}
                                                                 onChange={onChangeHandle}
                                                                 className="cstm-input"
                                                                 placeholder="Enter Technique Name"
-                                                                name="TechniqueName"
+                                                                name="techniquesName"
                                                                 required="" />
                                                             {error.TechniqueName && <span className="error-message"> {error.TechniqueName} </span>}
                                                         </div>
@@ -358,7 +385,7 @@ const AddTopic = () => {
                                                     <div className="col-lg-6">
                                                         <div className="mb-4">
                                                             <label htmlFor='TechniqueCode' className="cstm-label">Technique Code</label>
-                                                            <input  value="T" readOnly={true} />
+                                                            <input value="T" readOnly={true} />
                                                             <input
                                                                 onKeyPress={(event) => {
                                                                     if (!/[0-9]/.test(event.key)) {
@@ -366,11 +393,11 @@ const AddTopic = () => {
                                                                     }
                                                                 }}
                                                                 type="text"
-                                                                value={topicData.TechniqueCode}
+                                                                value={topicData.techniquesCode}
                                                                 onChange={onChangeHandle}
                                                                 className="cstm-input"
                                                                 placeholder="Enter Technique Code"
-                                                                name="TechniqueCode"
+                                                                name="techniquesCode"
                                                                 required="" />
                                                             {error.TechniqueCode && <span className="error-message"> {error.TechniqueCode} </span>}
                                                         </div>
@@ -401,11 +428,11 @@ const AddTopic = () => {
                                                             <label htmlFor='languageName' className="cstm-label">Language Patterns Name</label>
                                                             <input
                                                                 type="text"
-                                                                value={topicData.languageName}
+                                                                value={topicData.languagePatternsName}
                                                                 onChange={onChangeHandle}
                                                                 className="cstm-input"
                                                                 placeholder="Enter language patterns name."
-                                                                name="languageName"
+                                                                name="languagePatternsName"
                                                                 required="" />
                                                             {error.languageName && <span className="error-message"> {error.languageName} </span>}
                                                         </div>
@@ -413,7 +440,7 @@ const AddTopic = () => {
                                                     <div className="col-lg-6">
                                                         <div className="mb-4">
                                                             <label htmlFor='languageCode' className="cstm-label">Language Patterns Code</label>
-                                                            <input  value="L" readOnly={true} />
+                                                            <input value="L" readOnly={true} />
                                                             <input
                                                                 type="text"
                                                                 onKeyPress={(event) => {
@@ -421,11 +448,11 @@ const AddTopic = () => {
                                                                         event.preventDefault();
                                                                     }
                                                                 }}
-                                                                value={topicData.languageCode}
+                                                                value={topicData.languagePatternsCode}
                                                                 onChange={onChangeHandle}
                                                                 className="cstm-input"
                                                                 placeholder="Enter language patterns code"
-                                                                name="languageCode"
+                                                                name="languagePatternsCode"
                                                                 required="" />
                                                             {error.languageCode && <span className="error-message"> {error.languageCode} </span>}
                                                         </div>
@@ -435,11 +462,11 @@ const AddTopic = () => {
                                                             <label htmlFor='Defination' className="cstm-label">Language Patterns Defination</label>
                                                             <input
                                                                 type="text"
-                                                                value={topicData.Defination}
+                                                                value={topicData.languagePatternsDefination}
                                                                 onChange={onChangeHandle}
                                                                 className="cstm-input"
                                                                 placeholder="Write Defination"
-                                                                name="Defination"
+                                                                name="languagePatternsDefination"
                                                                 required="" />
                                                             {error.Defination && <span className="error-message"> {error.Defination} </span>}
                                                         </div>
@@ -466,7 +493,7 @@ const AddTopic = () => {
                                                                 className="cstm-input"
                                                                 placeholder="select Pattern Type"
                                                                 name="Pattern"
-                                                                value={topicData.Pattern}
+                                                                value={topicData.patternsType}
                                                                 required="">
                                                                 <option>Pattern 1</option>
                                                                 <option>Pattern 1</option>
@@ -483,7 +510,7 @@ const AddTopic = () => {
                                                                 className="cstm-input"
                                                                 placeholder="select Techniques"
                                                                 name="Techniques"
-                                                                value={topicData.Techniques}
+                                                                value={topicData.selectTechniques}
                                                                 required="">
                                                                 <option>Techniques 1</option>
                                                                 <option>Techniques 1</option>
@@ -500,7 +527,7 @@ const AddTopic = () => {
                                                                 className="cstm-input"
                                                                 placeholder="select Induction"
                                                                 name="Induction"
-                                                                value={topicData.Induction}
+                                                                value={topicData.selectInductions}
                                                                 required="">
                                                                 <option>Induction 1</option>
                                                                 <option>Induction 1</option>

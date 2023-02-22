@@ -9,8 +9,8 @@ const createModuleService = (data) => {
     })
 }
 
-const editModuleService = (data) => {
-    return axios.post(API_URL + "editModule" , data, {
+const editModuleService = (id, data) => {
+    return axios.post(API_URL + "editModule/?editModuleId=" + id , data, {
         headers: authHeader()
     })
 }
