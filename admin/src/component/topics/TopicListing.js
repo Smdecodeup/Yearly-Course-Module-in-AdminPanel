@@ -2,12 +2,16 @@ import { Rating } from '@mui/material';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react'
 import { Modal } from 'react-bootstrap';
+import SweetAlert from 'react-bootstrap-sweetalert';
 import { Link, useNavigate } from 'react-router-dom';
 import moduleService from '../../service/module.service';
 import topicService from '../../service/topic.service';
 
 const TopicListing = () => {
 
+    const [loader, setLoader] = useState(false);
+    const [selectInput, setSelectInput] = useState("");
+    const [filterResult, setFilterResult] = useState([]);
     const [deleteOpen, setDelete] = useState(false)
     const [listingTopicData, setListingTopicData] = useState([])
     const [listingModuleData, setListingModuleData] = useState([])
@@ -29,7 +33,6 @@ const TopicListing = () => {
             const result = await topicService.topicListingService()
             if (result.data.Status) {
                 setListingTopicData(result.data.data)
-                console.log(result.data.data, "listData");
             }
         } catch (error) {
 
@@ -39,15 +42,26 @@ const TopicListing = () => {
         try {
             const result = await moduleService.moduleListingService()
             if (result.data.Status === true) {
+                setLoader(false)
                 setListingModuleData(result.data.data)
             }
         } catch (error) {
+            setLoader(true)
         }
     }
     useEffect(() => {
         topicListingApi()
         moduleListingApi()
     }, [])
+    const moduleFilter = (selectValue) => {
+        setSelectInput(selectValue)
+        if (selectValue !== '') {
+            const filteredData = listingTopicData.filter((item) => {
+                return Object.values(item._id).join('').toLowerCase().includes(selectInput.toLowerCase())
+            })
+            setFilterResult(filteredData)
+        }
+    }
     return (
         <>
             <div className="page-wrapper doctris-theme toggled">
@@ -77,7 +91,7 @@ const TopicListing = () => {
                                                     name="module"
                                                     required="">
                                                     {listingModuleData.map((item, i) => (
-                                                        <option>{item.moduleName}</option>
+                                                        <option value={item._id}>{item.moduleName}</option>
                                                     ))}
                                                 </select>
                                                 {/* </div> */}
@@ -88,62 +102,63 @@ const TopicListing = () => {
                                             </div>
                                         </div>
                                         <div className="col-md-12 col-lg-12">
+                                            {loader ?
+                                                <div className="spinner-border"></div>
+                                                :
+                                                (listingTopicData === null || listingTopicData === undefined ?
+                                                    <div className='cstm-no-record-found'>No Data Found</div>
+                                                    :
+                                                    <div className="table-responsive bg-white rounded">
+                                                        <table className="table mb-0 table-center">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th className="border-bottom w-4">No.</th>
+                                                                    <th className="border-bottom w-12">Topic Name</th>
+                                                                    <th className="border-bottom w-15">Description</th>
+                                                                    <th className="border-bottom w-15">Rating</th>
+                                                                    <th className="border-bottom w-10">Date</th>
+                                                                    <th className="border-bottom w-11">Action</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {listingTopicData.map((item, i) => (
+                                                                    <tr key={i}>
+                                                                        <td className="fw-bold">{i + 1}</td>
+                                                                        <td>{item.topicName}</td>
+                                                                        <td>{item.description}</td>
+                                                                        <td><Rating
+                                                                            defaultValue={0.5}
+                                                                            precision={0.5}
+                                                                        /></td>
+                                                                        <td>{moment(item.date).format('Do MMM YYYY')}</td>
+                                                                        <td>
+                                                                            <Link to="/topic/view-topic" className="cstm-eye"><i className="fi fi-rr-eye"></i></Link>
+                                                                            <Link to="/topic/edit-topic" className="cstm-chekmank"><i className="fi-rr-pencil"></i></Link>
+                                                                            <Link onClick={(e) => toggleDeleteOpen(e)} className="cstm-cross mrn-rt"><i className="fi fi-rr-trash"></i></Link>
+                                                                            {deleteOpen &&
+                                                                                <SweetAlert
+                                                                                    warning
+                                                                                    showCancel
+                                                                                    cancelBtnText="Discard"
+                                                                                    confirmBtnText="Delete"
+                                                                                    confirmBtnBsStyle="danger"
+                                                                                    title="Are you sure?"
+                                                                                    // onConfirm={(e) => handleDelete(e, item._id)}
+                                                                                    onCancel={toggleDeleteClose}
+                                                                                    focusCancelBtn
+                                                                                >
+                                                                                    Are you sure to delete this module?
+                                                                                </SweetAlert>
+                                                                            }
+                                                                        </td>
+                                                                    </tr>
+                                                                ))}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
 
-                                            <div className="table-responsive bg-white rounded">
-                                                <table className="table mb-0 table-center">
-                                                    <thead>
-                                                        <tr>
-                                                            <th className="border-bottom w-4">No.</th>
-                                                            <th className="border-bottom w-12">Topic Name</th>
-                                                            <th className="border-bottom w-15">Description</th>
-                                                            <th className="border-bottom w-15">Rating</th>
-                                                            <th className="border-bottom w-10">Date</th>
-                                                            <th className="border-bottom w-11">Action</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {listingTopicData.map((item, i) => (
-                                                            <tr>
-                                                                <td className="fw-bold">{i + 1}</td>
-                                                                <td>{item.topicName}</td>
-                                                                <td>{item.description}</td>
-                                                                <td><Rating
-                                                                    defaultValue={0.5}
-                                                                    precision={0.5}
-                                                                /></td>
-                                                                <td>{moment(item.date).format('Do MMM YYYY')}</td>
-                                                                <td>
-                                                                    <Link to="/topic/view-topic" className="cstm-eye"><i className="fi fi-rr-eye"></i></Link>
-                                                                    <Link to="/topic/edit-topic" className="cstm-chekmank"><i className="fi-rr-pencil"></i></Link>
-                                                                    <Link onClick={(e) => toggleDeleteOpen(e)} className="cstm-cross mrn-rt"><i className="fi fi-rr-trash"></i></Link>
-                                                                    {deleteOpen &&
-                                                                        <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={deleteOpen} onHide={toggleDeleteClose}>
-                                                                            <div class="modal-content" >
-                                                                                <div class="modal-header border-0 p-4">
-                                                                                    <h4 class="modal-title" id="exampleModalLabel1">Delete Module</h4>
-                                                                                </div>
-                                                                                <div class="modal-body p-4 pt-0">
-                                                                                    <div class="mb-3">
-                                                                                        <p name="module" >Are you sure to delete this module?</p>
-                                                                                    </div>
-                                                                                    <div className="row">
-                                                                                        <div className="col-lg-12">
-                                                                                            <div className="mb-2">
-                                                                                                <button onClick={handleDelete} className="mr-3 cstm-btn7">Delete</button>
-                                                                                                <button onClick={() => setDelete(false)} className="mr-3 cstm-btn2">Discrad</button>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </Modal>
-                                                                    }
-                                                                </td>
-                                                            </tr>
-                                                        ))}
-                                                    </tbody>
-                                                </table>
-                                            </div>
+                                                )
+                                            }
                                         </div>
                                     </div>
                                 </div>

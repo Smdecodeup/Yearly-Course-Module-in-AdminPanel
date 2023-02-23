@@ -1,12 +1,15 @@
 import { Image, MusicNote, YouTube } from '@material-ui/icons'
-import React, { useState } from 'react'
-import Dropzone from 'react-dropzone'
+import React, { useEffect, useState } from 'react'
+import Dropzone, { useDropzone } from 'react-dropzone'
 import { useNavigate } from 'react-router-dom'
 import 'froala-editor/css/froala_style.min.css';
 import 'froala-editor/css/froala_editor.pkgd.min.css';
 import { Editor } from 'react-draft-wysiwyg'
+import Imageupload from '../mediaComponent/Imageupload';
+import VideoUpload from '../mediaComponent/VideoUpload';
+import Audioupload from '../mediaComponent/Audioupload';
 
-const EditTopic = () => {
+const EditTopic = (props) => {
 
     const [induction, setInduction] = useState(false)
     const [technique, setTechnique] = useState(false)
@@ -117,10 +120,8 @@ const EditTopic = () => {
     const handleAddSubmit = (e) => {
         e.preventDefault();
         if (!validate(topicData)) {
-            console.log(error);
         }
         setTopicData(topicData)
-        console.log(topicData, "topicData");
     }
     const onChangeHandle = (e) => {
         const { name, value } = e.target
@@ -199,6 +200,7 @@ const EditTopic = () => {
     const handleBack = () => {
         navigate('/topic')
     }
+
     return (
         <>
             <div className="page-wrapper doctris-theme toggled">
@@ -314,20 +316,7 @@ const EditTopic = () => {
                                                     <div className="col-lg-12">
                                                         <div className="mb-4">
                                                             <label htmlFor='img' className="cstm-label">Upload Sign Language Images</label>
-                                                            <div className="dropzone col-lg-12" >
-                                                                <Dropzone accept={"image/jpeg, image/png"} onDrop={e => console.log(e)}>
-                                                                    {({ getRootProps, getInputProps }) => (
-                                                                        <section>
-                                                                            <div  {...getRootProps()}>
-                                                                                <input {...getInputProps()} />
-                                                                                <Image />
-                                                                                <h4>Drag & Drop or Click to add Image</h4>
-                                                                                <p>Please use JPEG,PNG formate of Image</p>
-                                                                            </div>
-                                                                        </section>
-                                                                    )}
-                                                                </Dropzone>
-                                                            </div>
+                                                            <Imageupload />
                                                         </div>
                                                     </div>
                                                 </>
@@ -370,20 +359,7 @@ const EditTopic = () => {
                                                     <div className="col-lg-12">
                                                         <div className="mb-4">
                                                             <label htmlFor='img' className="cstm-label">Upload Sign Language Images</label>
-                                                            <div className="dropzone col-lg-12" >
-                                                                <Dropzone accept={"image/jpeg, image/png"} onDrop={e => console.log(e)}>
-                                                                    {({ getRootProps, getInputProps }) => (
-                                                                        <section>
-                                                                            <div  {...getRootProps()}>
-                                                                                <input {...getInputProps()} />
-                                                                                <Image />
-                                                                                <h4>Drag & Drop or Click to add Image</h4>
-                                                                                <p>Please use JPEG,PNG formate of Image</p>
-                                                                            </div>
-                                                                        </section>
-                                                                    )}
-                                                                </Dropzone>
-                                                            </div>
+                                                            <Imageupload />
                                                         </div>
                                                     </div>
                                                 </>
@@ -505,100 +481,33 @@ const EditTopic = () => {
                                                     <div className="col-lg-12">
                                                         <div className="mb-4">
                                                             <label htmlFor='img' className="cstm-label">Upload Sign Language Images</label>
-                                                            <div className="dropzone col-lg-12" >
-                                                                <Dropzone accept={"image/jpeg, image/png"} onDrop={e => console.log(e)}>
-                                                                    {({ getRootProps, getInputProps }) => (
-                                                                        <section>
-                                                                            <div  {...getRootProps()}>
-                                                                                <input {...getInputProps()} />
-                                                                                <Image />
-                                                                                <h4>Drag & Drop or Click to add Image</h4>
-                                                                                <p>Please use JPEG,PNG formate of Image</p>
-                                                                            </div>
-                                                                        </section>
-                                                                    )}
-                                                                </Dropzone>
-                                                            </div>
+                                                            <Imageupload />
                                                         </div>
                                                     </div>
                                                 </>
                                             }
                                             <div className="col-lg-12">
                                                 <div className="mb-4">
-                                                    <label htmlFor='video' className="cstm-label">Upload Videos</label>
-                                                    <div className="dropzone col-lg-12" >
-                                                        <Dropzone accept="video/mp4" onDrop={e => console.log(e)}>
-                                                            {({ getRootProps, getInputProps }) => (
-                                                                <section>
-                                                                    <div  {...getRootProps()}>
-                                                                        <input   {...getInputProps()} />
-                                                                        <YouTube />
-                                                                        <h4>Drag & Drop or Click to add video</h4>
-                                                                        <p>Please use MP4 formate of video</p>
-                                                                    </div>
-                                                                </section>
-                                                            )}
-                                                        </Dropzone>
-                                                    </div>
+                                                    <label htmlFor='image' className="cstm-label">Upload Videos</label>
+                                                    <VideoUpload />
                                                 </div>
                                             </div>
                                             <div className="col-lg-12">
                                                 <div className="mb-4">
-                                                    <label htmlFor='img' className="cstm-label">Upload Images</label>
-                                                    <div className="dropzone col-lg-12" >
-                                                        <Dropzone accept={"image/jpeg, image/png"} onDrop={e => console.log(e)}>
-                                                            {({ getRootProps, getInputProps }) => (
-                                                                <section>
-                                                                    <div  {...getRootProps()}>
-                                                                        <input {...getInputProps()} />
-                                                                        <Image />
-                                                                        <h4>Drag & Drop or Click to add Image</h4>
-                                                                        <p>Please use JPEG,PNG formate of Image</p>
-                                                                    </div>
-                                                                </section>
-                                                            )}
-                                                        </Dropzone>
-                                                    </div>
+                                                    <label htmlFor='image' className="cstm-label">Upload Image</label>
+                                                    <Imageupload />
                                                 </div>
                                             </div>
                                             <div className="col-lg-12">
                                                 <div className="mb-4">
-                                                    <label htmlFor='audio' className="cstm-label">Upload Audio</label>
-                                                    <div className="dropzone col-lg-12" >
-                                                        <Dropzone accept={"audio/mp3"}
-                                                            onDrop={e => console.log(e)}>
-                                                            {({ getRootProps, getInputProps }) => (
-
-                                                                <section>
-                                                                    <div  {...getRootProps()}>
-                                                                        <input   {...getInputProps()} />
-                                                                        <MusicNote />
-                                                                        <h4>Drag & Drop or Click to add Audio</h4>
-                                                                        <p>Please use MP3 formate of Audio</p>
-                                                                    </div>
-                                                                </section>
-                                                            )}
-                                                        </Dropzone>
-                                                    </div>
+                                                    <label htmlFor='image' className="cstm-label">Upload Audio</label>
+                                                    <Audioupload />
                                                 </div>
                                             </div>
                                             <div className="col-lg-12">
                                                 <div className="mb-4">
                                                     <label htmlFor='audio' className="cstm-label">Upload Audio Suggestion</label>
-                                                    <div className="dropzone col-lg-12" >
-                                                        <Dropzone accept={"audio/mp3"} onDrop={e => console.log(e)}>
-                                                            {({ getRootProps, getInputProps }) => (
-                                                                <section>
-                                                                    <div  {...getRootProps()}>
-                                                                        <input   {...getInputProps()} />
-                                                                        <MusicNote />
-                                                                        <h4>Drag & Drop or Click to add Audio</h4>
-                                                                        <p>Please use MP3 formate of Audio</p>
-                                                                    </div>
-                                                                </section>
-                                                            )}
-                                                        </Dropzone>
-                                                    </div>
+                                                    <Audioupload />
                                                 </div>
                                             </div>
                                             <div className="col-lg-12" >

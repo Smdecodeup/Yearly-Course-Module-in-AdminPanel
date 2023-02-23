@@ -109,15 +109,12 @@ const ModuleListing = () => {
             setEdit(false)
             setEditSuccess(true)
         }
-        console.log(videwData, "edit data");
         moduleListingApi()
     }
     //onchange for edit 
     const onChangeEdit = (e) => {
         const { name, value } = e.target
         setViewData({ ...videwData, [name]: value })
-        // console.log(videwData, "data");
-        console.log(value, "editdata");
         switch (name) {
             case "moduleName":
                 value === '' ? setEditModuleError({ ...editModuleerror, moduleName: 'Please enter module description.' }) : setEditModuleError({ ...editModuleerror, moduleName: '' });
@@ -163,7 +160,6 @@ const ModuleListing = () => {
     }
     //edit module popup open
     const toggleEditOpen = (e, id) => {
-        console.log(id);
         setEdit(true)
         let query_string = ""
         if (id) {
@@ -171,12 +167,10 @@ const ModuleListing = () => {
         }
         viewModuleApi(query_string)
         setViewData(videwData)
-        console.log(videwData);
     }
     //edit module popup close
     const toggleEditClose = () => {
         setEdit(false)
-        console.log(moduleId, "close");
     }
     //delete module popup open
     const toggleDeleteOpen = (e, id) => {
@@ -239,7 +233,6 @@ const ModuleListing = () => {
                 "moduleDescription": videwData.moduleDescription
             }
             const result = await moduleService.editModuleService(videwData._id, bodyData)
-            console.log(result);
             if (result.data.Status === true) {
                 setViewData(result.data.data)
                 moduleListingApi()
@@ -358,215 +351,219 @@ const ModuleListing = () => {
 
                                         </div>
                                         <div className="col-md-12 col-lg-12">
-                                            <div className="table-responsive bg-white rounded">
-                                                <table className="table mb-0 table-center">
-                                                    <thead>
-                                                        <tr>
-                                                            <th className="border-bottom w-4">No.</th>
-                                                            <th className="border-bottom w-12">Module Name</th>
-                                                            <th className="border-bottom w-15">Description</th>
-                                                            <th className="border-bottom w-10">Date</th>
-                                                            <th className="border-bottom w-11">Action</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-
-                                                        {loader ?
-                                                            <div className="spinner-border"></div>
-                                                            :
-                                                            (searchInput.length > 2 ?
-                                                                (filteredResults.map((item, i) => (
-                                                                    <tr>
-                                                                        <td >{i + 1}</td>
-                                                                        <td>{item.moduleName}</td>
-                                                                        <td>{item.moduleDescription}</td>
-                                                                        <td>{moment(item.date).format('Do MMM YYYY')}</td>
-                                                                        <td>
-                                                                            <Link onClick={(e) => toggleViewOpen(e, item._id)} className="cstm-eye"><i className="fi fi-rr-eye"></i></Link>
-                                                                            {viewOpen &&
-                                                                                <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={viewOpen} onHide={toggleViewClose}>
-                                                                                    <div className="modal-header border-0 p-4">
-                                                                                        <h4 className="modal-title" id="exampleModalLabel1">View Module</h4>
-                                                                                        <button onClick={toggleViewClose} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                                    </div>
-                                                                                    <div className="modal-body p-4 pt-0">
-                                                                                        <div className="mb-3">
-                                                                                            <label className="cstm-label">Module Name</label>
-                                                                                            <p name="module" required="">{videwData.moduleName}</p>
-                                                                                        </div>
-                                                                                        <div className="mb-3">
-                                                                                            <label className="cstm-label">Module Description</label>
-                                                                                            <p name="module" >{videwData.moduleDescription}</p>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </Modal>
-                                                                            }
-                                                                            <Link onClick={(e) => toggleEditOpen(e, item._id)} className="cstm-chekmank"><i className="fi-rr-pencil"></i></Link>
-                                                                            {editOpen &&
-                                                                                <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={editOpen} onHide={toggleEditClose}>
-                                                                                    <div className="modal-content">
+                                            {loader ?
+                                                <div className="spinner-border"></div>
+                                                :
+                                                (listingData === null ?
+                                                    <div className='cstm-no-record-found'>No Data Found</div>
+                                                    :
+                                                    <div className="table-responsive bg-white rounded">
+                                                        <table className="table mb-0 table-center">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th className="border-bottom w-4">No.</th>
+                                                                    <th className="border-bottom w-12">Module Name</th>
+                                                                    <th className="border-bottom w-15">Description</th>
+                                                                    <th className="border-bottom w-10">Date</th>
+                                                                    <th className="border-bottom w-11">Action</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {searchInput.length > 2 ?
+                                                                    (filteredResults.map((item, i) => (
+                                                                        <tr>
+                                                                            <td >{i + 1}</td>
+                                                                            <td>{item.moduleName}</td>
+                                                                            <td>{item.moduleDescription}</td>
+                                                                            <td>{moment(item.date).format('Do MMM YYYY')}</td>
+                                                                            <td>
+                                                                                <Link onClick={(e) => toggleViewOpen(e, item._id)} className="cstm-eye"><i className="fi fi-rr-eye"></i></Link>
+                                                                                {viewOpen &&
+                                                                                    <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={viewOpen} onHide={toggleViewClose}>
                                                                                         <div className="modal-header border-0 p-4">
-                                                                                            <h4 className="modal-title" id="exampleModalLabel1">Edit Module</h4>
-                                                                                            <button onClick={toggleEditClose} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                                            <h4 className="modal-title" id="exampleModalLabel1">View Module</h4>
+                                                                                            <button onClick={toggleViewClose} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                                         </div>
                                                                                         <div className="modal-body p-4 pt-0">
                                                                                             <div className="mb-3">
-                                                                                                <label htmlFor='moduleName' className="cstm-label">Module Name</label>
-                                                                                                <input
-
-                                                                                                    type="text"
-                                                                                                    className="cstm-input"
-                                                                                                    placeholder="Enter Module Name"
-                                                                                                    name="moduleName"
-                                                                                                    value={videwData.moduleName}
-                                                                                                    onChange={onChangeEdit}
-                                                                                                    required="" />
-                                                                                                {editModuleerror.moduleName && <span className="error-message"> {editModuleerror.moduleName} </span>}
+                                                                                                <label className="cstm-label">Module Name</label>
+                                                                                                <p name="module" required="">{videwData.moduleName}</p>
                                                                                             </div>
                                                                                             <div className="mb-3">
-                                                                                                <label htmlFor='moduleDescription' className="cstm-label">Module Description</label>
-                                                                                                <input
-                                                                                                    type="text"
-                                                                                                    value={videwData.moduleDescription}
-                                                                                                    onChange={onChangeEdit}
-                                                                                                    className="cstm-textarea"
-                                                                                                    placeholder="Write Description"
-                                                                                                    name="moduleDescription" />
-                                                                                                {editModuleerror.moduleDescription && <span className="error-message"> {editModuleerror.moduleDescription} </span>}
+                                                                                                <label className="cstm-label">Module Description</label>
+                                                                                                <p name="module" >{videwData.moduleDescription}</p>
                                                                                             </div>
-                                                                                            <div className="row">
-                                                                                                <div className="col-lg-12">
-                                                                                                    <div className="mb-2">
-                                                                                                        <button onClick={(id) => handleEditSubmit(id)} className="mr-3 cstm-btn6">Save Changes</button>
+                                                                                        </div>
+                                                                                    </Modal>
+                                                                                }
+                                                                                <Link onClick={(e) => toggleEditOpen(e, item._id)} className="cstm-chekmank"><i className="fi-rr-pencil"></i></Link>
+                                                                                {editOpen &&
+                                                                                    <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={editOpen} onHide={toggleEditClose}>
+                                                                                        <div className="modal-content">
+                                                                                            <div className="modal-header border-0 p-4">
+                                                                                                <h4 className="modal-title" id="exampleModalLabel1">Edit Module</h4>
+                                                                                                <button onClick={toggleEditClose} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                                            </div>
+                                                                                            <div className="modal-body p-4 pt-0">
+                                                                                                <div className="mb-3">
+                                                                                                    <label htmlFor='moduleName' className="cstm-label">Module Name</label>
+                                                                                                    <input
+
+                                                                                                        type="text"
+                                                                                                        className="cstm-input"
+                                                                                                        placeholder="Enter Module Name"
+                                                                                                        name="moduleName"
+                                                                                                        value={videwData.moduleName}
+                                                                                                        onChange={onChangeEdit}
+                                                                                                        required="" />
+                                                                                                    {editModuleerror.moduleName && <span className="error-message"> {editModuleerror.moduleName} </span>}
+                                                                                                </div>
+                                                                                                <div className="mb-3">
+                                                                                                    <label htmlFor='moduleDescription' className="cstm-label">Module Description</label>
+                                                                                                    <input
+                                                                                                        type="text"
+                                                                                                        value={videwData.moduleDescription}
+                                                                                                        onChange={onChangeEdit}
+                                                                                                        className="cstm-textarea"
+                                                                                                        placeholder="Write Description"
+                                                                                                        name="moduleDescription" />
+                                                                                                    {editModuleerror.moduleDescription && <span className="error-message"> {editModuleerror.moduleDescription} </span>}
+                                                                                                </div>
+                                                                                                <div className="row">
+                                                                                                    <div className="col-lg-12">
+                                                                                                        <div className="mb-2">
+                                                                                                            <button onClick={(id) => handleEditSubmit(id)} className="mr-3 cstm-btn6">Save Changes</button>
+                                                                                                        </div>
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </div>
                                                                                         </div>
-                                                                                    </div>
-                                                                                </Modal>
-                                                                            }
-                                                                            {editsuccess &&
-                                                                                <SweetAlert success title="Module Successfully Edited" confirmBtnText="close" onConfirm={() => setEditSuccess(false)} onCancel={() => setEditSuccess(false)} />
-                                                                            }
-                                                                            <Link onClick={(e) => toggleDeleteOpen(e, item._id)} className="cstm-cross mrn-rt"><i className="fi fi-rr-trash"></i></Link>
-                                                                            {deleteOpen &&
-                                                                                <SweetAlert
-                                                                                    warning
-                                                                                    showCancel
-                                                                                    cancelBtnText="Discard"
-                                                                                    confirmBtnText="Delete"
-                                                                                    confirmBtnBsStyle="danger"
-                                                                                    title="Are you sure?"
-                                                                                    onConfirm={(e) => handleDelete(e, item._id)}
-                                                                                    onCancel={toggleDeleteClose}
-                                                                                    focusCancelBtn
-                                                                                >
-                                                                                    Are you sure to delete this module?
-                                                                                </SweetAlert>
-                                                                            }
-                                                                        </td>
-                                                                    </tr>
-                                                                ))
+                                                                                    </Modal>
+                                                                                }
+                                                                                {editsuccess &&
+                                                                                    <SweetAlert success title="Module Successfully Edited" confirmBtnText="close" onConfirm={() => setEditSuccess(false)} onCancel={() => setEditSuccess(false)} />
+                                                                                }
+                                                                                <Link onClick={(e) => toggleDeleteOpen(e, item._id)} className="cstm-cross mrn-rt"><i className="fi fi-rr-trash"></i></Link>
+                                                                                {deleteOpen &&
+                                                                                    <SweetAlert
+                                                                                        warning
+                                                                                        showCancel
+                                                                                        cancelBtnText="Discard"
+                                                                                        confirmBtnText="Delete"
+                                                                                        confirmBtnBsStyle="danger"
+                                                                                        title="Are you sure?"
+                                                                                        onConfirm={(e) => handleDelete(e, item._id)}
+                                                                                        onCancel={toggleDeleteClose}
+                                                                                        focusCancelBtn
+                                                                                    >
+                                                                                        Are you sure to delete this module?
+                                                                                    </SweetAlert>
+                                                                                }
+                                                                            </td>
+                                                                        </tr>
+                                                                    ))
 
-                                                                )
-                                                                :
-                                                                (listingData.map((item, i) => (
-                                                                    <tr>
-                                                                        <td >{i + 1}</td>
-                                                                        <td>{item.moduleName}</td>
-                                                                        <td>{item.moduleDescription}</td>
-                                                                        <td>{moment(item.date).format('Do MMM YYYY')}</td>
-                                                                        <td>
-                                                                            <Link onClick={(e) => toggleViewOpen(e, item._id)} className="cstm-eye"><i className="fi fi-rr-eye"></i></Link>
-                                                                            {viewOpen &&
-                                                                                <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={viewOpen} onHide={toggleViewClose}>
-                                                                                    <div className="modal-header border-0 p-4">
-                                                                                        <h4 className="modal-title" id="exampleModalLabel1">View Module</h4>
-                                                                                        <button onClick={toggleViewClose} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                                    </div>
-                                                                                    <div className="modal-body p-4 pt-0">
-                                                                                        <div className="mb-3">
-                                                                                            <label className="cstm-label">Module Name</label>
-                                                                                            <p name="module" required="">{videwData.moduleName}</p>
-                                                                                        </div>
-                                                                                        <div className="mb-3">
-                                                                                            <label className="cstm-label">Module Description</label>
-                                                                                            <p name="module" >{videwData.moduleDescription}</p>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </Modal>
-                                                                            }
-                                                                            <Link onClick={(e) => toggleEditOpen(e, item._id)} className="cstm-chekmank"><i className="fi-rr-pencil"></i></Link>
-                                                                            {editOpen &&
-                                                                                <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={editOpen} onHide={toggleEditClose}>
-                                                                                    <div className="modal-content">
+                                                                    )
+                                                                    :
+                                                                    (listingData.map((item, i) => (
+                                                                        <tr>
+                                                                            <td >{i + 1}</td>
+                                                                            <td>{item.moduleName}</td>
+                                                                            <td>{item.moduleDescription}</td>
+                                                                            <td>{moment(item.date).format('Do MMM YYYY')}</td>
+                                                                            <td>
+                                                                                <Link onClick={(e) => toggleViewOpen(e, item._id)} className="cstm-eye"><i className="fi fi-rr-eye"></i></Link>
+                                                                                {viewOpen &&
+                                                                                    <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={viewOpen} onHide={toggleViewClose}>
                                                                                         <div className="modal-header border-0 p-4">
-                                                                                            <h4 className="modal-title" id="exampleModalLabel1">Edit Module</h4>
-                                                                                            <button onClick={toggleEditClose} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                                            <h4 className="modal-title" id="exampleModalLabel1">View Module</h4>
+                                                                                            <button onClick={toggleViewClose} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                                         </div>
                                                                                         <div className="modal-body p-4 pt-0">
                                                                                             <div className="mb-3">
-                                                                                                <label htmlFor='moduleName' className="cstm-label">Module Name</label>
-                                                                                                <input
-                                                                                                    type="text"
-                                                                                                    className="cstm-input"
-                                                                                                    placeholder="Enter Module Name"
-                                                                                                    name="moduleName"
-                                                                                                    value={videwData.moduleName}
-                                                                                                    onChange={onChangeEdit}
-                                                                                                />
-                                                                                                {editModuleerror.moduleName && <span className="error-message"> {editModuleerror.moduleName} </span>}
+                                                                                                <label className="cstm-label">Module Name</label>
+                                                                                                <p name="module" required="">{videwData.moduleName}</p>
                                                                                             </div>
                                                                                             <div className="mb-3">
-                                                                                                <label htmlFor='moduleDescription' className="cstm-label">Module Description</label>
-                                                                                                <input
-                                                                                                    type="text"
-                                                                                                    value={videwData.moduleDescription}
-                                                                                                    onChange={onChangeEdit}
-                                                                                                    className="cstm-textarea"
-                                                                                                    placeholder="Write Description"
-                                                                                                    name="moduleDescription" />
-                                                                                                {editModuleerror.moduleDescription && <span className="error-message"> {editModuleerror.moduleDescription} </span>}
+                                                                                                <label className="cstm-label">Module Description</label>
+                                                                                                <p name="module" >{videwData.moduleDescription}</p>
                                                                                             </div>
-                                                                                            <div className="row">
-                                                                                                <div className="col-lg-12">
-                                                                                                    <div className="mb-2">
-                                                                                                        <button onClick={(id) => handleEditSubmit(id)} className="mr-3 cstm-btn6">Save Changes</button>
+                                                                                        </div>
+                                                                                    </Modal>
+                                                                                }
+                                                                                <Link onClick={(e) => toggleEditOpen(e, item._id)} className="cstm-chekmank"><i className="fi-rr-pencil"></i></Link>
+                                                                                {editOpen &&
+                                                                                    <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={editOpen} onHide={toggleEditClose}>
+                                                                                        <div className="modal-content">
+                                                                                            <div className="modal-header border-0 p-4">
+                                                                                                <h4 className="modal-title" id="exampleModalLabel1">Edit Module</h4>
+                                                                                                <button onClick={toggleEditClose} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                                            </div>
+                                                                                            <div className="modal-body p-4 pt-0">
+                                                                                                <div className="mb-3">
+                                                                                                    <label htmlFor='moduleName' className="cstm-label">Module Name</label>
+                                                                                                    <input
+                                                                                                        type="text"
+                                                                                                        className="cstm-input"
+                                                                                                        placeholder="Enter Module Name"
+                                                                                                        name="moduleName"
+                                                                                                        value={videwData.moduleName}
+                                                                                                        onChange={onChangeEdit}
+                                                                                                    />
+                                                                                                    {editModuleerror.moduleName && <span className="error-message"> {editModuleerror.moduleName} </span>}
+                                                                                                </div>
+                                                                                                <div className="mb-3">
+                                                                                                    <label htmlFor='moduleDescription' className="cstm-label">Module Description</label>
+                                                                                                    <input
+                                                                                                        type="text"
+                                                                                                        value={videwData.moduleDescription}
+                                                                                                        onChange={onChangeEdit}
+                                                                                                        className="cstm-textarea"
+                                                                                                        placeholder="Write Description"
+                                                                                                        name="moduleDescription" />
+                                                                                                    {editModuleerror.moduleDescription && <span className="error-message"> {editModuleerror.moduleDescription} </span>}
+                                                                                                </div>
+                                                                                                <div className="row">
+                                                                                                    <div className="col-lg-12">
+                                                                                                        <div className="mb-2">
+                                                                                                            <button onClick={(id) => handleEditSubmit(id)} className="mr-3 cstm-btn6">Save Changes</button>
+                                                                                                        </div>
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </div>
                                                                                         </div>
-                                                                                    </div>
-                                                                                </Modal>
-                                                                            }
-                                                                            {editsuccess &&
-                                                                                <SweetAlert success title="Module Successfully Added" confirmBtnText="close" onConfirm={() => setEditSuccess(false)} onCancel={() => setEditSuccess(false)} />
-                                                                            }
-                                                                            <Link onClick={(e) => toggleDeleteOpen(e, item._id)} className="cstm-cross mrn-rt"><i className="fi fi-rr-trash"></i></Link>
-                                                                            {deleteOpen &&
-                                                                                <SweetAlert
-                                                                                    warning
-                                                                                    showCancel
-                                                                                    cancelBtnText="Discard"
-                                                                                    confirmBtnText="Delete"
-                                                                                    confirmBtnBsStyle="danger"
-                                                                                    title="Are you sure?"
-                                                                                    onConfirm={(e) => handleDelete(e, item._id)}
-                                                                                    onCancel={toggleDeleteClose}
-                                                                                    focusCancelBtn
-                                                                                >
-                                                                                    Are you sure to delete this module?
-                                                                                </SweetAlert>
-                                                                            }
-                                                                        </td>
-                                                                    </tr>
-                                                                ))
-                                                                )
-                                                            )
-                                                        }
-                                                    </tbody>
-                                                </table>
-                                            </div>
+                                                                                    </Modal>
+                                                                                }
+                                                                                {editsuccess &&
+                                                                                    <SweetAlert success title="Module Successfully Added" confirmBtnText="close" onConfirm={() => setEditSuccess(false)} onCancel={() => setEditSuccess(false)} />
+                                                                                }
+                                                                                <Link onClick={(e) => toggleDeleteOpen(e, item._id)} className="cstm-cross mrn-rt"><i className="fi fi-rr-trash"></i></Link>
+                                                                                {deleteOpen &&
+                                                                                    <SweetAlert
+                                                                                        warning
+                                                                                        showCancel
+                                                                                        cancelBtnText="Discard"
+                                                                                        confirmBtnText="Delete"
+                                                                                        confirmBtnBsStyle="danger"
+                                                                                        title="Are you sure?"
+                                                                                        onConfirm={(e) => handleDelete(e, item._id)}
+                                                                                        onCancel={toggleDeleteClose}
+                                                                                        focusCancelBtn
+                                                                                    >
+                                                                                        Are you sure to delete this module?
+                                                                                    </SweetAlert>
+                                                                                }
+                                                                            </td>
+                                                                        </tr>
+                                                                    ))
+                                                                    )
+                                                                }
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+
+                                                )
+                                            }
                                         </div>
                                     </div>
                                 </div>

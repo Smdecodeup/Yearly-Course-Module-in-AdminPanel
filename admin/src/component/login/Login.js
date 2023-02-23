@@ -80,7 +80,6 @@ const Login = () => {
         return axios.post(API_URL + "users/Login", loginData)
             .then((response) => {
                 if (response.data.Status) {
-                    console.log(response.data.message, "login");
                     navigate("/module")
                     localStorage.setItem("auth", JSON.stringify(response.data.checkuser))
                     localStorage.setItem("Authorization", response.data.token)
