@@ -1,41 +1,51 @@
 import { Rating } from '@mui/material';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react'
-import { Modal } from 'react-bootstrap';
 import SweetAlert from 'react-bootstrap-sweetalert';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import swal from 'sweetalert';
 import moduleService from '../../service/module.service';
 import topicService from '../../service/topic.service';
 
 const TopicListing = () => {
 
     const [loader, setLoader] = useState(false);
-    const [selectInput, setSelectInput] = useState("");
-    const [filterResult, setFilterResult] = useState([]);
+    const [topicId, setTopicId] = useState("")
     const [deleteOpen, setDelete] = useState(false)
     const [listingTopicData, setListingTopicData] = useState([])
+    const [initialToicData, setInitialToicData] = useState([])
     const [listingModuleData, setListingModuleData] = useState([])
-    const navigate = useNavigate();
-    const onclickAddTopic = (e) => {
-        navigate("/topic/add-topic");
-    }
-    const toggleDeleteOpen = () => {
+
+    useEffect(() => {
+        topicListingApi()
+        moduleListingApi()
+    }, [])
+
+    const toggleDeleteOpen = (id) => {
         setDelete(true)
+        setTopicId(id)
     }
     const toggleDeleteClose = () => {
-        setDelete(true)
+        setDelete(false)
     }
     const handleDelete = () => {
+        setDelete(false)
+        let query_string = ""
+        if (topicId) {
+            query_string += "?topicId=" + topicId;
+        }
     }
 
     async function topicListingApi() {
         try {
             const result = await topicService.topicListingService()
             if (result.data.Status) {
+                setLoader(false)
+                setInitialToicData(result.data.data)
                 setListingTopicData(result.data.data)
             }
         } catch (error) {
-
+            setLoader(true)
         }
     }
     async function moduleListingApi() {
@@ -49,19 +59,21 @@ const TopicListing = () => {
             setLoader(true)
         }
     }
-    useEffect(() => {
-        topicListingApi()
-        moduleListingApi()
-    }, [])
-    const moduleFilter = (selectValue) => {
-        setSelectInput(selectValue)
-        if (selectValue !== '') {
-            const filteredData = listingTopicData.filter((item) => {
-                return Object.values(item._id).join('').toLowerCase().includes(selectInput.toLowerCase())
-            })
-            setFilterResult(filteredData)
+
+    const moduleFilter = (e) => {
+        const { name, value } = e.target
+        console.log(name);
+        let filterdata = [...initialToicData]
+        if (value === 'all') {
+            setListingTopicData([...filterdata])
+            setLoader(false)
+        } else {
+            var filteredKeywords = filterdata.filter((item) => { return item.moduleId === value });
+            setListingTopicData([...filteredKeywords])
+            setLoader(false)
         }
     }
+
     return (
         <>
             <div className="page-wrapper doctris-theme toggled">
@@ -69,7 +81,7 @@ const TopicListing = () => {
                     <div className="container-fluid">
                         <div className="layout-specing">
                             <div className="d-flex justify-content-between align-items-center mb-3">
-                                {/* <div className="cstm-bre uppercase">dashboard>YEAR LONG COURSE><a href="">TOPICS</a></div> */}
+                                {/* <div className="cstm-bre uppercase">dashboard>YEAR LONG COURSE><Link>TOPICS</Link></div> */}
                             </div>
                             <div className="row">
                                 <div className="col-md-12">
@@ -88,9 +100,11 @@ const TopicListing = () => {
                                                 <select
                                                     className="cstm-input"
                                                     placeholder="select Module"
+                                                    onChange={moduleFilter}
                                                     name="module"
                                                     required="">
-                                                    {listingModuleData.map((item, i) => (
+                                                    <option value="all">All</option>
+                                                    {listingModuleData.map((item) => (
                                                         <option value={item._id}>{item.moduleName}</option>
                                                     ))}
                                                 </select>
@@ -98,16 +112,16 @@ const TopicListing = () => {
                                             </div>
                                             {/* </div> */}
                                             <div>
-                                                <button onClick={(e) => onclickAddTopic(e)} className="cstm-btn">Create Topic</button>
+                                                <Link to="/topic/add-topic" className="cstm-btn">Create Topic</Link>
                                             </div>
                                         </div>
-                                        <div className="col-md-12 col-lg-12">
-                                            {loader ?
-                                                <div className="spinner-border"></div>
+                                        {loader ?
+                                            <div className="spinner-border"></div>
+                                            :
+                                            (listingTopicData.length === 0 ?
+                                                <div className='cstm-no-record-found'>No Data Found</div>
                                                 :
-                                                (listingTopicData === null || listingTopicData === undefined ?
-                                                    <div className='cstm-no-record-found'>No Data Found</div>
-                                                    :
+                                                <div className="col-md-12 col-lg-12">
                                                     <div className="table-responsive bg-white rounded">
                                                         <table className="table mb-0 table-center">
                                                             <thead>
@@ -121,45 +135,49 @@ const TopicListing = () => {
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
-                                                                {listingTopicData.map((item, i) => (
-                                                                    <tr key={i}>
-                                                                        <td className="fw-bold">{i + 1}</td>
-                                                                        <td>{item.topicName}</td>
-                                                                        <td>{item.description}</td>
-                                                                        <td><Rating
-                                                                            defaultValue={0.5}
-                                                                            precision={0.5}
-                                                                        /></td>
-                                                                        <td>{moment(item.date).format('Do MMM YYYY')}</td>
-                                                                        <td>
-                                                                            <Link to="/topic/view-topic" className="cstm-eye"><i className="fi fi-rr-eye"></i></Link>
-                                                                            <Link to="/topic/edit-topic" className="cstm-chekmank"><i className="fi-rr-pencil"></i></Link>
-                                                                            <Link onClick={(e) => toggleDeleteOpen(e)} className="cstm-cross mrn-rt"><i className="fi fi-rr-trash"></i></Link>
-                                                                            {deleteOpen &&
-                                                                                <SweetAlert
-                                                                                    warning
-                                                                                    showCancel
-                                                                                    cancelBtnText="Discard"
-                                                                                    confirmBtnText="Delete"
-                                                                                    confirmBtnBsStyle="danger"
-                                                                                    title="Are you sure?"
-                                                                                    // onConfirm={(e) => handleDelete(e, item._id)}
-                                                                                    onCancel={toggleDeleteClose}
-                                                                                    focusCancelBtn
-                                                                                >
-                                                                                    Are you sure to delete this module?
-                                                                                </SweetAlert>
-                                                                            }
-                                                                        </td>
-                                                                    </tr>
-                                                                ))}
+                                                                {listingTopicData.length > 0 ?
+                                                                    (listingTopicData.map((item, i) => (
+                                                                        <tr key={i}>
+                                                                            <td className="fw-bold">{i + 1}</td>
+                                                                            <td>{item.topicName}</td>
+                                                                            <td>{item.description}</td>
+                                                                            <td><Rating
+                                                                                defaultValue={0.5}
+                                                                                precision={0.5}
+                                                                            /></td>
+                                                                            <td>{moment(item.date).format('Do MMM YYYY')}</td>
+                                                                            <td>
+                                                                                <Link to="/topic/view-topic" className="cstm-eye"><i className="fi fi-rr-eye"></i></Link>
+                                                                                <Link to="/topic/edit-topic" className="cstm-chekmank"><i className="fi-rr-pencil"></i></Link>
+                                                                                <Link onClick={(e) => toggleDeleteOpen(e)} className="cstm-cross mrn-rt"><i className="fi fi-rr-trash"></i></Link>
+                                                                                {deleteOpen &&
+                                                                                    <SweetAlert
+                                                                                        warning
+                                                                                        showCancel
+                                                                                        cancelBtnText="Discard"
+                                                                                        confirmBtnText="Delete"
+                                                                                        confirmBtnBsStyle="danger"
+                                                                                        title="Are you sure?"
+                                                                                        onConfirm={(e) => handleDelete(e, item._id)}
+                                                                                        onCancel={toggleDeleteClose}
+                                                                                        focusCancelBtn
+                                                                                    >
+                                                                                        Are you sure to delete this module?
+                                                                                    </SweetAlert>
+                                                                                }
+                                                                            </td>
+                                                                        </tr>
+                                                                    )))
+                                                                    :
+                                                                    ''
+                                                                }
+
                                                             </tbody>
                                                         </table>
                                                     </div>
-
-                                                )
-                                            }
-                                        </div>
+                                                </div>
+                                            )
+                                        }
                                     </div>
                                 </div>
                             </div>

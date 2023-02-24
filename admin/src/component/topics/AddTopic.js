@@ -1,6 +1,8 @@
+import { Image } from '@material-ui/icons'
 import Multiselect from 'multiselect-react-dropdown'
 import React, { useEffect, useState } from 'react'
 import SweetAlert from 'react-bootstrap-sweetalert'
+import { useDropzone } from 'react-dropzone'
 import { useNavigate } from 'react-router-dom'
 import swal from 'sweetalert'
 import moduleService from '../../service/module.service'
@@ -10,7 +12,7 @@ import Imageupload from '../mediaComponent/Imageupload'
 import VideoUpload from '../mediaComponent/VideoUpload'
 
 const AddTopic = (props) => {
-
+    console.log(props.files, "props");
     const [induction, setInduction] = useState(false)
     const [technique, setTechnique] = useState(false)
     const [language, setLanguage] = useState(false)
@@ -283,6 +285,7 @@ const AddTopic = (props) => {
 
         }
     }
+    // console.log(topicData.image, "addImage");
     function createTopicApi() {
         var bodyData = {
             "moduleId": topicData.moduleId || "",
@@ -299,7 +302,7 @@ const AddTopic = (props) => {
             "selectInductions": langaugeData.selectInductions || "",
             "selectTechniques": langaugeData.selectTechniques || "",
             "patternsType": langaugeData.patternsType || "",
-            "image": topicData.image,
+            "image": files,
             "languagePatternsExampl": langaugeData.languagePatternsExampl || "",
             "video": topicData.video,
             "audio": topicData.audio,
@@ -309,6 +312,7 @@ const AddTopic = (props) => {
         try {
             const result = topicService.topicCreateService(bodyData)
             if (result.data.Status) {
+                swal("success", result.data.message)
                 setCreatedData(result.data.data)
             }
         } catch (error) {
@@ -321,7 +325,67 @@ const AddTopic = (props) => {
         setSuccess(false)
         navigate("/topic")
     }
-    
+    const [files, setFiles] = useState([])
+    const thumbsContainer = {
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        marginTop: 16
+    };
+
+    const thumb = {
+        display: 'inline-flex',
+        borderRadius: 2,
+        border: '1px solid #eaeaea',
+        marginBottom: 8,
+        marginRight: 8,
+        width: 100,
+        height: 100,
+        padding: 4,
+        boxSizing: 'border-box'
+    };
+
+    const thumbInner = {
+        display: 'flex',
+        minWidth: 0,
+        overflow: 'hidden'
+    };
+
+    const img = {
+        display: 'block',
+        width: 'auto',
+        height: '100%'
+    };
+
+    const { getRootProps, getInputProps } = useDropzone({
+        accept: {
+            'image/jpeg, image/png': []
+        },
+        maxSize: 3145728,
+        multiple: true,
+        onDrop: acceptedFiles => {
+            setFiles(acceptedFiles.map(file => Object.assign(file, {
+                preview: URL.createObjectURL(file),
+            })));
+        }
+    });
+    const thumbs = files.map(file => (
+        <div style={thumb} key={file.name}>
+            <div style={thumbInner}>
+                <img
+                    src={file.preview}
+                    style={img}
+                    // Revoke data uri after image is loaded
+                    onLoad={() => { URL.revokeObjectURL(file.preview) }}
+                />
+            </div>
+        </div>
+    ));
+    console.log(files, "files");
+    useEffect(() => {
+        // Make sure to revoke the data uris to avoid memory leaks, will run on unmount
+        return () => files.forEach(file => URL.revokeObjectURL(file.preview));
+    }, []);
     return (
         <>
 
@@ -443,7 +507,15 @@ const AddTopic = (props) => {
                                                     <div className="col-lg-12">
                                                         <div className="mb-4">
                                                             <label htmlFor='img' className="cstm-label">Upload Sign Language Images</label>
-                                                            <Imageupload />
+                                                            <div {...getRootProps({ className: 'dropzone col-lg-12' })}>
+                                                                <input value={topicData.image} {...getInputProps()} />
+                                                                <Image />
+                                                                <h4>Drag & Drop or Click to add Image</h4>
+                                                                <p>Please use JPEG,PNG formate of Image</p>
+                                                            </div>
+                                                            <aside style={thumbsContainer}>
+                                                                {thumbs}
+                                                            </aside>
                                                         </div>
                                                     </div>
                                                 </>
@@ -487,7 +559,15 @@ const AddTopic = (props) => {
                                                     <div className="col-lg-12">
                                                         <div className="mb-4">
                                                             <label htmlFor='img' className="cstm-label">Upload Sign Language Images</label>
-                                                            <Imageupload />
+                                                            <div {...getRootProps({ className: 'dropzone col-lg-12' })}>
+                                                                <input  {...getInputProps()} />
+                                                                <Image />
+                                                                <h4>Drag & Drop or Click to add Image</h4>
+                                                                <p>Please use JPEG,PNG formate of Image</p>
+                                                            </div>
+                                                            <aside style={thumbsContainer}>
+                                                                {thumbs}
+                                                            </aside>
                                                         </div>
                                                     </div>
                                                 </>
@@ -614,7 +694,15 @@ const AddTopic = (props) => {
                                                     <div className="col-lg-12">
                                                         <div className="mb-4">
                                                             <label htmlFor='img' className="cstm-label">Upload Sign Language Images</label>
-                                                            <Imageupload />
+                                                            <div {...getRootProps({ className: 'dropzone col-lg-12' })}>
+                                                                <input value={topicData.image} {...getInputProps()} />
+                                                                <Image />
+                                                                <h4>Drag & Drop or Click to add Image</h4>
+                                                                <p>Please use JPEG,PNG formate of Image</p>
+                                                            </div>
+                                                            <aside style={thumbsContainer}>
+                                                                {thumbs}
+                                                            </aside>
                                                         </div>
                                                     </div>
                                                 </>
@@ -628,7 +716,15 @@ const AddTopic = (props) => {
                                             <div className="col-lg-12">
                                                 <div className="mb-4">
                                                     <label htmlFor='img' className="cstm-label">Upload Images</label>
-                                                    <Imageupload image={topicData.image} />
+                                                    <div {...getRootProps({ className: 'dropzone col-lg-12' })}>
+                                                        <input  {...getInputProps()} />
+                                                        <Image />
+                                                        <h4>Drag & Drop or Click to add Image</h4>
+                                                        <p>Please use JPEG,PNG formate of Image</p>
+                                                    </div>
+                                                    <aside style={thumbsContainer}>
+                                                        {thumbs}
+                                                    </aside>
                                                 </div>
                                             </div>
                                             <div className="col-lg-12">

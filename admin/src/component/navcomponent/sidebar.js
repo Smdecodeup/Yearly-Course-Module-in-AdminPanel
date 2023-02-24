@@ -30,22 +30,23 @@ const Sidebar = () => {
                                 <NavLink><i className="fi fi-rr-dashboard"></i> Dashboard</NavLink>
                             </li>
 
-                            <li className="sidebar-dropdown">
-                                {/* <li className={`sidebar-dropdown ${isUOpen ? "active" : null}`}> */}
+                            {/* <li className="sidebar-dropdown"> */}
+                            <li className={`sidebar-dropdown ${isUOpen ? "active" : null}`}>
                                 <NavLink onClick={onUClickToggle}><i className="fi fi-rr-users"></i> Users</NavLink>
-                                <div className="sidebar-submenu">
-                                    {/* <div className={`sidebar-submenu ${isUOpen ? "d-block" : null}`}> */}
-                                    <ul>
-                                        <li><NavLink >Loren</NavLink></li>
-                                        <li><NavLink >Loren</NavLink></li>
-                                    </ul>
-                                </div>
+                                {/* <div className="sidebar-submenu"> */}
+                                    <div className={`sidebar-submenu ${isUOpen ? "d-block" : null}`}>
+                                        <ul>
+                                            <li><NavLink >Loren</NavLink></li>
+                                            <li><NavLink >Loren</NavLink></li>
+                                        </ul>
+                                    </div>
+                                {/* </div> */}
                             </li>
-                            <li className="sidebar-dropdown">
-                                {/* <li className={`sidebar-dropdown ${open ? "active" : null}`}> */}
-                                <Link onClick={onClickToggle}><i className="fi fi-rr-pharmacy" ></i> Month Long course</Link>
-                                {/* <div className={`sidebar-submenu ${open ? "d-block" : null}`}> */}
-                                <div className="sidebar-submenu">
+                            {/* <li className="sidebar-dropdown"> */}
+                                <li className={`sidebar-dropdown ${open ? "active" : null}`}>
+                                <Link onClick={onClickToggle}><i className="fi fi-rr-e-learning"></i> Month Long course</Link>
+                                <div className={`sidebar-submenu ${open ? "d-block" : null}`}>
+                                {/* <div className="sidebar-submenu"> */}
                                     <ul>
                                         <li><NavLink >Loren</NavLink></li>
                                         <li><NavLink >Loren</NavLink></li>
@@ -54,7 +55,7 @@ const Sidebar = () => {
                             </li>
 
                             <li className={`sidebar-dropdown ${isOpen ? "active" : null}`} >
-                                <Link onClick={onyrClickToggle}><i className="fi fi-rr-test-tube"></i>  Year Long course</Link>
+                                <Link onClick={onyrClickToggle}><i className="fi fi-rr-e-learning"></i>  Year Long course</Link>
                                 <div className={`sidebar-submenu ${isOpen ? "d-block" : null}`}>
                                     <ul>
                                         <li><NavLink to='/module'>Modules</NavLink></li>

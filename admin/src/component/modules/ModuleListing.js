@@ -3,9 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Modal } from 'react-bootstrap'
 import SweetAlert from 'react-bootstrap-sweetalert'
 import { Link } from 'react-router-dom'
-import swal from 'sweetalert'
 import moduleService from '../../service/module.service'
-
 const ModuleListing = () => {
 
     const [loader, setLoader] = useState(false)
@@ -21,6 +19,7 @@ const ModuleListing = () => {
     const [deleteOpen, setDelete] = useState(false)
     //store listing data in that come from module listing api
     const [listingData, setListingData] = useState([])
+    const [initialListingData, setInitialListingData] = useState([])
     const [moduleId, setModuleId] = useState("");
     //for input value validation
     const [moduleData, setModuleData] = useState({
@@ -125,9 +124,8 @@ const ModuleListing = () => {
         }
     }
     //delete module 
-    const handleDelete = (e) => {
+    const handleDelete = () => {
 
-        setDelete(true)
         let query_string = ""
         if (moduleId) {
             query_string += "?moduleId=" + moduleId;
@@ -189,11 +187,11 @@ const ModuleListing = () => {
             const filteredData = listingData.filter((item) => {
                 return Object.values(item).join('').toLowerCase().includes(searchInput.toLowerCase())
             })
-            // setLoader(false)
+            setLoader(false)
             setFilteredResults(filteredData)
         }
         else {
-            // setLoader(true)
+            setLoader(true)
             setMessage("No Data Found")
             setFilteredResults(listingData)
         }
@@ -204,6 +202,7 @@ const ModuleListing = () => {
             const result = await moduleService.moduleListingService()
             if (result.data.Status === true) {
                 setLoader(false)
+                setInitialListingData(result.data.data)
                 setListingData(result.data.data)
             }
         } catch (error) {
@@ -214,12 +213,12 @@ const ModuleListing = () => {
     async function moduleAddApi() {
         try {
             const result = await moduleService.createModuleService(moduleData)
-
+            console.log(result.data.message, "result add ");
             if (result.data.Status === true) {
+                setLoader(false)
                 setAddModule(result.data.data)
                 moduleListingApi()
             }
-
         } catch (error) {
 
         }
@@ -266,7 +265,6 @@ const ModuleListing = () => {
 
     useEffect(() => {
         moduleListingApi()
-
     }, [])
 
     return (
@@ -276,13 +274,13 @@ const ModuleListing = () => {
                     <div className="container-fluid">
                         <div className="layout-specing">
                             <div className="d-flex justify-content-between align-items-center mb-3">
-                                <h4 className="mb-0">Year-Long Modules</h4>
-                                {/* <div className="cstm-bre uppercase">Dashboard > YEAR LONG COURSE > <a href="#">MODULES</a></div> */}
+                                {/* <div className="cstm-bre uppercase">dashboard>YEAR LONG COURSE><Link>MODULES</Link></div> */}
                             </div>
                             <div className="row">
                                 <div className="col-md-12">
                                     <div className="card  rounded-md  border">
                                         <div className="d-flex justify-content-between align-items-center p-3 border-bottom">
+                                            <h4 className="mb-0">Year-Long Modules</h4>
                                             <div className="col-md-8">
                                                 <div className="row row ">
                                                     <div className="col-md-5">
@@ -354,7 +352,7 @@ const ModuleListing = () => {
                                             {loader ?
                                                 <div className="spinner-border"></div>
                                                 :
-                                                (listingData === null ?
+                                                (listingData === null || listingData === undefined || listingData.length === 0 ?
                                                     <div className='cstm-no-record-found'>No Data Found</div>
                                                     :
                                                     <div className="table-responsive bg-white rounded">

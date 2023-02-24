@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useDropzone } from 'react-dropzone';
 
 const Imageupload = (props) => {
+    console.log(props.image, "img");
     const [files, setFiles] = useState([])
     const thumbsContainer = {
         display: 'flex',
@@ -35,7 +36,7 @@ const Imageupload = (props) => {
         height: '100%'
     };
 
-    const { getRootProps, getInputProps } = useDropzone({
+    const { getRootProps, getInputProps, e } = useDropzone({
         accept: {
             'image/jpeg, image/png': []
         },
@@ -43,7 +44,7 @@ const Imageupload = (props) => {
         multiple: true,
         onDrop: acceptedFiles => {
             setFiles(acceptedFiles.map(file => Object.assign(file, {
-                preview: URL.createObjectURL(file)
+                preview: URL.createObjectURL(file),
             })));
         }
     });
@@ -59,6 +60,7 @@ const Imageupload = (props) => {
             </div>
         </div>
     ));
+    console.log(files, "files");
     useEffect(() => {
         // Make sure to revoke the data uris to avoid memory leaks, will run on unmount
         return () => files.forEach(file => URL.revokeObjectURL(file.preview));
@@ -66,7 +68,7 @@ const Imageupload = (props) => {
     return (
         <>
             <div {...getRootProps({ className: 'dropzone col-lg-12' })}>
-                <input {...getInputProps()} />
+                <input  {...getInputProps()} />
                 <Image />
                 <h4>Drag & Drop or Click to add Image</h4>
                 <p>Please use JPEG,PNG formate of Image</p>
