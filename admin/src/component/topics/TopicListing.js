@@ -1,9 +1,9 @@
+import { ArrowForwardIos } from '@material-ui/icons';
 import { Rating } from '@mui/material';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react'
 import SweetAlert from 'react-bootstrap-sweetalert';
 import { Link } from 'react-router-dom';
-import swal from 'sweetalert';
 import moduleService from '../../service/module.service';
 import topicService from '../../service/topic.service';
 
@@ -19,6 +19,7 @@ const TopicListing = () => {
     useEffect(() => {
         topicListingApi()
         moduleListingApi()
+        setLoader(true)
     }, [])
 
     const toggleDeleteOpen = (id) => {
@@ -81,7 +82,7 @@ const TopicListing = () => {
                     <div className="container-fluid">
                         <div className="layout-specing">
                             <div className="d-flex justify-content-between align-items-center mb-3">
-                                {/* <div className="cstm-bre uppercase">dashboard>YEAR LONG COURSE><Link>TOPICS</Link></div> */}
+                                <div className="cstm-bre uppercase">dashboard<ArrowForwardIos fontSize='small' />YEAR LONG COURSE<ArrowForwardIos fontSize='small' /><Link>TOPICS</Link></div>
                             </div>
                             <div className="row">
                                 <div className="col-md-12">
@@ -169,7 +170,7 @@ const TopicListing = () => {
                                                                         </tr>
                                                                     )))
                                                                     :
-                                                                    ''
+                                                                    {/* <div className="spinner-border"></div> */}
                                                                 }
 
                                                             </tbody>

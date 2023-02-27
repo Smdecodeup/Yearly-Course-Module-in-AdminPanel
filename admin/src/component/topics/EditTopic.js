@@ -1,7 +1,7 @@
-import { Image, MusicNote, YouTube } from '@material-ui/icons'
+import { ArrowForwardIos, Image, MusicNote, YouTube } from '@material-ui/icons'
 import React, { useEffect, useState } from 'react'
 import Dropzone, { useDropzone } from 'react-dropzone'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import 'froala-editor/css/froala_style.min.css';
 import 'froala-editor/css/froala_editor.pkgd.min.css';
 import { Editor } from 'react-draft-wysiwyg'
@@ -209,7 +209,7 @@ const EditTopic = (props) => {
                         <div className="layout-specing">
                             <div className="d-flex justify-content-between align-items-center">
                                 <button onClick={handleBack}>back</button>
-                                {/* <div className="cstm-bre uppercase">dashboard>YEAR LONG COURSE>TOPICS><a href="">Add Topic</a></div> */}
+                                <div className="cstm-bre uppercase">dashboard<ArrowForwardIos fontSize='small' />YEAR LONG COURSE<ArrowForwardIos fontSize='small' />TOPICS<ArrowForwardIos fontSize='small' /><Link>Add Topic</Link></div>
                             </div>
                             <div className="row">
                                 <div className="col-md-12">

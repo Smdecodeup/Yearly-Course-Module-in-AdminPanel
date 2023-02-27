@@ -1,9 +1,11 @@
+import { ArrowForwardIosOutlined } from '@material-ui/icons'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
 import { Modal } from 'react-bootstrap'
 import SweetAlert from 'react-bootstrap-sweetalert'
 import { Link } from 'react-router-dom'
 import moduleService from '../../service/module.service'
+
 const ModuleListing = () => {
 
     const [loader, setLoader] = useState(false)
@@ -28,7 +30,7 @@ const ModuleListing = () => {
     })
     //view module data
     const [dataValue, setDatavalue] = useState("")
-    const [videwData, setViewData] = useState({
+    const [viewData, setViewData] = useState({
         moduleName: '',
         moduleDescription: '',
     })
@@ -44,6 +46,10 @@ const ModuleListing = () => {
         moduleDescription: ''
     })
 
+    useEffect(() => {
+        moduleListingApi()
+        setLoader(true)
+    }, [])
     //validate input value
     const validate = (moduleData) => {
         let moduleError = {}
@@ -59,14 +65,14 @@ const ModuleListing = () => {
         setError(moduleError)
         return isvalid
     }
-    const validateEdit = (videwData) => {
+    const validateEdit = (viewData) => {
         let editError = {}
         let isvalid = false
-        if (!videwData.moduleName) {
+        if (!viewData.moduleName) {
             isvalid = true
             editError.moduleName = "Please enter the module name."
         }
-        if (!videwData.moduleDescription) {
+        if (!viewData.moduleDescription) {
             isvalid = true
             editError.moduleDescription = "Please enter module description."
         }
@@ -103,7 +109,7 @@ const ModuleListing = () => {
     //edit module submit
     const handleEditSubmit = (e) => {
         e.preventDefault();
-        if (!validateEdit(videwData)) {
+        if (!validateEdit(viewData)) {
             moduleEditAPi()
             setEdit(false)
             setEditSuccess(true)
@@ -113,7 +119,7 @@ const ModuleListing = () => {
     //onchange for edit 
     const onChangeEdit = (e) => {
         const { name, value } = e.target
-        setViewData({ ...videwData, [name]: value })
+        setViewData({ ...viewData, [name]: value })
         switch (name) {
             case "moduleName":
                 value === '' ? setEditModuleError({ ...editModuleerror, moduleName: 'Please enter module description.' }) : setEditModuleError({ ...editModuleerror, moduleName: '' });
@@ -164,7 +170,7 @@ const ModuleListing = () => {
             query_string += "?moduleId=" + id;
         }
         viewModuleApi(query_string)
-        setViewData(videwData)
+        setViewData(viewData)
     }
     //edit module popup close
     const toggleEditClose = () => {
@@ -202,7 +208,7 @@ const ModuleListing = () => {
             const result = await moduleService.moduleListingService()
             if (result.data.Status === true) {
                 setLoader(false)
-                setInitialListingData(result.data.data)
+                setFilteredResults(result.data.data)
                 setListingData(result.data.data)
             }
         } catch (error) {
@@ -213,7 +219,6 @@ const ModuleListing = () => {
     async function moduleAddApi() {
         try {
             const result = await moduleService.createModuleService(moduleData)
-            console.log(result.data.message, "result add ");
             if (result.data.Status === true) {
                 setLoader(false)
                 setAddModule(result.data.data)
@@ -228,10 +233,10 @@ const ModuleListing = () => {
         try {
 
             var bodyData = {
-                "moduleName": videwData.moduleName,
-                "moduleDescription": videwData.moduleDescription
+                "moduleName": viewData.moduleName,
+                "moduleDescription": viewData.moduleDescription
             }
-            const result = await moduleService.editModuleService(videwData._id, bodyData)
+            const result = await moduleService.editModuleService(viewData._id, bodyData)
             if (result.data.Status === true) {
                 setViewData(result.data.data)
                 moduleListingApi()
@@ -263,9 +268,6 @@ const ModuleListing = () => {
         }
     }
 
-    useEffect(() => {
-        moduleListingApi()
-    }, [])
 
     return (
         <>
@@ -274,7 +276,7 @@ const ModuleListing = () => {
                     <div className="container-fluid">
                         <div className="layout-specing">
                             <div className="d-flex justify-content-between align-items-center mb-3">
-                                {/* <div className="cstm-bre uppercase">dashboard>YEAR LONG COURSE><Link>MODULES</Link></div> */}
+                                <div className="cstm-bre uppercase">dashboard<ArrowForwardIosOutlined fontSize='small' />YEAR LONG COURSE<ArrowForwardIosOutlined fontSize='small' /><Link>MODULES</Link></div>
                             </div>
                             <div className="row">
                                 <div className="col-md-12">
@@ -385,11 +387,11 @@ const ModuleListing = () => {
                                                                                         <div className="modal-body p-4 pt-0">
                                                                                             <div className="mb-3">
                                                                                                 <label className="cstm-label">Module Name</label>
-                                                                                                <p name="module" required="">{videwData.moduleName}</p>
+                                                                                                <p name="module" required="">{viewData.moduleName}</p>
                                                                                             </div>
                                                                                             <div className="mb-3">
                                                                                                 <label className="cstm-label">Module Description</label>
-                                                                                                <p name="module" >{videwData.moduleDescription}</p>
+                                                                                                <p name="module" >{viewData.moduleDescription}</p>
                                                                                             </div>
                                                                                         </div>
                                                                                     </Modal>
@@ -411,7 +413,7 @@ const ModuleListing = () => {
                                                                                                         className="cstm-input"
                                                                                                         placeholder="Enter Module Name"
                                                                                                         name="moduleName"
-                                                                                                        value={videwData.moduleName}
+                                                                                                        value={viewData.moduleName}
                                                                                                         onChange={onChangeEdit}
                                                                                                         required="" />
                                                                                                     {editModuleerror.moduleName && <span className="error-message"> {editModuleerror.moduleName} </span>}
@@ -420,7 +422,7 @@ const ModuleListing = () => {
                                                                                                     <label htmlFor='moduleDescription' className="cstm-label">Module Description</label>
                                                                                                     <input
                                                                                                         type="text"
-                                                                                                        value={videwData.moduleDescription}
+                                                                                                        value={viewData.moduleDescription}
                                                                                                         onChange={onChangeEdit}
                                                                                                         className="cstm-textarea"
                                                                                                         placeholder="Write Description"
@@ -449,13 +451,12 @@ const ModuleListing = () => {
                                                                                         cancelBtnText="Discard"
                                                                                         confirmBtnText="Delete"
                                                                                         confirmBtnBsStyle="danger"
-                                                                                        title="Are you sure?"
+                                                                                        title="Are you sure to delete this module?"
                                                                                         onConfirm={(e) => handleDelete(e, item._id)}
                                                                                         onCancel={toggleDeleteClose}
                                                                                         focusCancelBtn
-                                                                                    >
-                                                                                        Are you sure to delete this module?
-                                                                                    </SweetAlert>
+                                                                                    />
+
                                                                                 }
                                                                             </td>
                                                                         </tr>
@@ -480,11 +481,11 @@ const ModuleListing = () => {
                                                                                         <div className="modal-body p-4 pt-0">
                                                                                             <div className="mb-3">
                                                                                                 <label className="cstm-label">Module Name</label>
-                                                                                                <p name="module" required="">{videwData.moduleName}</p>
+                                                                                                <p name="module" required="">{viewData.moduleName}</p>
                                                                                             </div>
                                                                                             <div className="mb-3">
                                                                                                 <label className="cstm-label">Module Description</label>
-                                                                                                <p name="module" >{videwData.moduleDescription}</p>
+                                                                                                <p name="module" >{viewData.moduleDescription}</p>
                                                                                             </div>
                                                                                         </div>
                                                                                     </Modal>
@@ -505,7 +506,7 @@ const ModuleListing = () => {
                                                                                                         className="cstm-input"
                                                                                                         placeholder="Enter Module Name"
                                                                                                         name="moduleName"
-                                                                                                        value={videwData.moduleName}
+                                                                                                        value={viewData.moduleName}
                                                                                                         onChange={onChangeEdit}
                                                                                                     />
                                                                                                     {editModuleerror.moduleName && <span className="error-message"> {editModuleerror.moduleName} </span>}
@@ -514,7 +515,7 @@ const ModuleListing = () => {
                                                                                                     <label htmlFor='moduleDescription' className="cstm-label">Module Description</label>
                                                                                                     <input
                                                                                                         type="text"
-                                                                                                        value={videwData.moduleDescription}
+                                                                                                        value={viewData.moduleDescription}
                                                                                                         onChange={onChangeEdit}
                                                                                                         className="cstm-textarea"
                                                                                                         placeholder="Write Description"
@@ -543,13 +544,11 @@ const ModuleListing = () => {
                                                                                         cancelBtnText="Discard"
                                                                                         confirmBtnText="Delete"
                                                                                         confirmBtnBsStyle="danger"
-                                                                                        title="Are you sure?"
+                                                                                        title="Are you sure to delete this module?"
                                                                                         onConfirm={(e) => handleDelete(e, item._id)}
                                                                                         onCancel={toggleDeleteClose}
                                                                                         focusCancelBtn
-                                                                                    >
-                                                                                        Are you sure to delete this module?
-                                                                                    </SweetAlert>
+                                                                                    />
                                                                                 }
                                                                             </td>
                                                                         </tr>

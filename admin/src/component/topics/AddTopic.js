@@ -10,6 +10,7 @@ import topicService from '../../service/topic.service'
 import Audioupload from '../mediaComponent/Audioupload'
 import Imageupload from '../mediaComponent/Imageupload'
 import VideoUpload from '../mediaComponent/VideoUpload'
+import { ArrowForwardIos } from '@material-ui/icons'
 
 const AddTopic = (props) => {
     console.log(props.files, "props");
@@ -171,7 +172,6 @@ const AddTopic = (props) => {
         e.preventDefault();
         if (!validate(topicData) || !validateTechnique(techniqueData) || !validateLanguage(langaugeData) || !validateInduction(inductionData)) {
             createTopicApi()
-            // navigate("/topic")
             setSuccess(true)
         }
     }
@@ -304,10 +304,10 @@ const AddTopic = (props) => {
             "patternsType": langaugeData.patternsType || "",
             "image": files,
             "languagePatternsExampl": langaugeData.languagePatternsExampl || "",
-            "video": topicData.video,
-            "audio": topicData.audio,
-            "audioSuggestion": topicData.audioSuggestion,
-            "signLanguageimage": topicData.signLanguageimage
+            // "video": topicData.video,
+            // "audio": topicData.audio,
+            // "audioSuggestion": topicData.audioSuggestion,
+            // "signLanguageimage": topicData.signLanguageimage
         }
         try {
             const result = topicService.topicCreateService(bodyData)
@@ -316,6 +316,7 @@ const AddTopic = (props) => {
                 setCreatedData(result.data.data)
             }
         } catch (error) {
+            swal("")
         }
     }
     useEffect(() => {
@@ -388,14 +389,13 @@ const AddTopic = (props) => {
     }, []);
     return (
         <>
-
             <div className="page-wrapper doctris-theme toggled">
                 <main className="page-content">
                     <div className="container-fluid">
                         <div className="layout-specing">
                             <div className="d-flex justify-content-between align-items-center">
                                 <button onClick={handleBack}>back</button>
-                                {/* <div className="cstm-bre uppercase">dashboard>YEAR LONG COURSE>TOPICS><a href="">Add Topic</a></div> */}
+                                <div className="cstm-bre uppercase">dashboard <ArrowForwardIos fontSize='small' /> YEAR LONG COURSE<ArrowForwardIos fontSize='small' />TOPICS<ArrowForwardIos fontSize='small' /><a href="">Add Topic</a></div>
                             </div>
                             <div className="row">
                                 <div className="col-md-12">
@@ -642,6 +642,7 @@ const AddTopic = (props) => {
                                                             <Multiselect
                                                                 onSelect={onChangeHandle}
                                                                 value={langaugeData.patternsType}
+                                                                options={["Pattern 1", "Pattern 2", "Pattern 3"]}
                                                             />
                                                             <select
                                                                 onChange={onChangeLanguage}
@@ -765,7 +766,11 @@ const AddTopic = (props) => {
                                                 </div>
                                             </div>
                                             {success &&
-                                                <SweetAlert success title="Create topic successfully" confirmBtnText="close" onConfirm={successClose} />
+                                                <SweetAlert
+                                                    success title="Create topic successfully"
+                                                    confirmBtnText="close"
+                                                    onConfirm={successClose}
+                                                />
                                             }
                                         </div>
                                     </div>

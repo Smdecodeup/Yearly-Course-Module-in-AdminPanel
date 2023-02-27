@@ -57,6 +57,10 @@ const Login = () => {
     const handleEmailOnchange = (e) => {
         const { name, value } = e.target
         setLoginData({ ...loginData, [name]: value })
+        switch (name) {
+            case "Email":
+            // value === "" ? setError({ ...error, Email: "Enter Email" }) : setError({ ...error, Email: "" }) ? value !== emailRegex.test(loginData.Email) : setError({ ...error, Email: "Enter Valid Email" }) ? value === emailRegex.test(loginData.Email) : setError({ ...error, Email: "" })
+        }
         if (!loginData.Email) {
             setError({ ...error, [name]: 'Enter Email.' })
         } else if (!emailRegex.test(loginData.Email)) {

@@ -1,5 +1,6 @@
+import { ArrowForwardIos } from '@material-ui/icons'
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 const ViewTopic = () => {
     const navigate = useNavigate()
@@ -14,7 +15,7 @@ const ViewTopic = () => {
                         <div className="layout-specing">
                             <div className="d-flex justify-content-between align-items-center">
                                 <button onClick={handleBack}>back</button>
-                                {/* <div className="cstm-bre uppercase">dashboard>YEAR LONG COURSE>TOPICS><a href="">Add Topic</a></div> */}
+                                <div className="cstm-bre uppercase">dashboard<ArrowForwardIos fontSize='small' />YEAR LONG COURSE<ArrowForwardIos fontSize='small' />TOPICS<ArrowForwardIos fontSize='small' /><Link>Add Topic</Link></div>
                             </div>
                             <div className="row">
                                 <div className="col-md-12">

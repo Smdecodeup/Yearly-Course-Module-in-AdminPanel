@@ -10,7 +10,7 @@ const topicListingService = () => {
 }
 
 const topicCreateService = (data) => {
-    return axios.post(API_URL + "/createTopic", data, {
+    return axios.post(API_URL + "/createTopic" , data, {
         headers: authHeader()
     })
 }
