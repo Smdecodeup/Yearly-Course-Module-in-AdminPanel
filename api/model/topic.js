@@ -24,9 +24,9 @@ const topicSchema = new Schema ({
     languagePatternsCode:Number,
     languagePatternsDefination:String,
     languagePatternsExample:String,
-    selectInductions:{type:String,default:""},
-    selectTechniques:{type:String,default:""},
-    patternsType:{type:String,default:""},
+    selectInductions:[{type:String,default:""}],
+    selectTechniques:[{type:String,default:""}],
+    patternsType:[{type:String,default:""}],
 
     image:[String],
     video:[String],
@@ -36,7 +36,6 @@ const topicSchema = new Schema ({
 
     date: { type: Date, required: true, default: Date.now },
 })
-
 const TOPIC = mongoose.model('topic', topicSchema);
 
 module.exports = TOPIC;

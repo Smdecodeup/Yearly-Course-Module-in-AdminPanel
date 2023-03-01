@@ -79,7 +79,7 @@ exports.createTopic = async function (req, res, next) {
           }
         }
       }
-
+      
       // Set the image, video and audio URLs in the request body
       req.body.image = imageUrls;
       req.body.video = videoUrls;
