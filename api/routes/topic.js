@@ -5,9 +5,13 @@ var userController = require("../controller/user/userController")
 
 
 router.post('/createTopic',userController.secure,topicController.createTopic)
+router.post('/deleteTopic',userController.secure,topicController.deleteTopic)
+router.post('/deleteAllTopic',userController.secure,topicController.deleteAllTopic)
+
+
+router.get('/viewTopic',userController.secure,topicController.viewTopic)
 router.get('/listingTopic',userController.secure,topicController.listingTopic)
 
-router.post('/deleteTopic',userController.secure,topicController.deleteTopic)
 
 
 
