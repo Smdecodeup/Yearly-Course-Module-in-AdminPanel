@@ -15,8 +15,6 @@ export default function App() {
   return (
     <>
       <Routes>
-        <Route element={<Sidebar />} />
-        <Route element={<Header />} />
         <Route exact path="/admin" element={<Login />} />
         <Route path="/" element={<RestrictPage><Dashboard /></RestrictPage>} />
         <Route path="/module" element={<RestrictPage><ModuleListing /></RestrictPage>} />

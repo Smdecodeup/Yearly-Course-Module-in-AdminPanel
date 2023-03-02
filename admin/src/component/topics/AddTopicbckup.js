@@ -1,65 +1,21 @@
-import { Image, MusicNote, YouTube } from '@material-ui/icons'
+import { Image, YouTube } from '@material-ui/icons'
 import Multiselect from 'multiselect-react-dropdown'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import SweetAlert from 'react-bootstrap-sweetalert'
 import Dropzone, { useDropzone } from 'react-dropzone'
 import { Link, useNavigate } from 'react-router-dom'
 import moduleService from '../../service/module.service'
 import topicService from '../../service/topic.service'
+import Audioupload from '../mediaComponent/Audioupload'
+import Imageupload from '../mediaComponent/Imageupload'
+import VideoUpload from '../mediaComponent/VideoUpload'
 import { ArrowForwardIos } from '@material-ui/icons'
 import { Editor } from 'react-draft-wysiwyg'
 
-const AddTopic = () => {
-
-    const [isOpen, setIsOpen] = useState(false)
-    const [isSignOpen, setIsSignOpen] = useState(false)
-    const [isOpenVideo, setIsOpenVideo] = useState(false)
-    //images
-    const [imageFiles, setImageFiles] = useState([])
-    const [imgGallary, setImgGallary] = useState([])
-    const [imagesPrev, setImagesPrev] = useState([])
-    var imgArray = [];
-    var imgExtArray = [];
-    const dragFinalImage = useRef();
-    const dragOverFinalImage = useRef();
-    const dragImagePrev = useRef();
-    const dragOverImagePrev = useRef();
-
-    //SignImage
-    const [signImageFiles, setSignImageFiles] = useState([])
-    const [signimgGallary, setSignImgGallary] = useState([])
-    const [signimagesPrev, setSignImagesPrev] = useState([])
-    var SignimgArray = [];
-    var SignimgExtArray = [];
-    const dragFinalSignImage = useRef();
-    const dragOverFinalSignImage = useRef();
-    const dragSignImagePrev = useRef();
-    const dragSignOverImagePrev = useRef();
-
-    //videos
-    const [videoFiles, setVideoFiles] = useState([])
-    const [videosGallary, setVideosGallary] = useState([])
-    const [videosPrev, setVideosPrev] = useState([])
-    var videoArray = [];
-    var videoExtArray = [];
-    const dragVideoPrev = useRef()
-    const dragOverVideoPrev = useRef()
-    const dragFinalVideo = useRef()
-    const dragOverFinalVideo = useRef()
-
-    //audio
-    const [audioFiles, setAudioFiles] = useState([])
-    const [audioPrev, setAudioPrev] = useState([])
-    var audioArray = [];
-    var audioExtArray = [];
-
-    //audioSuggestion
-    const [audioSuggestionFiles, setAudioSuggestionFiles] = useState([])
-    const [audioSuggestionPrev, setAudioSuggestionPrev] = useState([])
-    var audioSuggestionArray = [];
-    var audioSuggestionExtArray = [];
-
-    //topicListing
+const AddTopic = (props) => {
+    // console.log(props, "props");
+    const [video, setVideo] = useState([])
+    console.log(video, "video");
     const [topicListing, setTopicListing] = useState([])
     const [induction, setInduction] = useState(false)
     const [technique, setTechnique] = useState(false)
@@ -115,10 +71,7 @@ const AddTopic = () => {
         topicType: '',
         description: '',
         Defination: '',
-        languagePatternsExampl: '',
-        image: '',
-        video: '',
-        audio: ''
+        languagePatternsExampl: ''
     })
     const [success, setSuccess] = useState(false);
     const navigate = useNavigate()
@@ -223,6 +176,7 @@ const AddTopic = () => {
             createTopicApi()
             setSuccess(true)
         }
+        console.log(createdData, "createdData");
     }
     const onChangeHandle = (e) => {
         const { name, value } = e.target
@@ -338,9 +292,11 @@ const AddTopic = () => {
     const onChangeInductionSelect = (selectedList, name) => {
         setLanguageData({ ...langaugeData, [name]: selectedList })
     }
+    console.log();
     const inductionOption = filterInductionData.map((item) => (
         (item.inductionName)
     ))
+    // console.log(inductionOption, "inductionOption");
     const filterTechniqueData = topicListing.filter((item) => (item.techniquesName !== null && item.techniquesName !== ""))
     async function topicListingApi() {
         try {
@@ -352,31 +308,35 @@ const AddTopic = () => {
 
         }
     }
-
-    const allMediaFiles = [...imageFiles, ...videoFiles, ...audioFiles, ...audioSuggestionFiles, ...signImageFiles]
-    const formData = new FormData();
-    formData.append("moduleId", topicData.moduleId || "")
-    formData.append("topicName", topicData.topicName || "")
-    formData.append("topicType", topicData.topicType || "")
-    formData.append("description", topicData.description || "")
-    formData.append("inductionCode", inductionData.inductionCode || "")
-    formData.append("inductionName", inductionData.inductionName || "")
-    formData.append("techniquesName", techniqueData.techniquesName || "")
-    formData.append("techniquesCode", techniqueData.techniquesCode || "")
-    formData.append("languagePatternsName", langaugeData.languagePatternsName || "")
-    formData.append("languagePatternsCode", langaugeData.languagePatternsCode || "")
-    formData.append("languagePatternsDefination", langaugeData.languagePatternsDefination || "")
-    formData.append("selectInductions", langaugeData.selectInductions || [])
-    formData.append("selectTechniques", langaugeData.selectTechniques || [])
-    formData.append("patternsType", langaugeData.patternsType || [])
-    formData.append("languagePatternsExampl", langaugeData.languagePatternsExampl || "")
-    allMediaFiles.map((files, index) => (
-        formData.append("files", files || [])
-    ))
     function createTopicApi() {
+        var bodyData = {
+            "moduleId": topicData.moduleId || "",
+            "topicName": topicData.topicName || "",
+            "topicType": topicData.topicType || "",
+            "description": topicData.description || "",
+            "inductionName": inductionData.inductionName || "",
+            "inductionCode": inductionData.inductionCode || "",
+            "techniquesName": techniqueData.techniquesName || "",
+            "techniquesCode": techniqueData.techniquesCode || "",
+            "languagePatternsName": langaugeData.languagePatternsName || "",
+            "languagePatternsCode": langaugeData.languagePatternsCode || "",
+            "languagePatternsDefination": langaugeData.languagePatternsDefination || "",
+            "selectInductions": langaugeData.selectInductions || [],
+            "selectTechniques": langaugeData.selectTechniques || [],
+            "patternsType": langaugeData.patternsType || [],
+            "files": image,
+
+            // "files": video,
+            "languagePatternsExampl": langaugeData.languagePatternsExampl || "",
+            "video": video,
+            // "audio": topicData.audio,
+            // "audioSuggestion": topicData.audioSuggestion,
+            // "signLanguageimage": topicData.signLanguageimage
+        }
         try {
-            const result = topicService.topicCreateService(formData)
+            const result = topicService.topicCreateService(bodyData)
             if (result.data.Status) {
+                console.log(result.data.data);
                 setCreatedData(result.data.data)
             }
         } catch (error) {
@@ -386,245 +346,103 @@ const AddTopic = () => {
         setSuccess(false)
         navigate("/topic")
     }
-
-    const handleImageChange = (e) => {
-        var files = e;
-        var filesArr = Array.prototype.slice.call(files);
-        filesArr.forEach(function (f, index) {
-            imgArray = [...imgArray, f];
-        });
-        setImageFiles([...imageFiles, ...imgArray])
-        const arr = [];
-        imgArray.forEach(function (f, index) {
-            var u = URL.createObjectURL(f);
-            arr.push(u);
-            setImgGallary([...imgGallary, ...arr]);
-            var filesplit = f.name.split(".").pop();
-
-            var imageExtension = [
-                "png",
-                "jpeg"
-            ];
-
-            imageExtension.includes(filesplit) && imgExtArray.push(u)
-                ? (error.image = "")
-                : (error.image = "Upload image only");
-            setError({ ...error });
-
-            setImagesPrev([...imagesPrev, ...imgExtArray]);
-        });
-    }
-    const dragStart = (e, position) => {
-        dragFinalImage.current = position;
-        dragImagePrev.current = position;
-    };
-    const dragEnter = (e, position) => {
-        dragOverFinalImage.current = position;
-        dragOverImagePrev.current = position;
-    };
-    const drop = () => {
-        const copyListImagePrev = [...imagesPrev];
-        const dragImagePrevContent = copyListImagePrev[dragImagePrev.current];
-        copyListImagePrev.splice(dragImagePrev.current, 1);
-        copyListImagePrev.splice(dragOverImagePrev.current, 0, dragImagePrevContent);
-        dragImagePrev.current = null;
-        dragOverImagePrev.current = null;
-        setImagesPrev(copyListImagePrev)
-
-        const copyFinalImages = [...imageFiles];
-        const dragImageContent = copyFinalImages[dragFinalImage.current];
-        copyFinalImages.splice(dragFinalImage.current, 1);
-        copyFinalImages.splice(dragOverFinalImage.current, 0, dragImageContent);
-        dragFinalImage.current = null;
-        dragOverFinalImage.current = null;
-        setImageFiles(copyFinalImages)
-    }
-    const deleteImages = (e) => {
-        const imgp = imagesPrev.filter((item, index) => index !== e);
-        const fi = imageFiles.filter((item, index) => index !== e);
-        setImageFiles(fi)
-        setImagesPrev(imgp)
-    }
-
-    const handleSignImageChange = (e) => {
-        var files = e;
-        var filesArr = Array.prototype.slice.call(files);
-        filesArr.forEach(function (f, index) {
-            SignimgArray = [...SignimgArray, f];
-        });
-        setSignImageFiles([...signImageFiles, ...SignimgArray])
-        const arr = [];
-        SignimgArray.forEach(function (f, index) {
-            var u = URL.createObjectURL(f);
-            arr.push(u);
-            setSignImgGallary([...signimgGallary, ...arr]);
-            var filesplit = f.name.split(".").pop();
-
-            var imageExtension = [
-                "png",
-                "jpeg"
-            ];
-
-            imageExtension.includes(filesplit) && SignimgExtArray.push(u)
-                ? (error.image = "")
-                : (error.image = "Upload image only");
-            setError({ ...error });
-
-            setSignImagesPrev([...signimagesPrev, ...SignimgExtArray]);
-        });
-    }
-    const dragSignStart = (e, position) => {
-        dragFinalSignImage.current = position;
-        dragSignImagePrev.current = position;
-    };
-    const dragSignEnter = (e, position) => {
-        dragOverFinalSignImage.current = position;
-        dragSignOverImagePrev.current = position;
-    };
-    const signDrop = () => {
-        const copyListImagePrev = [...signimagesPrev];
-        const dragImagePrevContent = copyListImagePrev[dragSignImagePrev.current];
-        copyListImagePrev.splice(dragSignImagePrev.current, 1);
-        copyListImagePrev.splice(dragSignOverImagePrev.current, 0, dragImagePrevContent);
-        dragSignImagePrev.current = null;
-        dragSignOverImagePrev.current = null;
-        setSignImagesPrev(copyListImagePrev)
-
-        const copyFinalImages = [...signImageFiles];
-        const dragImageContent = copyFinalImages[dragFinalSignImage.current];
-        copyFinalImages.splice(dragFinalSignImage.current, 1);
-        copyFinalImages.splice(dragOverFinalSignImage.current, 0, dragImageContent);
-        dragFinalSignImage.current = null;
-        dragOverFinalSignImage.current = null;
-        setSignImageFiles(copyFinalImages)
-    }
-    const deleteSignImages = (e) => {
-        const imgp = signimagesPrev.filter((item, index) => index !== e);
-        const fi = signImageFiles.filter((item, index) => index !== e);
-        setSignImageFiles(fi)
-        setSignImagesPrev(imgp)
-    }
-
-    const handleVideoChange = (e) => {
-
-        var files = e;
-        var filesArr = Array.prototype.slice.call(files);
-        filesArr.forEach(function (f, index) {
-            videoArray = [...videoArray, f];
-        });
-        setVideoFiles([...videoFiles, ...videoArray]);
-        const arr = [];
-        videoArray.forEach(function (f, index) {
-            var u = URL.createObjectURL(f);
-            arr.push(u);
-            setVideosGallary([...videosGallary, ...arr]);
-            var filesplit = f.name.split(".").pop();
-            var videoExtension = [
-                "mp4",
-            ];
-            videoExtension.includes(filesplit) && videoExtArray.push(u)
-                ? (error.video = "")
-                : (error.video = "Upload video only");
-            setError({ ...error });
-            setVideosPrev([...videosPrev, ...videoExtArray]);
-        });
+    const [image, setImage] = useState([])
+    console.log(image, "image");
+    const thumbsContainer = {
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        marginTop: 16
     };
 
-    const dragStartVideo = (e, position) => {
-        dragFinalVideo.current = position;
-        dragVideoPrev.current = position;
+    const thumb = {
+        display: 'inline-flex',
+        borderRadius: 2,
+        border: '1px solid #eaeaea',
+        marginBottom: 8,
+        marginRight: 8,
+        width: 100,
+        height: 100,
+        padding: 4,
+        boxSizing: 'border-box'
     };
 
-    const dragEnterVideo = (e, position) => {
-        dragOverFinalVideo.current = position;
-        dragOverVideoPrev.current = position;
+    const thumbInner = {
+        display: 'flex',
+        minWidth: 0,
+        overflow: 'hidden'
     };
 
-    const dropVideo = (e) => {
-        const copyListVideoPrev = [...videosPrev];
-        const dragVideoPrevContent = copyListVideoPrev[dragVideoPrev.current];
-        copyListVideoPrev.splice(dragVideoPrev.current, 1);
-        copyListVideoPrev.splice(dragOverVideoPrev.current, 0, dragVideoPrevContent);
-        dragVideoPrev.current = null;
-        dragOverVideoPrev.current = null;
-        setVideosPrev(copyListVideoPrev)
-
-        const copyFinalVideos = [...videoFiles];
-        const dragVideoContent = copyFinalVideos[dragFinalVideo.current];
-        copyFinalVideos.splice(dragFinalVideo.current, 1);
-        copyFinalVideos.splice(dragOverFinalVideo.current, 0, dragVideoContent);
-        dragFinalVideo.current = null;
-        dragOverFinalVideo.current = null;
-        setVideoFiles(copyFinalVideos)
-
+    const img = {
+        display: 'block',
+        width: 'auto',
+        height: '100%'
     };
 
-    const deleteVideos = (e) => {
-        const vidP = videosPrev.filter((item, index) => index !== e);
-        const fv = videoFiles.filter((item, index) => index !== e);
-        setVideoFiles([...fv]);
-        setVideosPrev([...vidP]);
-    }
+    const { getRootProps, getInputProps } = useDropzone({
+        accept: {
+            'image/jpeg, image/png': []
+        },
+        maxSize: 3145728,
+        multiple: true,
+        noClick: false,
+        onDrop: acceptedFiles => {
+            console.log(acceptedFiles, "target");
+            setImage(acceptedFiles.map(file => Object.assign(file, {
+                preview: URL.createObjectURL(file),
+            })));
+        }
+    });
 
-    const handleAudioChange = (e) => {
-        var files = e;
-        var filesArr = Array.prototype.slice.call(files);
-        filesArr.forEach(function (f, index) {
-            audioArray = [...audioArray, f];
-        });
-        setAudioFiles([...audioFiles, ...audioArray]);
-        const arr = [];
-        audioArray.forEach(function (f, index) {
-            var u = URL.createObjectURL(f);
-            arr.push(u);
-            var filesplit = f.name.split(".").pop();
-            var audioExtension = [
-                "mp3",
-            ];
-            audioExtension.includes(filesplit) && audioExtArray.push(u)
-                ? (error.audio = "")
-                : (error.audio = "Upload audio only");
-            setError({ ...error });
-            setAudioPrev([...audioPrev, ...audioExtArray]);
-        });
+    function deleteFile(e) {
+        const s = image.filter((item, index) => index !== e);
+        setImage(s);
     }
-
-    const deleteAudio = (e) => {
-        const audP = audioPrev.filter((item, index) => index !== e);
-        const fv = audioFiles.filter((item, index) => index !== e);
-        setAudioFiles([...fv]);
-        setAudioPrev([...audP]);
+    function deleteVideo(e) {
+        const s = video.filter((item, index) => index !== e);
+        setVideo(s);
     }
-
-    const handleAudioSuggestionChange = (e) => {
-        var files = e;
-        var filesArr = Array.prototype.slice.call(files);
-        filesArr.forEach(function (f, index) {
-            audioSuggestionArray = [...audioSuggestionArray, f];
-        });
-        setAudioSuggestionFiles([...audioSuggestionFiles, ...audioSuggestionArray]);
-        const arr = [];
-        audioSuggestionArray.forEach(function (f, index) {
-            var u = URL.createObjectURL(f);
-            arr.push(u);
-            var filesplit = f.name.split(".").pop();
-            var audioExtension = [
-                "mp3",
-            ];
-            audioExtension.includes(filesplit) && audioSuggestionExtArray.push(u)
-                ? (error.audio = "")
-                : (error.audio = "Upload audio only");
-            setError({ ...error });
-            setAudioSuggestionPrev([...audioSuggestionPrev, ...audioSuggestionExtArray]);
-        });
+    const thumbs = image.map((file, index) => (
+        <div style={thumb} key={file.name}>
+            {/* <div style={thumbInner}> */}
+            <img
+                src={file.preview}
+                style={img}
+                // Revoke data uri after image is loaded
+                onLoad={() => { URL.revokeObjectURL(file.preview) }}
+            />
+            <button type="button" onClick={() => deleteFile(index)}>
+                X
+            </button>
+            {/* </div> */}
+        </div>
+    ));
+    const videoPreview = video.map((item, index) => (
+        <div style={thumb} key={item.name}>
+            {/* <div style={thumbInner}> */}
+            <video
+                src={item.preview}
+                style={img}
+                // Revoke data uri after image is loaded
+                onLoad={() => { URL.revokeObjectURL(item.preview) }}
+            />
+            <button type="button" onClick={() => deleteVideo(index)}>
+                X
+            </button>
+            {/* </div> */}
+        </div>
+    ))
+    const onChangeMedia = (e) => {
+        console.log(e.target);
     }
-
-    const deleteSuggestionAudio = (e) => {
-        const audP = audioSuggestionPrev.filter((item, index) => index !== e);
-        const fv = audioSuggestionFiles.filter((item, index) => index !== e);
-        setAudioSuggestionFiles([...fv]);
-        setAudioSuggestionPrev([...audP]);
-    }
+    useEffect(() => {
+        // Make sure to revoke the data uris to avoid memory leaks, will run on unmount
+        return () => image.forEach(file => URL.revokeObjectURL(file.preview));
+    }, []);
+    useEffect(() => {
+        // Make sure to revoke the data uris to avoid memory leaks, will run on unmount
+        return () => video.forEach(file => URL.revokeObjectURL(file.preview));
+    }, []);
     return (
         <>
             <div className="page-wrapper doctris-theme toggled">
@@ -746,47 +564,15 @@ const AddTopic = () => {
                                                     <div className="col-lg-12">
                                                         <div className="mb-4">
                                                             <label htmlFor='img' className="cstm-label">Upload Sign Language Images</label>
-                                                            <Dropzone
-                                                                onDrop={(e) => handleSignImageChange(e)}
-                                                                name="images"
-                                                                multiple={true}
-                                                                accept="image/png, image/jpeg"
-                                                                maxSize="3145728"
-                                                            >
-                                                                {({ getRootProps, getInputProps }) => (
-                                                                    <div {...getRootProps({ className: 'dropzone col-lg-12' })}>
-                                                                        <input {...getInputProps()} />
-                                                                        <Image fontSize='large' />
-                                                                        <h4>Drag & Drop or Click to add Image</h4>
-                                                                        <p>Please use JPEG,PNG formate of Image</p>
-                                                                    </div>
-                                                                )}
-                                                            </Dropzone>
-                                                            <span className='error-message'>{error.image}</span>
-                                                            {signimagesPrev &&
-                                                                signimagesPrev.map((url, index) => (
-                                                                    <div className="uploadimg uploadimgeffect row-1"
-                                                                        onDragStart={(e) => dragSignStart(e, index)}
-                                                                        onDragEnter={(e) => dragSignEnter(e, index)}
-                                                                        onDragEnd={signDrop}
-                                                                        key={index}
-                                                                        draggable>
-                                                                        <img src={url} id={index}
-                                                                            onClick={() => setIsSignOpen(true)}
-                                                                            data-toggle="modal" data-target="#myModal-imgGallary"
-                                                                        />
-                                                                        <span className="viewImage-option">
-                                                                            <span>
-                                                                                {" "}
-                                                                                <i
-                                                                                    className="fi fi-rr-trash"
-                                                                                    aria-hidden="true"
-                                                                                    onClick={() => deleteSignImages(index, "image")}
-                                                                                ></i>
-                                                                            </span>
-                                                                        </span>
-                                                                    </div>
-                                                                ))}
+                                                            {/* <div {...getRootProps({ className: 'dropzone col-lg-12' })}>
+                                                                <input value={topicData.image} {...getInputProps()} />
+                                                                <Image />
+                                                                <h4>Drag & Drop or Click to add Image</h4>
+                                                                <p>Please use JPEG,PNG formate of Image</p>
+                                                            </div>
+                                                            <aside style={thumbsContainer}>
+                                                                {thumbs}
+                                                            </aside> */}
                                                         </div>
                                                     </div>
                                                 </>
@@ -830,47 +616,15 @@ const AddTopic = () => {
                                                     <div className="col-lg-12">
                                                         <div className="mb-4">
                                                             <label htmlFor='img' className="cstm-label">Upload Sign Language Images</label>
-                                                            <Dropzone
-                                                                onDrop={(e) => handleSignImageChange(e)}
-                                                                name="images"
-                                                                multiple={true}
-                                                                accept="image/png, image/jpeg"
-                                                                maxSize="3145728"
-                                                            >
-                                                                {({ getRootProps, getInputProps }) => (
-                                                                    <div {...getRootProps({ className: 'dropzone col-lg-12' })}>
-                                                                        <input {...getInputProps()} />
-                                                                        <Image fontSize='large' />
-                                                                        <h4>Drag & Drop or Click to add Image</h4>
-                                                                        <p>Please use JPEG,PNG formate of Image</p>
-                                                                    </div>
-                                                                )}
-                                                            </Dropzone>
-                                                            <span className='error-message'>{error.image}</span>
-                                                            {signimagesPrev &&
-                                                                signimagesPrev.map((url, index) => (
-                                                                    <div className="uploadimg uploadimgeffect row-1"
-                                                                        onDragStart={(e) => dragSignStart(e, index)}
-                                                                        onDragEnter={(e) => dragSignEnter(e, index)}
-                                                                        onDragEnd={signDrop}
-                                                                        key={index}
-                                                                        draggable>
-                                                                        <img src={url} id={index}
-                                                                            onClick={() => setIsSignOpen(true)}
-                                                                            data-toggle="modal" data-target="#myModal-imgGallary"
-                                                                        />
-                                                                        <span className="viewImage-option">
-                                                                            <span>
-                                                                                {" "}
-                                                                                <i
-                                                                                    className="fi fi-rr-trash"
-                                                                                    aria-hidden="true"
-                                                                                    onClick={() => deleteSignImages(index, "image")}
-                                                                                ></i>
-                                                                            </span>
-                                                                        </span>
-                                                                    </div>
-                                                                ))}
+                                                            {/* <div {...getRootProps({ className: 'dropzone col-lg-12' })}>
+                                                                <input  {...getInputProps()} />
+                                                                <Image />
+                                                                <h4>Drag & Drop or Click to add Image</h4>
+                                                                <p>Please use JPEG,PNG formate of Image</p>
+                                                            </div>
+                                                            <aside style={thumbsContainer}>
+                                                                {thumbs}
+                                                            </aside> */}
                                                         </div>
                                                     </div>
                                                 </>
@@ -1020,63 +774,26 @@ const AddTopic = () => {
                                                         </div>
                                                     </div>
                                                     <div className="col-lg-12">
-                                                        <div className="mb-4">
+                                                        {/* <div className="mb-4">
                                                             <label htmlFor='img' className="cstm-label">Upload Sign Language Images</label>
-                                                            <Dropzone
-                                                                onDrop={(e) => handleSignImageChange(e)}
-                                                                name="images"
-                                                                multiple={true}
-                                                                accept="image/png, image/jpeg"
-                                                                maxSize="3145728"
-                                                            >
-                                                                {({ getRootProps, getInputProps }) => (
-                                                                    <div {...getRootProps({ className: 'dropzone col-lg-12' })}>
-                                                                        <input {...getInputProps()} />
-                                                                        <Image fontSize='large' />
-                                                                        <h4>Drag & Drop or Click to add Image</h4>
-                                                                        <p>Please use JPEG,PNG formate of Image</p>
-                                                                    </div>
-                                                                )}
-                                                            </Dropzone>
-                                                            <span className='error-message'>{error.image}</span>
-                                                            {signimagesPrev &&
-                                                                signimagesPrev.map((url, index) => (
-                                                                    <div className="uploadimg uploadimgeffect row-1"
-                                                                        onDragStart={(e) => dragSignStart(e, index)}
-                                                                        onDragEnter={(e) => dragSignEnter(e, index)}
-                                                                        onDragEnd={signDrop}
-                                                                        key={index}
-                                                                        draggable>
-                                                                        <img src={url} id={index}
-                                                                            onClick={() => setIsSignOpen(true)}
-                                                                            data-toggle="modal" data-target="#myModal-imgGallary"
-                                                                        />
-                                                                        <span className="viewImage-option">
-                                                                            <span>
-                                                                                {" "}
-                                                                                <i
-                                                                                    className="fi fi-rr-trash"
-                                                                                    aria-hidden="true"
-                                                                                    onClick={() => deleteSignImages(index, "image")}
-                                                                                ></i>
-                                                                            </span>
-                                                                        </span>
-                                                                    </div>
-                                                                ))}
-                                                        </div>
+                                                            <div {...getRootProps({ className: 'dropzone col-lg-12' })}>
+                                                                <input value={topicData.image} {...getInputProps()} />
+                                                                <Image />
+                                                                <h4>Drag & Drop or Click to add Image</h4>
+                                                                <p>Please use JPEG,PNG formate of Image</p>
+                                                            </div>
+                                                            <aside style={thumbsContainer}>
+                                                                {thumbs}
+                                                            </aside>
+                                                        </div> */}
                                                     </div>
                                                 </>
                                             }
                                             <div className="col-lg-12">
                                                 <div className="mb-4">
                                                     <label htmlFor='video' className="cstm-label">Upload Videos</label>
-                                                    <Dropzone
-                                                        accept='video/mp4'
-                                                        name="image_video"
-                                                        multiple={true}
-                                                        maxSize="10485760"
-                                                        onDrop={(e) => handleVideoChange(e)}
-                                                    >
+                                                    {/* <VideoUpload  /> */}
+                                                    <Dropzone accept={'video/mp4'} onDrop={acceptedFiles => setVideo(acceptedFiles.map(file => Object.assign(file, { preview: URL.createObjectURL(file) })))}>
                                                         {({ getRootProps, getInputProps }) => (
                                                             <>
                                                                 <div {...getRootProps({ className: 'dropzone col-lg-12' })}>
@@ -1085,166 +802,40 @@ const AddTopic = () => {
                                                                     <h4>Drag & Drop or Click to add video</h4>
                                                                     <p>Please use MP4 formate of video</p>
                                                                 </div>
+                                                                <aside>
+                                                                    {videoPreview}
+                                                                </aside>
                                                             </>
 
                                                         )}
                                                     </Dropzone>
-                                                    <span className='error-message'>{error.video}</span>
-                                                    {videosPrev &&
-                                                        videosPrev.map((url, index) => (
-                                                            <div className="uploadimg uploadimgeffect row-1"
-                                                                onDragStart={(e) => dragStartVideo(e, index)}
-                                                                onDragEnter={(e) => dragEnterVideo(e, index)}
-                                                                onDragEnd={dropVideo}
-                                                                key={index}
-                                                                draggable>
-                                                                <video
-                                                                    width="200"
-                                                                    height="200"
-                                                                    controls
-                                                                    src={url}
-                                                                    id={index}
-                                                                    data-toggle="modal" data-target="#myModal-videoGallary"
-                                                                    onClick={() => setIsOpenVideo(true)}
-                                                                />
-                                                                <span className="viewImage-option">
-                                                                    <span>
-                                                                        {" "}
-                                                                        <i
-                                                                            className="fi fi-rr-trash"
-                                                                            aria-hidden="true"
-                                                                            onClick={() => deleteVideos(index, "video")}
-                                                                        ></i>
-                                                                    </span>
-                                                                </span>
-                                                            </div>
-                                                        ))}
                                                 </div>
                                             </div>
+                                            {/* <input type="file" accept='image/jpeg, image/png' value={image} /> */}
                                             <div className="col-lg-12">
                                                 <div className="mb-4">
                                                     <label htmlFor='img' className="cstm-label">Upload Images</label>
-                                                    <Dropzone
-                                                        onDrop={(e) => handleImageChange(e)}
-                                                        name="images"
-                                                        multiple={true}
-                                                        accept="image/png, image/jpeg"
-                                                        maxSize="3145728"
-                                                    >
-                                                        {({ getRootProps, getInputProps }) => (
-                                                            <div {...getRootProps({ className: 'dropzone col-lg-12' })}>
-                                                                <input {...getInputProps()} />
-                                                                <Image fontSize='large' />
-                                                                <h4>Drag & Drop or Click to add Image</h4>
-                                                                <p>Please use JPEG,PNG formate of Image</p>
-                                                            </div>
-                                                        )}
-                                                    </Dropzone>
-                                                    <span className='error-message'>{error.image}</span>
-                                                    {imagesPrev &&
-                                                        imagesPrev.map((url, index) => (
-                                                            <div className="uploadimg uploadimgeffect row-1"
-                                                                onDragStart={(e) => dragStart(e, index)}
-                                                                onDragEnter={(e) => dragEnter(e, index)}
-                                                                onDragEnd={drop}
-                                                                key={index}
-                                                                draggable>
-                                                                <img src={url} id={index}
-                                                                    onClick={() => setIsOpen(true)}
-                                                                    data-toggle="modal" data-target="#myModal-imgGallary"
-                                                                />
-                                                                <span className="viewImage-option">
-                                                                    <span>
-                                                                        {" "}
-                                                                        <i
-                                                                            className="fi fi-rr-trash"
-                                                                            aria-hidden="true"
-                                                                            onClick={() => deleteImages(index, "image")}
-                                                                        ></i>
-                                                                    </span>
-                                                                </span>
-                                                            </div>
-                                                        ))}
+                                                    <div {...getRootProps({ className: 'dropzone col-lg-12' })}>
+                                                        <input onChange={onChangeMedia} {...getInputProps()} />
+                                                        <Image fontSize='large' />
+                                                        <h4>Drag & Drop or Click to add Image</h4>
+                                                        <p>Please use JPEG,PNG formate of Image</p>
+                                                    </div>
+                                                    <aside style={thumbsContainer}>
+                                                        {thumbs}
+                                                    </aside>
                                                 </div>
                                             </div>
                                             <div className="col-lg-12">
                                                 <div className="mb-4">
                                                     <label htmlFor='audio' className="cstm-label">Upload Audio</label>
-                                                    <Dropzone
-                                                        onDrop={(e) => handleAudioChange(e)}
-                                                        name="audio"
-                                                        multiple={true}
-                                                        accept="audio/mp3"
-                                                        maxSize="3145728"
-                                                    >
-                                                        {({ getRootProps, getInputProps }) => (
-                                                            <div {...getRootProps({ className: 'dropzone col-lg-12' })}>
-                                                                <input {...getInputProps()} />
-                                                                <MusicNote fontSize='large' />
-                                                                <h4>Drag & Drop or Click to add Audio</h4>
-                                                                <p>Please use MP3 formate of Audio</p>
-                                                            </div>
-                                                        )}
-                                                    </Dropzone>
-                                                    <span className='error-message'>{error.audio}</span>
-                                                    {audioPrev &&
-                                                        audioPrev.map((url, index) => (
-                                                            <div className="row-1 edit-Main-music">
-                                                                <audio controls id={index} autoplay src={url} />
-                                                                <div className="edit-delete-icon">
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => deleteAudio(index, "audio")}
-                                                                        class="cstm-icon-btn cstm-delete"
-                                                                    >
-                                                                        <i
-                                                                            className="fi fi-rr-trash"
-                                                                            aria-hidden="true"
-                                                                        ></i>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        ))}
+                                                    <Audioupload />
                                                 </div>
                                             </div>
                                             <div className="col-lg-12">
                                                 <div className="mb-4">
                                                     <label htmlFor='audio' className="cstm-label">Upload Audio Suggestion</label>
-                                                    <Dropzone
-                                                        onDrop={(e) => handleAudioSuggestionChange(e)}
-                                                        name="audio"
-                                                        multiple={true}
-                                                        accept="audio/mp3"
-                                                        maxSize="3145728"
-                                                    >
-                                                        {({ getRootProps, getInputProps }) => (
-                                                            <div {...getRootProps({ className: 'dropzone col-lg-12' })}>
-                                                                <input {...getInputProps()} />
-                                                                <MusicNote fontSize='large' />
-                                                                <h4>Drag & Drop or Click to add Audio</h4>
-                                                                <p>Please use MP3 formate of Audio</p>
-                                                            </div>
-                                                        )}
-                                                    </Dropzone>
-                                                    <span className='error-message'>{error.audio}</span>
-                                                    {audioSuggestionPrev &&
-                                                        audioSuggestionPrev.map((url, index) => (
-                                                            <div className="row-1 edit-Main-music">
-                                                                <audio controls id={index} autoplay src={url} />
-                                                                <div className="edit-delete-icon">
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => deleteSuggestionAudio(index, "audio")}
-                                                                        class="cstm-icon-btn cstm-delete"
-                                                                    >
-                                                                        <i
-                                                                            className="fi fi-rr-trash"
-                                                                            aria-hidden="true"
-                                                                        ></i>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        ))}
+                                                    <Audioupload />
                                                 </div>
                                             </div>
                                             <div className="col-lg-12" >

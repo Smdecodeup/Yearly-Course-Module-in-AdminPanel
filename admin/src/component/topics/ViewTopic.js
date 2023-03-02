@@ -1,12 +1,29 @@
 import { ArrowForwardIos } from '@material-ui/icons'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import topicService from '../../service/topic.service'
 
 const ViewTopic = () => {
     const navigate = useNavigate()
+    const [viewData, setViewData]=useState({})
     const handleBack = () => {
         navigate('/topic')
     }
+
+    async function viewTopicApi(id){
+        try {
+            const result = await topicService.topicViewService(id)
+            console.log(result);
+            if(result.data.Status){
+
+            }
+        } catch (error) {
+            
+        }
+    }
+    useEffect(() => {
+        viewTopicApi()
+    },[])
     return (
         <>
             <div className="page-wrapper doctris-theme toggled">

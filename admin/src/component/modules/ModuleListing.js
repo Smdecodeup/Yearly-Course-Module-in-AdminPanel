@@ -1,11 +1,10 @@
-import { ArrowForwardIosOutlined } from '@material-ui/icons'
+import { ArrowForwardIos } from '@material-ui/icons'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
 import { Modal } from 'react-bootstrap'
 import SweetAlert from 'react-bootstrap-sweetalert'
 import { Link } from 'react-router-dom'
 import moduleService from '../../service/module.service'
-
 const ModuleListing = () => {
 
     const [loader, setLoader] = useState(false)
@@ -46,10 +45,6 @@ const ModuleListing = () => {
         moduleDescription: ''
     })
 
-    useEffect(() => {
-        moduleListingApi()
-        setLoader(true)
-    }, [])
     //validate input value
     const validate = (moduleData) => {
         let moduleError = {}
@@ -189,17 +184,17 @@ const ModuleListing = () => {
 
     const OnClickSearch = (searchValue) => {
         setSearchInput(searchValue)
+        let filterData = [...listingData]
         if (searchInput !== '') {
-            const filteredData = listingData.filter((item) => {
+            const filteredData = filterData.filter((item) => {
                 return Object.values(item).join('').toLowerCase().includes(searchInput.toLowerCase())
             })
             setLoader(false)
-            setFilteredResults(filteredData)
+            setFilteredResults([...filteredData])
         }
         else {
             setLoader(true)
-            setMessage("No Data Found")
-            setFilteredResults(listingData)
+            setFilteredResults([...filterData])
         }
     }
     //moduledata listing api
@@ -225,7 +220,7 @@ const ModuleListing = () => {
                 moduleListingApi()
             }
         } catch (error) {
-
+            setLoader(true)
         }
     }
     //edit module api
@@ -238,11 +233,12 @@ const ModuleListing = () => {
             }
             const result = await moduleService.editModuleService(viewData._id, bodyData)
             if (result.data.Status === true) {
+                setLoader(false)
                 setViewData(result.data.data)
                 moduleListingApi()
             }
         } catch (error) {
-
+            setLoader(true)
         }
     }
     //view module api
@@ -250,10 +246,11 @@ const ModuleListing = () => {
         try {
             const result = await moduleService.viewModuleService(id)
             if (result.data.Status === true) {
+                setLoader(false)
                 setViewData(result.data.data)
             }
         } catch (error) {
-
+            setLoader(true)
         }
     }
     //delete module api
@@ -261,13 +258,17 @@ const ModuleListing = () => {
         try {
             const result = await moduleService.deleteModuleService(id)
             if (result.data.Status) {
+                setLoader(false)
                 moduleListingApi()
             }
         } catch (error) {
-
+            setLoader(true)
         }
     }
 
+    useEffect(() => {
+        moduleListingApi()
+    }, [])
 
     return (
         <>
@@ -276,7 +277,7 @@ const ModuleListing = () => {
                     <div className="container-fluid">
                         <div className="layout-specing">
                             <div className="d-flex justify-content-between align-items-center mb-3">
-                                <div className="cstm-bre uppercase">dashboard<ArrowForwardIosOutlined fontSize='small' />YEAR LONG COURSE<ArrowForwardIosOutlined fontSize='small' /><Link>MODULES</Link></div>
+                                <div className="cstm-bre uppercase">dashboard<ArrowForwardIos fontSize='small' />YEAR LONG COURSE<ArrowForwardIos fontSize='small' /><Link to="/module">MODULES</Link></div>
                             </div>
                             <div className="row">
                                 <div className="col-md-12">
@@ -354,7 +355,7 @@ const ModuleListing = () => {
                                             {loader ?
                                                 <div className="spinner-border"></div>
                                                 :
-                                                (listingData === null || listingData === undefined || listingData.length === 0 ?
+                                                (filteredResults.length === 0 ?
                                                     <div className='cstm-no-record-found'>No Data Found</div>
                                                     :
                                                     <div className="table-responsive bg-white rounded">
@@ -371,7 +372,7 @@ const ModuleListing = () => {
                                                             <tbody>
                                                                 {searchInput.length > 2 ?
                                                                     (filteredResults.map((item, i) => (
-                                                                        <tr>
+                                                                        <tr key={i}>
                                                                             <td >{i + 1}</td>
                                                                             <td>{item.moduleName}</td>
                                                                             <td>{item.moduleDescription}</td>
@@ -379,22 +380,26 @@ const ModuleListing = () => {
                                                                             <td>
                                                                                 <Link onClick={(e) => toggleViewOpen(e, item._id)} className="cstm-eye"><i className="fi fi-rr-eye"></i></Link>
                                                                                 {viewOpen &&
-                                                                                    <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={viewOpen} onHide={toggleViewClose}>
-                                                                                        <div className="modal-header border-0 p-4">
-                                                                                            <h4 className="modal-title" id="exampleModalLabel1">View Module</h4>
-                                                                                            <button onClick={toggleViewClose} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                                        </div>
-                                                                                        <div className="modal-body p-4 pt-0">
-                                                                                            <div className="mb-3">
-                                                                                                <label className="cstm-label">Module Name</label>
-                                                                                                <p name="module" required="">{viewData.moduleName}</p>
+                                                                                    (loader ?
+                                                                                        <div className="spinner-border"></div>
+                                                                                        :
+                                                                                        <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={viewOpen} onHide={toggleViewClose}>
+                                                                                            <div className="modal-header border-0 p-4">
+                                                                                                <h4 className="modal-title" id="exampleModalLabel1">View Module</h4>
+                                                                                                <button onClick={toggleViewClose} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                                             </div>
-                                                                                            <div className="mb-3">
-                                                                                                <label className="cstm-label">Module Description</label>
-                                                                                                <p name="module" >{viewData.moduleDescription}</p>
+                                                                                            <div className="modal-body p-4 pt-0">
+                                                                                                <div className="mb-3">
+                                                                                                    <label className="cstm-label">Module Name</label>
+                                                                                                    <p name="module" required="">{viewData.moduleName}</p>
+                                                                                                </div>
+                                                                                                <div className="mb-3">
+                                                                                                    <label className="cstm-label">Module Description</label>
+                                                                                                    <p name="module" >{viewData.moduleDescription}</p>
+                                                                                                </div>
                                                                                             </div>
-                                                                                        </div>
-                                                                                    </Modal>
+                                                                                        </Modal>
+                                                                                    )
                                                                                 }
                                                                                 <Link onClick={(e) => toggleEditOpen(e, item._id)} className="cstm-chekmank"><i className="fi-rr-pencil"></i></Link>
                                                                                 {editOpen &&
@@ -451,21 +456,21 @@ const ModuleListing = () => {
                                                                                         cancelBtnText="Discard"
                                                                                         confirmBtnText="Delete"
                                                                                         confirmBtnBsStyle="danger"
-                                                                                        title="Are you sure to delete this module?"
+                                                                                        title="Are you sure?"
                                                                                         onConfirm={(e) => handleDelete(e, item._id)}
                                                                                         onCancel={toggleDeleteClose}
                                                                                         focusCancelBtn
-                                                                                    />
-
+                                                                                    >
+                                                                                        Are you sure to delete this module?
+                                                                                    </SweetAlert>
                                                                                 }
                                                                             </td>
                                                                         </tr>
                                                                     ))
-
                                                                     )
                                                                     :
                                                                     (listingData.map((item, i) => (
-                                                                        <tr>
+                                                                        <tr key={i}>
                                                                             <td >{i + 1}</td>
                                                                             <td>{item.moduleName}</td>
                                                                             <td>{item.moduleDescription}</td>
@@ -544,11 +549,13 @@ const ModuleListing = () => {
                                                                                         cancelBtnText="Discard"
                                                                                         confirmBtnText="Delete"
                                                                                         confirmBtnBsStyle="danger"
-                                                                                        title="Are you sure to delete this module?"
+                                                                                        title="Are you sure?"
                                                                                         onConfirm={(e) => handleDelete(e, item._id)}
                                                                                         onCancel={toggleDeleteClose}
                                                                                         focusCancelBtn
-                                                                                    />
+                                                                                    >
+                                                                                        Are you sure to delete this module?
+                                                                                    </SweetAlert>
                                                                                 }
                                                                             </td>
                                                                         </tr>

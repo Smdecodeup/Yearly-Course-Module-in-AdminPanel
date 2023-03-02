@@ -5,15 +5,16 @@ import { Link, useNavigate } from 'react-router-dom'
 import 'froala-editor/css/froala_style.min.css';
 import 'froala-editor/css/froala_editor.pkgd.min.css';
 import { Editor } from 'react-draft-wysiwyg'
-import Imageupload from '../mediaComponent/Imageupload';
-import VideoUpload from '../mediaComponent/VideoUpload';
-import Audioupload from '../mediaComponent/Audioupload';
+import moduleService from '../../service/module.service';
+import topicService from '../../service/topic.service';
 
 const EditTopic = (props) => {
 
+    const [files, setFiles] = ([])
     const [induction, setInduction] = useState(false)
     const [technique, setTechnique] = useState(false)
     const [language, setLanguage] = useState(false)
+    const [moduleList, setModuleList] = useState([])
     const [topicData, setTopicData] = useState({
         module: '',
         topicName: '',
@@ -52,8 +53,13 @@ const EditTopic = (props) => {
         Pattern: '',
         key: ""
     })
+    const [topicListing, setTopicListing] = useState([])
     const navigate = useNavigate()
 
+    useEffect(() => {
+        moduleListingApi()
+        topicListingApi()
+    }, [])
     const validate = (topicData) => {
         let topicError = {}
         let isvalid = false
@@ -200,7 +206,28 @@ const EditTopic = (props) => {
     const handleBack = () => {
         navigate('/topic')
     }
+    async function topicListingApi() {
+        try {
+            const result = await topicService.topicListingService()
+            if (result.data.Status) {
+                setTopicListing(result.data.data)
+            }
+        } catch (error) {
 
+        }
+    }
+    async function moduleListingApi() {
+        try {
+            const result = await moduleService.moduleListingService()
+            if (result.data.Status) {
+                setModuleList(result.data.data)
+            }
+        } catch (error) {
+
+        }
+    }
+    const filterInductionData = topicListing.filter((item) => (item.inductionName !== null && item.inductionName !== ""))
+    const filterTechniqueData = topicListing.filter((item) => (item.techniquesName !== null && item.techniquesName !== ""))
     return (
         <>
             <div className="page-wrapper doctris-theme toggled">
@@ -226,9 +253,10 @@ const EditTopic = (props) => {
                                                         name="module"
                                                         value={topicData.module}
                                                         required="">
-                                                        <option>Module 1</option>
-                                                        <option>Module 1</option>
-                                                        <option>Module 1</option>
+                                                        <option value="">Select Module</option>
+                                                        {moduleList.map((item, i) => (
+                                                            <option value={item._id}>{item.moduleName}</option>
+                                                        ))}
                                                     </select>
                                                     {error.module && <span className="error-message"> {error.module} </span>}
                                                 </div>
@@ -257,6 +285,7 @@ const EditTopic = (props) => {
                                                         name="TopicType"
                                                         value={topicData.TopicType}
                                                         required="">
+                                                        <option value="">select topic</option>
                                                         {topicOption && topicOption.map((item) => (
                                                             <option>{item}</option>
                                                         ))}
@@ -316,7 +345,7 @@ const EditTopic = (props) => {
                                                     <div className="col-lg-12">
                                                         <div className="mb-4">
                                                             <label htmlFor='img' className="cstm-label">Upload Sign Language Images</label>
-                                                            <Imageupload />
+                                                            
                                                         </div>
                                                     </div>
                                                 </>
@@ -359,7 +388,7 @@ const EditTopic = (props) => {
                                                     <div className="col-lg-12">
                                                         <div className="mb-4">
                                                             <label htmlFor='img' className="cstm-label">Upload Sign Language Images</label>
-                                                            <Imageupload />
+                                                            
                                                         </div>
                                                     </div>
                                                 </>
@@ -454,9 +483,10 @@ const EditTopic = (props) => {
                                                                 name="Techniques"
                                                                 value={topicData.Techniques}
                                                                 required="">
-                                                                <option>Techniques 1</option>
-                                                                <option>Techniques 1</option>
-                                                                <option>Techniques 1</option>
+                                                                <option value="">Select Techniques</option>
+                                                                {filterTechniqueData.map((item) => (
+                                                                    <option>{item.techniquesName}</option>
+                                                                ))}
                                                             </select>
                                                             {error.Techniques && <span className="error-message"> {error.Techniques} </span>}
                                                         </div>
@@ -471,9 +501,10 @@ const EditTopic = (props) => {
                                                                 name="Induction"
                                                                 value={topicData.Induction}
                                                                 required="">
-                                                                <option>Induction 1</option>
-                                                                <option>Induction 1</option>
-                                                                <option>Induction 1</option>
+                                                                <option value="">select Induction</option>
+                                                                {filterInductionData.map((item) => (
+                                                                    <option>{item.inductionName}</option>
+                                                                ))}
                                                             </select>
                                                             {error.Induction && <span className="error-message"> {error.Induction} </span>}
                                                         </div>
@@ -481,7 +512,7 @@ const EditTopic = (props) => {
                                                     <div className="col-lg-12">
                                                         <div className="mb-4">
                                                             <label htmlFor='img' className="cstm-label">Upload Sign Language Images</label>
-                                                            <Imageupload />
+                                                            
                                                         </div>
                                                     </div>
                                                 </>
@@ -489,25 +520,29 @@ const EditTopic = (props) => {
                                             <div className="col-lg-12">
                                                 <div className="mb-4">
                                                     <label htmlFor='image' className="cstm-label">Upload Videos</label>
-                                                    <VideoUpload />
                                                 </div>
                                             </div>
                                             <div className="col-lg-12">
                                                 <div className="mb-4">
                                                     <label htmlFor='image' className="cstm-label">Upload Image</label>
-                                                    <Imageupload />
+                                                    
+                                                    {/* <Dropzone accept={"image/jpeg, image/png"} maxSize="3145728" multiple="false" onDrop={acceptedFiles => {
+                                                        setFiles(acceptedFiles.map(file => Object.assign(file, {
+                                                            preview: URL.createObjectURL(file),
+                                                        })));
+                                                    }}>
+                                                    </Dropzone> */}
+
                                                 </div>
                                             </div>
                                             <div className="col-lg-12">
                                                 <div className="mb-4">
                                                     <label htmlFor='image' className="cstm-label">Upload Audio</label>
-                                                    <Audioupload />
                                                 </div>
                                             </div>
                                             <div className="col-lg-12">
                                                 <div className="mb-4">
                                                     <label htmlFor='audio' className="cstm-label">Upload Audio Suggestion</label>
-                                                    <Audioupload />
                                                 </div>
                                             </div>
                                             <div className="col-lg-12" >

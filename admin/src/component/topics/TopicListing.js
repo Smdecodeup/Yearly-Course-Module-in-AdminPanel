@@ -22,19 +22,24 @@ const TopicListing = () => {
         setLoader(true)
     }, [])
 
-    const toggleDeleteOpen = (id) => {
+    const toggleDeleteOpen = (e, id) => {
+        console.log(id, "id");
         setDelete(true)
         setTopicId(id)
     }
     const toggleDeleteClose = () => {
         setDelete(false)
+        setTopicId("")
     }
     const handleDelete = () => {
-        setDelete(false)
+
         let query_string = ""
         if (topicId) {
-            query_string += "?topicId=" + topicId;
+            query_string += "?id=" + topicId;
         }
+        console.log(query_string, "query");
+        topicDeleteApi(query_string)
+        setDelete(false)
     }
 
     async function topicListingApi() {
@@ -61,13 +66,23 @@ const TopicListing = () => {
         }
     }
 
+    async function topicDeleteApi(id) {
+        try {
+            const result = await topicService.topicDeleteService(id)
+            if (result.data.Status) {
+                setLoader(false)
+                topicListingApi()
+                moduleListingApi()
+            }
+        } catch (error) {
+            setLoader(true)
+        }
+    }
     const moduleFilter = (e) => {
         const { name, value } = e.target
-        console.log(name);
         let filterdata = [...initialToicData]
         if (value === 'all') {
             setListingTopicData([...filterdata])
-            setLoader(false)
         } else {
             var filteredKeywords = filterdata.filter((item) => { return item.moduleId === value });
             setListingTopicData([...filteredKeywords])
@@ -82,7 +97,7 @@ const TopicListing = () => {
                     <div className="container-fluid">
                         <div className="layout-specing">
                             <div className="d-flex justify-content-between align-items-center mb-3">
-                                <div className="cstm-bre uppercase">dashboard<ArrowForwardIos fontSize='small' />YEAR LONG COURSE<ArrowForwardIos fontSize='small' /><Link>TOPICS</Link></div>
+                                <div className="cstm-bre uppercase">dashboard<ArrowForwardIos fontSize='small' />YEAR LONG COURSE<ArrowForwardIos fontSize='small' /><Link to="/topic">TOPICS</Link></div>
                             </div>
                             <div className="row">
                                 <div className="col-md-12">
@@ -95,9 +110,7 @@ const TopicListing = () => {
                                                     </div>
                                                 </div>
                                             </div>
-                                            {/* <div className="col-lg-2"> */}
                                             <div className="row row ">
-                                                {/* <div className="mb-4"> */}
                                                 <select
                                                     className="cstm-input"
                                                     placeholder="select Module"
@@ -105,13 +118,11 @@ const TopicListing = () => {
                                                     name="module"
                                                     required="">
                                                     <option value="all">All</option>
-                                                    {listingModuleData.map((item) => (
-                                                        <option value={item._id}>{item.moduleName}</option>
+                                                    {listingModuleData.map((item, i) => (
+                                                        <option key={item._id} value={item._id}>{item.moduleName}</option>
                                                     ))}
                                                 </select>
-                                                {/* </div> */}
                                             </div>
-                                            {/* </div> */}
                                             <div>
                                                 <Link to="/topic/add-topic" className="cstm-btn">Create Topic</Link>
                                             </div>
@@ -142,15 +153,17 @@ const TopicListing = () => {
                                                                             <td className="fw-bold">{i + 1}</td>
                                                                             <td>{item.topicName}</td>
                                                                             <td>{item.description}</td>
-                                                                            <td><Rating
-                                                                                defaultValue={0.5}
-                                                                                precision={0.5}
-                                                                            /></td>
+                                                                            <td>
+                                                                                <Rating
+                                                                                    defaultValue={0.5}
+                                                                                    precision={0.5}
+                                                                                />
+                                                                            </td>
                                                                             <td>{moment(item.date).format('Do MMM YYYY')}</td>
                                                                             <td>
                                                                                 <Link to="/topic/view-topic" className="cstm-eye"><i className="fi fi-rr-eye"></i></Link>
                                                                                 <Link to="/topic/edit-topic" className="cstm-chekmank"><i className="fi-rr-pencil"></i></Link>
-                                                                                <Link onClick={(e) => toggleDeleteOpen(e)} className="cstm-cross mrn-rt"><i className="fi fi-rr-trash"></i></Link>
+                                                                                <Link onClick={(e) => toggleDeleteOpen(e, item._id)} className="cstm-cross mrn-rt"><i className="fi fi-rr-trash"></i></Link>
                                                                                 {deleteOpen &&
                                                                                     <SweetAlert
                                                                                         warning
@@ -170,7 +183,7 @@ const TopicListing = () => {
                                                                         </tr>
                                                                     )))
                                                                     :
-                                                                    {/* <div className="spinner-border"></div> */}
+                                                                    {/* <div className="spinner-border"></div> */ }
                                                                 }
 
                                                             </tbody>

@@ -20,7 +20,7 @@ const Sidebar = () => {
                 <nav id="sidebar" className="sidebar-wrapper">
                     <div className="sidebar-content">
                         <div className="sidebar-brand">
-                            <Link to="/" >
+                            <Link to="/module" >
                                 <img src={logo} />
                             </Link>
                         </div>

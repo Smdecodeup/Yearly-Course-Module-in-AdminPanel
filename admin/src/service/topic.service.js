@@ -10,12 +10,24 @@ const topicListingService = () => {
 }
 
 const topicCreateService = (data) => {
-    return axios.post(API_URL + "/createTopic" , data, {
+    return axios.post(API_URL + "/createTopic", data, {
         headers: authHeader()
     })
 }
 
+const topicDeleteService = (id) => {
+    return axios.delete(API_URL + "/deleteTopic" + id, {
+        headers: authHeader()
+    })
+}
+const topicViewService = (id) => {
+    return axios.get(API_URL + "/viewTopic" + id, {
+        headers: authHeader()
+    })
+}
 export default {
     topicListingService,
-    topicCreateService
+    topicCreateService,
+    topicDeleteService,
+    topicViewService
 };
