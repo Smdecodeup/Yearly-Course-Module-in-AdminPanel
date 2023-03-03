@@ -11,7 +11,7 @@ var topicRouter = require('./routes/topic');
 var app = express();
 
 var cors = require('cors')
-var whitelist = ['://localhost:3000', '://localhost:3001'];
+var whitelist = ['http://localhost:3000', 'http://localhost:3001'];
 var corsOptions = {
     origin: function(origin, callback){
       var originIsWhitelisted = whitelist.indexOf(origin) !== -1;

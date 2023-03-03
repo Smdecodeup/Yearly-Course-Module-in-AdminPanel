@@ -23,8 +23,7 @@ exports.listingModule = async function (req, res, next) {
 };
 exports.viewModule = async function(req,res){
     try {
-        var moduleId = req.query.moduleId
-        
+        var moduleId = req.query.moduleId        
         const data = await MODULE.findById(moduleId)
         return res.status(200).json({ Status: true, message: "viewModule Sucessfully",data })
     } catch (error) {

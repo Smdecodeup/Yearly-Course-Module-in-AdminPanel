@@ -10,7 +10,6 @@ const topicSchema = new Schema ({
     moduleId: { type: Schema.ObjectId, ref: 'module',default:'' },
     user: { type: Schema.ObjectId, ref: 'user' },
 
-    
     // For introduction
     inductionName:String,
     inductionCode:Number,
@@ -27,6 +26,7 @@ const topicSchema = new Schema ({
     selectInductions:[{type:String,default:""}],
     selectTechniques:[{type:String,default:""}],
     patternsType:[{type:String,default:""}],
+    keyReminder:String,
 
     image:[String],
     video:[String],

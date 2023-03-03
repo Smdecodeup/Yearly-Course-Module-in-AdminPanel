@@ -3,8 +3,7 @@ var router = express.Router();
 var moduleController = require("../controller/module/moduleController")
 var userController = require('../controller/user/userController')
 
-
-/* GET home page. */
+//Module APIs
 router.post('/Api/createModule',userController.secure,moduleController.createModule)
 router.get('/Api/listingModule',userController.secure,moduleController.listingModule)
 router.get('/Api/viewModule',userController.secure,moduleController.viewModule)

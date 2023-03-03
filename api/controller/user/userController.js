@@ -25,29 +25,28 @@ exports.secure = async function (req, res, next) {
         return res.status(500).json({ Status: false, message: 'Token is invalid' });
     }
 }
+
 exports.Login = async function (req, res, next) {
     try {
-        // console.log(req.body, "req.body");
         if (!req.body.Email)
             return res.status(401).json({ Status: false, message: "please Enter Your Email" });
 
         const checkuser = await USER.findOne({ Email: req.body.Email });
-        // console.log(checkuser, "checkuser");
-
+        
         if (!checkuser)
-            return res.status(404).json({ Status: false, message: "User not found" });
+            return res.status(404).json({ Status: false, message: "Email not register" });
 
         var verifypass = await bcrypt.compare(
             req.body.password,
             checkuser.password
         );
-        // console.log(verifypass, "verifypass");
+
+        checkuser.password= undefined
         let token = await jwt.sign({ id: checkuser._id },process.env.JWT_SECRET_KEY)
-            console.log(token);
         if (verifypass) {
             return res.status(200).json({ Status: true, message: "User login Sucessfully", checkuser, token });
         } else {
-            return res.status(404).json({ Status: false, message: "Password Not Match" });
+            return res.status(404).json({ Status: false, message: "your Password is incorrect please insert valid password" });
         }
     } catch (err) {
         return res.status(500).json({ Status: false, message: err.message });

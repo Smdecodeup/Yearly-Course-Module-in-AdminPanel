@@ -12,7 +12,7 @@ const userschema = new Schema({
     type: String,
     required: true,
   },
-  phonenumber: Number,
+  token:String
 });
 const USER = mongoose.model("user", userschema);
 
