@@ -10,7 +10,11 @@ import topicService from '../../service/topic.service';
 
 const EditTopic = (props) => {
 
+    const { topic_Id } = useSelector(state => state.topic)
     const [files, setFiles] = ([])
+    const [loader, setLoader] = useState(false)
+    const [viewData, setViewData] = useState([])
+    const [moduleData, setModuleData] = useState([])
     const [induction, setInduction] = useState(false)
     const [technique, setTechnique] = useState(false)
     const [language, setLanguage] = useState(false)
@@ -55,7 +59,6 @@ const EditTopic = (props) => {
     })
     const [topicListing, setTopicListing] = useState([])
     const navigate = useNavigate()
-
     useEffect(() => {
         moduleListingApi()
         topicListingApi()
@@ -226,6 +229,33 @@ const EditTopic = (props) => {
 
         }
     }
+    let query_string = ""
+    if (topic_Id) {
+        query_string += "?id=" + topic_Id
+    }
+    async function viewTopicApi() {
+        try {
+            const result = await topicService.topicViewService(query_string)
+            console.log(result, "viewResult");
+            if (result.data.Status) {
+                setViewData(result.data.data)
+                setLoader(false)
+            }
+        } catch (error) {
+            setLoader(true)
+        }
+    }
+
+    async function moduleListingApi() {
+        try {
+            const result = await moduleService.moduleListingService()
+            if (result.data.Status) {
+                setModuleData(result.data.data)
+            }
+        } catch (error) {
+
+        }
+    }
     const filterInductionData = topicListing.filter((item) => (item.inductionName !== null && item.inductionName !== ""))
     const filterTechniqueData = topicListing.filter((item) => (item.techniquesName !== null && item.techniquesName !== ""))
     return (
@@ -345,7 +375,7 @@ const EditTopic = (props) => {
                                                     <div className="col-lg-12">
                                                         <div className="mb-4">
                                                             <label htmlFor='img' className="cstm-label">Upload Sign Language Images</label>
-                                                            
+
                                                         </div>
                                                     </div>
                                                 </>
@@ -388,7 +418,7 @@ const EditTopic = (props) => {
                                                     <div className="col-lg-12">
                                                         <div className="mb-4">
                                                             <label htmlFor='img' className="cstm-label">Upload Sign Language Images</label>
-                                                            
+
                                                         </div>
                                                     </div>
                                                 </>
@@ -512,7 +542,7 @@ const EditTopic = (props) => {
                                                     <div className="col-lg-12">
                                                         <div className="mb-4">
                                                             <label htmlFor='img' className="cstm-label">Upload Sign Language Images</label>
-                                                            
+
                                                         </div>
                                                     </div>
                                                 </>
@@ -525,7 +555,7 @@ const EditTopic = (props) => {
                                             <div className="col-lg-12">
                                                 <div className="mb-4">
                                                     <label htmlFor='image' className="cstm-label">Upload Image</label>
-                                                    
+
                                                     {/* <Dropzone accept={"image/jpeg, image/png"} maxSize="3145728" multiple="false" onDrop={acceptedFiles => {
                                                         setFiles(acceptedFiles.map(file => Object.assign(file, {
                                                             preview: URL.createObjectURL(file),

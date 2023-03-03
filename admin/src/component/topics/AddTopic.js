@@ -118,7 +118,8 @@ const AddTopic = () => {
         languagePatternsExampl: '',
         image: '',
         video: '',
-        audio: ''
+        audio: '',
+        audioSuggestion: ""
     })
     const [success, setSuccess] = useState(false);
     const navigate = useNavigate()
@@ -625,6 +626,8 @@ const AddTopic = () => {
         setAudioSuggestionFiles([...fv]);
         setAudioSuggestionPrev([...audP]);
     }
+
+    var Max_Files = 10
     return (
         <>
             <div className="page-wrapper doctris-theme toggled">
@@ -749,6 +752,7 @@ const AddTopic = () => {
                                                             <Dropzone
                                                                 onDrop={(e) => handleSignImageChange(e)}
                                                                 name="images"
+                                                                maxFiles={Max_Files}
                                                                 multiple={true}
                                                                 accept="image/png, image/jpeg"
                                                                 maxSize="3145728"
@@ -772,8 +776,9 @@ const AddTopic = () => {
                                                                         key={index}
                                                                         draggable>
                                                                         <img src={url} id={index}
+                                                                            style={{ width: 200, height: 200 }}
                                                                             onClick={() => setIsSignOpen(true)}
-                                                                            data-toggle="modal" data-target="#myModal-imgGallary"
+
                                                                         />
                                                                         <span className="viewImage-option">
                                                                             <span>
@@ -836,6 +841,7 @@ const AddTopic = () => {
                                                                 multiple={true}
                                                                 accept="image/png, image/jpeg"
                                                                 maxSize="3145728"
+                                                                maxFiles={Max_Files}
                                                             >
                                                                 {({ getRootProps, getInputProps }) => (
                                                                     <div {...getRootProps({ className: 'dropzone col-lg-12' })}>
@@ -856,8 +862,9 @@ const AddTopic = () => {
                                                                         key={index}
                                                                         draggable>
                                                                         <img src={url} id={index}
+                                                                            style={{ width: 200, height: 200 }}
                                                                             onClick={() => setIsSignOpen(true)}
-                                                                            data-toggle="modal" data-target="#myModal-imgGallary"
+
                                                                         />
                                                                         <span className="viewImage-option">
                                                                             <span>
@@ -1028,6 +1035,7 @@ const AddTopic = () => {
                                                                 multiple={true}
                                                                 accept="image/png, image/jpeg"
                                                                 maxSize="3145728"
+                                                                maxFiles={Max_Files}
                                                             >
                                                                 {({ getRootProps, getInputProps }) => (
                                                                     <div {...getRootProps({ className: 'dropzone col-lg-12' })}>
@@ -1048,8 +1056,9 @@ const AddTopic = () => {
                                                                         key={index}
                                                                         draggable>
                                                                         <img src={url} id={index}
+                                                                            style={{ width: 200, height: 200 }}
                                                                             onClick={() => setIsSignOpen(true)}
-                                                                            data-toggle="modal" data-target="#myModal-imgGallary"
+
                                                                         />
                                                                         <span className="viewImage-option">
                                                                             <span>
@@ -1076,6 +1085,7 @@ const AddTopic = () => {
                                                         multiple={true}
                                                         maxSize="10485760"
                                                         onDrop={(e) => handleVideoChange(e)}
+                                                        maxFiles={Max_Files}
                                                     >
                                                         {({ getRootProps, getInputProps }) => (
                                                             <>
@@ -1130,6 +1140,7 @@ const AddTopic = () => {
                                                         multiple={true}
                                                         accept="image/png, image/jpeg"
                                                         maxSize="3145728"
+                                                        maxFiles={Max_Files}
                                                     >
                                                         {({ getRootProps, getInputProps }) => (
                                                             <div {...getRootProps({ className: 'dropzone col-lg-12' })}>
@@ -1150,8 +1161,9 @@ const AddTopic = () => {
                                                                 key={index}
                                                                 draggable>
                                                                 <img src={url} id={index}
+                                                                    style={{ width: 200, height: 200, }}
                                                                     onClick={() => setIsOpen(true)}
-                                                                    data-toggle="modal" data-target="#myModal-imgGallary"
+
                                                                 />
                                                                 <span className="viewImage-option">
                                                                     <span>
@@ -1174,12 +1186,13 @@ const AddTopic = () => {
                                                         onDrop={(e) => handleAudioChange(e)}
                                                         name="audio"
                                                         multiple={true}
-                                                        accept="audio/mp3"
+                                                        accept={"audio/mp3"}
                                                         maxSize="3145728"
+                                                        maxFiles={Max_Files}
                                                     >
                                                         {({ getRootProps, getInputProps }) => (
                                                             <div {...getRootProps({ className: 'dropzone col-lg-12' })}>
-                                                                <input {...getInputProps()} />
+                                                                <input accept="audio/mp3" {...getInputProps()} />
                                                                 <MusicNote fontSize='large' />
                                                                 <h4>Drag & Drop or Click to add Audio</h4>
                                                                 <p>Please use MP3 formate of Audio</p>
@@ -1190,12 +1203,12 @@ const AddTopic = () => {
                                                     {audioPrev &&
                                                         audioPrev.map((url, index) => (
                                                             <div className="row-1 edit-Main-music">
-                                                                <audio controls id={index} autoplay src={url} />
+                                                                <audio controls id={index} src={url} />
                                                                 <div className="edit-delete-icon">
                                                                     <button
                                                                         type="button"
                                                                         onClick={() => deleteAudio(index, "audio")}
-                                                                        class="cstm-icon-btn cstm-delete"
+                                                                        className="cstm-icon-btn cstm-delete"
                                                                     >
                                                                         <i
                                                                             className="fi fi-rr-trash"
@@ -1216,26 +1229,27 @@ const AddTopic = () => {
                                                         multiple={true}
                                                         accept="audio/mp3"
                                                         maxSize="3145728"
+                                                        maxFiles={Max_Files}
                                                     >
                                                         {({ getRootProps, getInputProps }) => (
                                                             <div {...getRootProps({ className: 'dropzone col-lg-12' })}>
-                                                                <input {...getInputProps()} />
+                                                                <input accept='audio/mp3' {...getInputProps()} />
                                                                 <MusicNote fontSize='large' />
                                                                 <h4>Drag & Drop or Click to add Audio</h4>
                                                                 <p>Please use MP3 formate of Audio</p>
                                                             </div>
                                                         )}
                                                     </Dropzone>
-                                                    <span className='error-message'>{error.audio}</span>
+                                                    <span className='error-message'>{error.audioSuggestion}</span>
                                                     {audioSuggestionPrev &&
                                                         audioSuggestionPrev.map((url, index) => (
                                                             <div className="row-1 edit-Main-music">
-                                                                <audio controls id={index} autoplay src={url} />
+                                                                <audio controls id={index} src={url} />
                                                                 <div className="edit-delete-icon">
                                                                     <button
                                                                         type="button"
                                                                         onClick={() => deleteSuggestionAudio(index, "audio")}
-                                                                        class="cstm-icon-btn cstm-delete"
+                                                                        className="cstm-icon-btn cstm-delete"
                                                                     >
                                                                         <i
                                                                             className="fi fi-rr-trash"

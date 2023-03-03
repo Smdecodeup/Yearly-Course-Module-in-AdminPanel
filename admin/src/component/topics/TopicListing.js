@@ -3,7 +3,8 @@ import { Rating } from '@mui/material';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react'
 import SweetAlert from 'react-bootstrap-sweetalert';
-import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
 import moduleService from '../../service/module.service';
 import topicService from '../../service/topic.service';
 
@@ -15,7 +16,8 @@ const TopicListing = () => {
     const [listingTopicData, setListingTopicData] = useState([])
     const [initialToicData, setInitialToicData] = useState([])
     const [listingModuleData, setListingModuleData] = useState([])
-
+    const [deleteSuccess, setDeleteSuccess] = useState(false)
+    const dispatch = useDispatch()
     useEffect(() => {
         topicListingApi()
         moduleListingApi()
@@ -40,6 +42,7 @@ const TopicListing = () => {
         console.log(query_string, "query");
         topicDeleteApi(query_string)
         setDelete(false)
+        setDeleteSuccess(true)
     }
 
     async function topicListingApi() {
@@ -90,6 +93,11 @@ const TopicListing = () => {
         }
     }
 
+
+    const onClickView = (e, id) => {
+        console.log(id, "viewId");
+        dispatch({ type: "TOPIC_ID", payload: id })
+    }
     return (
         <>
             <div className="page-wrapper doctris-theme toggled">
@@ -161,8 +169,8 @@ const TopicListing = () => {
                                                                             </td>
                                                                             <td>{moment(item.date).format('Do MMM YYYY')}</td>
                                                                             <td>
-                                                                                <Link to="/topic/view-topic" className="cstm-eye"><i className="fi fi-rr-eye"></i></Link>
-                                                                                <Link to="/topic/edit-topic" className="cstm-chekmank"><i className="fi-rr-pencil"></i></Link>
+                                                                                <Link to="/topic/view-topic" onClick={(e) => onClickView(e, item._id)} className="cstm-eye"><i className="fi fi-rr-eye"></i></Link>
+                                                                                <Link to="/topic/edit-topic" onClick={(e) => onClickView(e, item._id)} className="cstm-chekmank"><i className="fi-rr-pencil"></i></Link>
                                                                                 <Link onClick={(e) => toggleDeleteOpen(e, item._id)} className="cstm-cross mrn-rt"><i className="fi fi-rr-trash"></i></Link>
                                                                                 {deleteOpen &&
                                                                                     <SweetAlert
@@ -178,6 +186,9 @@ const TopicListing = () => {
                                                                                     >
                                                                                         Are you sure to delete this module?
                                                                                     </SweetAlert>
+                                                                                }
+                                                                                {deleteSuccess &&
+                                                                                    <SweetAlert success title="Topic Successfully Deleted" confirmBtnText="close" onConfirm={() => setDeleteSuccess(false)} onCancel={() => setDeleteSuccess(false)} />
                                                                                 }
                                                                             </td>
                                                                         </tr>

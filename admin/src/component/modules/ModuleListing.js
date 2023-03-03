@@ -8,19 +8,19 @@ import moduleService from '../../service/module.service'
 const ModuleListing = () => {
 
     const [loader, setLoader] = useState(false)
-    const [message, setMessage] = useState("")
+    const [popLoader, setPopLoader]= useState(false)
     const [filteredResults, setFilteredResults] = useState([]);
     const [searchInput, setSearchInput] = useState('');
     //popup open close
     const [success, setSuccess] = useState(false)
     const [editsuccess, setEditSuccess] = useState(false)
+    const [deleteSuccess, setDeleteSuccess] = useState(false)
     const [isOpen, setOpen] = useState(false)
     const [viewOpen, setView] = useState(false)
     const [editOpen, setEdit] = useState(false)
     const [deleteOpen, setDelete] = useState(false)
     //store listing data in that come from module listing api
     const [listingData, setListingData] = useState([])
-    const [initialListingData, setInitialListingData] = useState([])
     const [moduleId, setModuleId] = useState("");
     //for input value validation
     const [moduleData, setModuleData] = useState({
@@ -28,11 +28,11 @@ const ModuleListing = () => {
         moduleDescription: '',
     })
     //view module data
-    const [dataValue, setDatavalue] = useState("")
     const [viewData, setViewData] = useState({
         moduleName: '',
         moduleDescription: '',
     })
+    const [editData, setEditData] = useState([])
     //add module data
     const [addModule, setAddModule] = useState([])
     //validation error
@@ -96,9 +96,11 @@ const ModuleListing = () => {
         if (!validate(moduleData)) {
             setOpen(false)
             setSuccess(true)
+            setDeleteSuccess(false)
             moduleAddApi()
         }
         setModuleData("")
+        setDeleteSuccess(false)
     }
 
     //edit module submit
@@ -234,7 +236,7 @@ const ModuleListing = () => {
             const result = await moduleService.editModuleService(viewData._id, bodyData)
             if (result.data.Status === true) {
                 setLoader(false)
-                setViewData(result.data.data)
+                setEditData(result.data.data)
                 moduleListingApi()
             }
         } catch (error) {
@@ -246,11 +248,11 @@ const ModuleListing = () => {
         try {
             const result = await moduleService.viewModuleService(id)
             if (result.data.Status === true) {
-                setLoader(false)
+                setPopLoader(false)
                 setViewData(result.data.data)
             }
         } catch (error) {
-            setLoader(true)
+            setPopLoader(true)
         }
     }
     //delete module api
@@ -260,6 +262,7 @@ const ModuleListing = () => {
             if (result.data.Status) {
                 setLoader(false)
                 moduleListingApi()
+                setDeleteSuccess(true)
             }
         } catch (error) {
             setLoader(true)
@@ -347,7 +350,7 @@ const ModuleListing = () => {
                                                 </Modal>
                                             }
                                             {success &&
-                                                <SweetAlert success title="Module Successfully Added" confirmBtnText="close" onConfirm={() => setSuccess(false)} />
+                                                <SweetAlert success title="Module Successfully Added" confirmBtnText="close" onConfirm={() => setSuccess(false)} onCancel={() => setSuccess(false)} />
                                             }
 
                                         </div>
@@ -380,7 +383,7 @@ const ModuleListing = () => {
                                                                             <td>
                                                                                 <Link onClick={(e) => toggleViewOpen(e, item._id)} className="cstm-eye"><i className="fi fi-rr-eye"></i></Link>
                                                                                 {viewOpen &&
-                                                                                    (loader ?
+                                                                                    (popLoader ?
                                                                                         <div className="spinner-border"></div>
                                                                                         :
                                                                                         <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={viewOpen} onHide={toggleViewClose}>
@@ -419,7 +422,7 @@ const ModuleListing = () => {
                                                                                                         placeholder="Enter Module Name"
                                                                                                         name="moduleName"
                                                                                                         value={viewData.moduleName}
-                                                                                                        onChange={onChangeEdit}
+                                                                                                        onChange={(e) => onChangeEdit(e.target.value)}
                                                                                                         required="" />
                                                                                                     {editModuleerror.moduleName && <span className="error-message"> {editModuleerror.moduleName} </span>}
                                                                                                 </div>
@@ -463,6 +466,9 @@ const ModuleListing = () => {
                                                                                     >
                                                                                         Are you sure to delete this module?
                                                                                     </SweetAlert>
+                                                                                }
+                                                                                {deleteSuccess &&
+                                                                                    <SweetAlert success title="Module Successfully Deleted" confirmBtnText="close" onConfirm={() => setDeleteSuccess(false)} onCancel={() => setDeleteSuccess(false)} />
                                                                                 }
                                                                             </td>
                                                                         </tr>
@@ -539,7 +545,7 @@ const ModuleListing = () => {
                                                                                     </Modal>
                                                                                 }
                                                                                 {editsuccess &&
-                                                                                    <SweetAlert success title="Module Successfully Added" confirmBtnText="close" onConfirm={() => setEditSuccess(false)} onCancel={() => setEditSuccess(false)} />
+                                                                                    <SweetAlert success title="Module Successfully Edited" confirmBtnText="close" onConfirm={() => setEditSuccess(false)} onCancel={() => setEditSuccess(false)} />
                                                                                 }
                                                                                 <Link onClick={(e) => toggleDeleteOpen(e, item._id)} className="cstm-cross mrn-rt"><i className="fi fi-rr-trash"></i></Link>
                                                                                 {deleteOpen &&
@@ -557,6 +563,9 @@ const ModuleListing = () => {
                                                                                         Are you sure to delete this module?
                                                                                     </SweetAlert>
                                                                                 }
+                                                                                {deleteSuccess &&
+                                                                                    <SweetAlert success title="Module Successfully Deleted" confirmBtnText="close" onConfirm={() => setDeleteSuccess(false)} onCancel={() => setDeleteSuccess(false)} />
+                                                                                }
                                                                             </td>
                                                                         </tr>
                                                                     ))
@@ -565,7 +574,6 @@ const ModuleListing = () => {
                                                             </tbody>
                                                         </table>
                                                     </div>
-
                                                 )
                                             }
                                         </div>
