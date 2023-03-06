@@ -17,8 +17,10 @@ const TopicListing = () => {
     const [initialToicData, setInitialToicData] = useState([])
     const [listingModuleData, setListingModuleData] = useState([])
     const [deleteSuccess, setDeleteSuccess] = useState(false)
+    const [deleteFail, setDeleteFail] = useState(false)
     const dispatch = useDispatch()
     useEffect(() => {
+        window.scrollTo(0, 0)
         topicListingApi()
         moduleListingApi()
         setLoader(true)
@@ -42,7 +44,6 @@ const TopicListing = () => {
         console.log(query_string, "query");
         topicDeleteApi(query_string)
         setDelete(false)
-        setDeleteSuccess(true)
     }
 
     async function topicListingApi() {
@@ -76,9 +77,12 @@ const TopicListing = () => {
                 setLoader(false)
                 topicListingApi()
                 moduleListingApi()
+                setDeleteSuccess(true)
             }
         } catch (error) {
-            setLoader(true)
+            setDeleteFail(true)
+            console.log(error);
+            console.log();
         }
     }
     const moduleFilter = (e) => {
@@ -188,7 +192,23 @@ const TopicListing = () => {
                                                                                     </SweetAlert>
                                                                                 }
                                                                                 {deleteSuccess &&
-                                                                                    <SweetAlert success title="Topic Successfully Deleted" confirmBtnText="close" onConfirm={() => setDeleteSuccess(false)} onCancel={() => setDeleteSuccess(false)} />
+                                                                                    <SweetAlert
+                                                                                        success
+                                                                                        title="Topic Successfully Deleted"
+                                                                                        confirmBtnText="close"
+                                                                                        onConfirm={() => setDeleteSuccess(false)}
+                                                                                        onCancel={() => setDeleteSuccess(false)}
+                                                                                    />
+                                                                                }
+                                                                                {deleteFail &&
+                                                                                    <SweetAlert
+                                                                                        danger
+                                                                                        title="Something went wrong"
+                                                                                        confirmBtnText="close"
+                                                                                        onConfirm={() => setDeleteFail(false)}
+                                                                                        onCancel={() => setDeleteFail(false)}
+                                                                                    />
+
                                                                                 }
                                                                             </td>
                                                                         </tr>

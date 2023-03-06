@@ -3,7 +3,6 @@ import { TOPIC_ID } from "../action/type"
 const initialState = {
     topic_Id: ""
 }
-console.log(initialState, "topic");
 export default function (state = initialState, action) {
     const { type, payload } = action
     switch (type) {

@@ -25,9 +25,16 @@ const topicViewService = (id) => {
         headers: authHeader()
     })
 }
+
+const topicEditService = (id, data) => {
+    return axios.post(API_URL + "/editTopic?id=" + id, data, {
+        headers: authHeader()
+    })
+}
 export default {
     topicListingService,
     topicCreateService,
     topicDeleteService,
-    topicViewService
+    topicViewService,
+    topicEditService
 };

@@ -8,7 +8,7 @@ import moduleService from '../../service/module.service'
 const ModuleListing = () => {
 
     const [loader, setLoader] = useState(false)
-    const [popLoader, setPopLoader]= useState(false)
+    const [popLoader, setPopLoader] = useState(false)
     const [filteredResults, setFilteredResults] = useState([]);
     const [searchInput, setSearchInput] = useState('');
     //popup open close
@@ -147,6 +147,12 @@ const ModuleListing = () => {
     }
     //view module popup open 
     const toggleViewOpen = (e, id) => {
+
+        if (viewData === null || viewData === undefined || viewData.length === 0) {
+            setPopLoader(true)
+        } else {
+            setPopLoader(false)
+        }
         setView(true)
         let query_string = ""
         if (id) {
@@ -161,6 +167,11 @@ const ModuleListing = () => {
     }
     //edit module popup open
     const toggleEditOpen = (e, id) => {
+        if (viewData === null || viewData === undefined || viewData.length === 0) {
+            setPopLoader(true)
+        } else {
+            setPopLoader(false)
+        }
         setEdit(true)
         let query_string = ""
         if (id) {
@@ -172,6 +183,7 @@ const ModuleListing = () => {
     //edit module popup close
     const toggleEditClose = () => {
         setEdit(false)
+        setViewData("")
     }
     //delete module popup open
     const toggleDeleteOpen = (e, id) => {
@@ -207,6 +219,8 @@ const ModuleListing = () => {
                 setLoader(false)
                 setFilteredResults(result.data.data)
                 setListingData(result.data.data)
+            } else {
+                setLoader(true)
             }
         } catch (error) {
             setLoader(true)
@@ -270,6 +284,8 @@ const ModuleListing = () => {
     }
 
     useEffect(() => {
+        window.scrollTo(0, 0)
+        setLoader(true)
         moduleListingApi()
     }, [])
 
@@ -383,69 +399,79 @@ const ModuleListing = () => {
                                                                             <td>
                                                                                 <Link onClick={(e) => toggleViewOpen(e, item._id)} className="cstm-eye"><i className="fi fi-rr-eye"></i></Link>
                                                                                 {viewOpen &&
-                                                                                    (popLoader ?
-                                                                                        <div className="spinner-border"></div>
-                                                                                        :
-                                                                                        <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={viewOpen} onHide={toggleViewClose}>
-                                                                                            <div className="modal-header border-0 p-4">
-                                                                                                <h4 className="modal-title" id="exampleModalLabel1">View Module</h4>
-                                                                                                <button onClick={toggleViewClose} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                                            </div>
-                                                                                            <div className="modal-body p-4 pt-0">
-                                                                                                <div className="mb-3">
-                                                                                                    <label className="cstm-label">Module Name</label>
-                                                                                                    <p name="module" required="">{viewData.moduleName}</p>
+                                                                                    <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={viewOpen} onHide={toggleViewClose}>
+
+                                                                                        {popLoader ?
+                                                                                            <div className="spinner-border"></div>
+                                                                                            :
+                                                                                            <>
+                                                                                                <div className="modal-header border-0 p-4">
+                                                                                                    <h4 className="modal-title" id="exampleModalLabel1">View Module</h4>
+                                                                                                    <button onClick={toggleViewClose} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                                                 </div>
-                                                                                                <div className="mb-3">
-                                                                                                    <label className="cstm-label">Module Description</label>
-                                                                                                    <p name="module" >{viewData.moduleDescription}</p>
+                                                                                                <div className="modal-body p-4 pt-0">
+                                                                                                    <div className="mb-3">
+                                                                                                        <label className="cstm-label">Module Name</label>
+                                                                                                        <p name="module" required="">{viewData.moduleName}</p>
+                                                                                                    </div>
+                                                                                                    <div className="mb-3">
+                                                                                                        <label className="cstm-label">Module Description</label>
+                                                                                                        <p name="module" >{viewData.moduleDescription}</p>
+                                                                                                    </div>
                                                                                                 </div>
-                                                                                            </div>
-                                                                                        </Modal>
-                                                                                    )
+                                                                                            </>
+                                                                                        }
+                                                                                    </Modal>
+
                                                                                 }
                                                                                 <Link onClick={(e) => toggleEditOpen(e, item._id)} className="cstm-chekmank"><i className="fi-rr-pencil"></i></Link>
                                                                                 {editOpen &&
                                                                                     <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={editOpen} onHide={toggleEditClose}>
-                                                                                        <div className="modal-content">
-                                                                                            <div className="modal-header border-0 p-4">
-                                                                                                <h4 className="modal-title" id="exampleModalLabel1">Edit Module</h4>
-                                                                                                <button onClick={toggleEditClose} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                                            </div>
-                                                                                            <div className="modal-body p-4 pt-0">
-                                                                                                <div className="mb-3">
-                                                                                                    <label htmlFor='moduleName' className="cstm-label">Module Name</label>
-                                                                                                    <input
+                                                                                        {popLoader ?
+                                                                                            <div className="spinner-border"></div>
+                                                                                            :
+                                                                                            <>
+                                                                                                <div className="modal-content">
+                                                                                                    <div className="modal-header border-0 p-4">
+                                                                                                        <h4 className="modal-title" id="exampleModalLabel1">Edit Module</h4>
+                                                                                                        <button onClick={toggleEditClose} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                                                    </div>
+                                                                                                    <div className="modal-body p-4 pt-0">
+                                                                                                        <div className="mb-3">
+                                                                                                            <label htmlFor='moduleName' className="cstm-label">Module Name</label>
+                                                                                                            <input
 
-                                                                                                        type="text"
-                                                                                                        className="cstm-input"
-                                                                                                        placeholder="Enter Module Name"
-                                                                                                        name="moduleName"
-                                                                                                        value={viewData.moduleName}
-                                                                                                        onChange={(e) => onChangeEdit(e.target.value)}
-                                                                                                        required="" />
-                                                                                                    {editModuleerror.moduleName && <span className="error-message"> {editModuleerror.moduleName} </span>}
-                                                                                                </div>
-                                                                                                <div className="mb-3">
-                                                                                                    <label htmlFor='moduleDescription' className="cstm-label">Module Description</label>
-                                                                                                    <input
-                                                                                                        type="text"
-                                                                                                        value={viewData.moduleDescription}
-                                                                                                        onChange={onChangeEdit}
-                                                                                                        className="cstm-textarea"
-                                                                                                        placeholder="Write Description"
-                                                                                                        name="moduleDescription" />
-                                                                                                    {editModuleerror.moduleDescription && <span className="error-message"> {editModuleerror.moduleDescription} </span>}
-                                                                                                </div>
-                                                                                                <div className="row">
-                                                                                                    <div className="col-lg-12">
-                                                                                                        <div className="mb-2">
-                                                                                                            <button onClick={(id) => handleEditSubmit(id)} className="mr-3 cstm-btn6">Save Changes</button>
+                                                                                                                type="text"
+                                                                                                                className="cstm-input"
+                                                                                                                placeholder="Enter Module Name"
+                                                                                                                name="moduleName"
+                                                                                                                value={viewData.moduleName}
+                                                                                                                onChange={(e) => onChangeEdit(e.target.value)}
+                                                                                                                required="" />
+                                                                                                            {editModuleerror.moduleName && <span className="error-message"> {editModuleerror.moduleName} </span>}
+                                                                                                        </div>
+                                                                                                        <div className="mb-3">
+                                                                                                            <label htmlFor='moduleDescription' className="cstm-label">Module Description</label>
+                                                                                                            <input
+                                                                                                                type="text"
+                                                                                                                value={viewData.moduleDescription}
+                                                                                                                onChange={onChangeEdit}
+                                                                                                                className="cstm-textarea"
+                                                                                                                placeholder="Write Description"
+                                                                                                                name="moduleDescription" />
+                                                                                                            {editModuleerror.moduleDescription && <span className="error-message"> {editModuleerror.moduleDescription} </span>}
+                                                                                                        </div>
+                                                                                                        <div className="row">
+                                                                                                            <div className="col-lg-12">
+                                                                                                                <div className="mb-2">
+                                                                                                                    <button onClick={(id) => handleEditSubmit(id)} className="mr-3 cstm-btn6">Save Changes</button>
+                                                                                                                </div>
+                                                                                                            </div>
                                                                                                         </div>
                                                                                                     </div>
                                                                                                 </div>
-                                                                                            </div>
-                                                                                        </div>
+                                                                                            </>
+                                                                                        }
                                                                                     </Modal>
                                                                                 }
                                                                                 {editsuccess &&
@@ -485,63 +511,74 @@ const ModuleListing = () => {
                                                                                 <Link onClick={(e) => toggleViewOpen(e, item._id)} className="cstm-eye"><i className="fi fi-rr-eye"></i></Link>
                                                                                 {viewOpen &&
                                                                                     <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={viewOpen} onHide={toggleViewClose}>
-                                                                                        <div className="modal-header border-0 p-4">
-                                                                                            <h4 className="modal-title" id="exampleModalLabel1">View Module</h4>
-                                                                                            <button onClick={toggleViewClose} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                                        </div>
-                                                                                        <div className="modal-body p-4 pt-0">
-                                                                                            <div className="mb-3">
-                                                                                                <label className="cstm-label">Module Name</label>
-                                                                                                <p name="module" required="">{viewData.moduleName}</p>
-                                                                                            </div>
-                                                                                            <div className="mb-3">
-                                                                                                <label className="cstm-label">Module Description</label>
-                                                                                                <p name="module" >{viewData.moduleDescription}</p>
-                                                                                            </div>
-                                                                                        </div>
+                                                                                        {popLoader ?
+                                                                                            <div className="spinner-border"></div>
+                                                                                            :
+                                                                                            <>
+                                                                                                <div className="modal-header border-0 p-4">
+                                                                                                    <h4 className="modal-title" id="exampleModalLabel1">View Module</h4>
+                                                                                                    <button onClick={toggleViewClose} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                                                </div>
+                                                                                                <div className="modal-body p-4 pt-0">
+                                                                                                    <div className="mb-3">
+                                                                                                        <label className="cstm-label">Module Name</label>
+                                                                                                        <p name="module" required="">{viewData.moduleName}</p>
+                                                                                                    </div>
+                                                                                                    <div className="mb-3">
+                                                                                                        <label className="cstm-label">Module Description</label>
+                                                                                                        <p name="module" >{viewData.moduleDescription}</p>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </>
+                                                                                        }
                                                                                     </Modal>
+
                                                                                 }
                                                                                 <Link onClick={(e) => toggleEditOpen(e, item._id)} className="cstm-chekmank"><i className="fi-rr-pencil"></i></Link>
                                                                                 {editOpen &&
                                                                                     <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={editOpen} onHide={toggleEditClose}>
-                                                                                        <div className="modal-content">
-                                                                                            <div className="modal-header border-0 p-4">
-                                                                                                <h4 className="modal-title" id="exampleModalLabel1">Edit Module</h4>
-                                                                                                <button onClick={toggleEditClose} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                                            </div>
-                                                                                            <div className="modal-body p-4 pt-0">
-                                                                                                <div className="mb-3">
-                                                                                                    <label htmlFor='moduleName' className="cstm-label">Module Name</label>
-                                                                                                    <input
-                                                                                                        type="text"
-                                                                                                        className="cstm-input"
-                                                                                                        placeholder="Enter Module Name"
-                                                                                                        name="moduleName"
-                                                                                                        value={viewData.moduleName}
-                                                                                                        onChange={onChangeEdit}
-                                                                                                    />
-                                                                                                    {editModuleerror.moduleName && <span className="error-message"> {editModuleerror.moduleName} </span>}
+                                                                                        {popLoader ?
+                                                                                            <div className="spinner-border"></div>
+                                                                                            :
+                                                                                            <div className="modal-content">
+                                                                                                <div className="modal-header border-0 p-4">
+                                                                                                    <h4 className="modal-title" id="exampleModalLabel1">Edit Module</h4>
+                                                                                                    <button onClick={toggleEditClose} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                                                 </div>
-                                                                                                <div className="mb-3">
-                                                                                                    <label htmlFor='moduleDescription' className="cstm-label">Module Description</label>
-                                                                                                    <input
-                                                                                                        type="text"
-                                                                                                        value={viewData.moduleDescription}
-                                                                                                        onChange={onChangeEdit}
-                                                                                                        className="cstm-textarea"
-                                                                                                        placeholder="Write Description"
-                                                                                                        name="moduleDescription" />
-                                                                                                    {editModuleerror.moduleDescription && <span className="error-message"> {editModuleerror.moduleDescription} </span>}
-                                                                                                </div>
-                                                                                                <div className="row">
-                                                                                                    <div className="col-lg-12">
-                                                                                                        <div className="mb-2">
-                                                                                                            <button onClick={(id) => handleEditSubmit(id)} className="mr-3 cstm-btn6">Save Changes</button>
+                                                                                                <div className="modal-body p-4 pt-0">
+                                                                                                    <div className="mb-3">
+                                                                                                        <label htmlFor='moduleName' className="cstm-label">Module Name</label>
+                                                                                                        <input
+                                                                                                            type="text"
+                                                                                                            className="cstm-input"
+                                                                                                            placeholder="Enter Module Name"
+                                                                                                            name="moduleName"
+                                                                                                            value={viewData.moduleName}
+                                                                                                            onChange={onChangeEdit}
+                                                                                                        />
+                                                                                                        {editModuleerror.moduleName && <span className="error-message"> {editModuleerror.moduleName} </span>}
+                                                                                                    </div>
+                                                                                                    <div className="mb-3">
+                                                                                                        <label htmlFor='moduleDescription' className="cstm-label">Module Description</label>
+                                                                                                        <input
+                                                                                                            type="text"
+                                                                                                            value={viewData.moduleDescription}
+                                                                                                            onChange={onChangeEdit}
+                                                                                                            className="cstm-textarea"
+                                                                                                            placeholder="Write Description"
+                                                                                                            name="moduleDescription" />
+                                                                                                        {editModuleerror.moduleDescription && <span className="error-message"> {editModuleerror.moduleDescription} </span>}
+                                                                                                    </div>
+                                                                                                    <div className="row">
+                                                                                                        <div className="col-lg-12">
+                                                                                                            <div className="mb-2">
+                                                                                                                <button onClick={(id) => handleEditSubmit(id)} className="mr-3 cstm-btn6">Save Changes</button>
+                                                                                                            </div>
                                                                                                         </div>
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </div>
-                                                                                        </div>
+                                                                                        }
                                                                                     </Modal>
                                                                                 }
                                                                                 {editsuccess &&

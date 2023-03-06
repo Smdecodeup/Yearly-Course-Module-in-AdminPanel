@@ -8,6 +8,8 @@ import moduleService from '../../service/module.service'
 import topicService from '../../service/topic.service'
 import { ArrowForwardIos } from '@material-ui/icons'
 import { Editor } from 'react-draft-wysiwyg'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+
 
 const AddTopic = () => {
 
@@ -124,6 +126,7 @@ const AddTopic = () => {
     const [success, setSuccess] = useState(false);
     const navigate = useNavigate()
     useEffect(() => {
+        window.scrollTo(0, 0)
         topicListingApi()
         moduleListingApi()
     }, [])
@@ -370,7 +373,7 @@ const AddTopic = () => {
     formData.append("selectInductions", langaugeData.selectInductions || [])
     formData.append("selectTechniques", langaugeData.selectTechniques || [])
     formData.append("patternsType", langaugeData.patternsType || [])
-    formData.append("languagePatternsExampl", langaugeData.languagePatternsExampl || "")
+    formData.append("languagePatternsExample", langaugeData.languagePatternsExampl || "")
     allMediaFiles.map((files, index) => (
         formData.append("files", files || [])
     ))
@@ -635,7 +638,7 @@ const AddTopic = () => {
                     <div className="container-fluid">
                         <div className="layout-specing">
                             <div className="d-flex justify-content-between align-items-center">
-                                <button onClick={handleBack}>back</button>
+                            <Link to="/topic"><ArrowBackIcon />back</Link>
                                 <div className="cstm-bre uppercase">dashboard <ArrowForwardIos fontSize='small' /> YEAR LONG COURSE<ArrowForwardIos fontSize='small' />
                                     TOPICS<ArrowForwardIos fontSize='small' /><Link to="/topic/add-topic">Add Topic</Link></div>
                             </div>
