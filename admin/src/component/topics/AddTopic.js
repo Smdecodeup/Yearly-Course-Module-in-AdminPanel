@@ -341,6 +341,8 @@ const AddTopic = () => {
 
     const onChangeInductionSelect = (selectedList, name) => {
         setLanguageData({ ...langaugeData, [name]: selectedList })
+        console.log(name, "name");
+        console.log(selectedList, "selectedList");
     }
     const inductionOption = filterInductionData.map((item) => (
         (item.inductionName)
@@ -630,6 +632,17 @@ const AddTopic = () => {
         setAudioSuggestionPrev([...audP]);
     }
 
+    const imageAccept = {
+        'image/jpeg': [],
+        'image/png': []
+    }
+    const audioAccept = {
+        'audio/mp3': []
+    }
+    const videoAccept = {
+        'video/mp4': []
+    }
+    console.log(audioFiles,"audio");
     var Max_Files = 10
     return (
         <>
@@ -638,7 +651,7 @@ const AddTopic = () => {
                     <div className="container-fluid">
                         <div className="layout-specing">
                             <div className="d-flex justify-content-between align-items-center">
-                            <Link to="/topic"><ArrowBackIcon />back</Link>
+                                <Link to="/topic"><ArrowBackIcon />back</Link>
                                 <div className="cstm-bre uppercase">dashboard <ArrowForwardIos fontSize='small' /> YEAR LONG COURSE<ArrowForwardIos fontSize='small' />
                                     TOPICS<ArrowForwardIos fontSize='small' /><Link to="/topic/add-topic">Add Topic</Link></div>
                             </div>
@@ -757,7 +770,7 @@ const AddTopic = () => {
                                                                 name="images"
                                                                 maxFiles={Max_Files}
                                                                 multiple={true}
-                                                                accept="image/png, image/jpeg"
+                                                                accept={imageAccept}
                                                                 maxSize="3145728"
                                                             >
                                                                 {({ getRootProps, getInputProps }) => (
@@ -842,7 +855,7 @@ const AddTopic = () => {
                                                                 onDrop={(e) => handleSignImageChange(e)}
                                                                 name="images"
                                                                 multiple={true}
-                                                                accept="image/png, image/jpeg"
+                                                                accept={imageAccept}
                                                                 maxSize="3145728"
                                                                 maxFiles={Max_Files}
                                                             >
@@ -977,7 +990,7 @@ const AddTopic = () => {
                                                         <div className="mb-4">
                                                             <label htmlFor='Techniques' className="cstm-label">Select Techniques</label>
                                                             <Multiselect
-                                                                name='selectTechniques'
+                                                                // name='selectTechniques'
                                                                 placeholder='selectTechniques'
                                                                 selectedValues={langaugeData.selectTechniques}
                                                                 showCheckbox="true"
@@ -992,18 +1005,6 @@ const AddTopic = () => {
                                                                     )))
                                                                 }
                                                             />
-                                                            {/* <select
-                                                                onChange={onChangeLanguage}
-                                                                className="cstm-input"
-                                                                placeholder="select Techniques"
-                                                                name="selectTechniques"
-                                                                value={langaugeData.selectTechniques}
-                                                                required="">
-                                                                <option value="">selectTechniques</option>
-                                                                {filterTechniqueData.map((item) => (
-                                                                    <option>{item.techniquesName}</option>
-                                                                ))}
-                                                            </select> */}
                                                             {languageErr.selectTechniques && <span className="error-message"> {languageErr.selectTechniques} </span>}
                                                         </div>
                                                     </div>
@@ -1013,7 +1014,7 @@ const AddTopic = () => {
                                                             <Multiselect
                                                                 name='selectInductions'
                                                                 placeholder="select Induction"
-                                                                value={langaugeData.selectInductions}
+                                                                selectedValues={langaugeData.selectInductions}
                                                                 showCheckbox="true"
                                                                 displayValue="selectInductions"
                                                                 onSelect={(e) => onChangeInductionSelect(e)}
@@ -1036,7 +1037,7 @@ const AddTopic = () => {
                                                                 onDrop={(e) => handleSignImageChange(e)}
                                                                 name="images"
                                                                 multiple={true}
-                                                                accept="image/png, image/jpeg"
+                                                                accept={imageAccept}
                                                                 maxSize="3145728"
                                                                 maxFiles={Max_Files}
                                                             >
@@ -1083,7 +1084,7 @@ const AddTopic = () => {
                                                 <div className="mb-4">
                                                     <label htmlFor='video' className="cstm-label">Upload Videos</label>
                                                     <Dropzone
-                                                        accept='video/mp4'
+                                                        accept={videoAccept}
                                                         name="image_video"
                                                         multiple={true}
                                                         maxSize="10485760"
@@ -1141,7 +1142,7 @@ const AddTopic = () => {
                                                         onDrop={(e) => handleImageChange(e)}
                                                         name="images"
                                                         multiple={true}
-                                                        accept="image/png, image/jpeg"
+                                                        accept={imageAccept}
                                                         maxSize="3145728"
                                                         maxFiles={Max_Files}
                                                     >
@@ -1189,7 +1190,8 @@ const AddTopic = () => {
                                                         onDrop={(e) => handleAudioChange(e)}
                                                         name="audio"
                                                         multiple={true}
-                                                        accept={"audio/mp3"}
+                                                        // accept={audioAccept}
+                                                        accept="audio/mp3"
                                                         maxSize="3145728"
                                                         maxFiles={Max_Files}
                                                     >

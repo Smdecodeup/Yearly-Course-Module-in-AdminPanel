@@ -14,31 +14,22 @@ const ViewTopic = () => {
     const [induction, setInduction] = useState(false)
     const [technique, setTechnique] = useState(false)
     const [language, setLanguage] = useState(false)
-    const [moduleId, setModuleId] = useState([""])
+    const { topic_Id } = useSelector(state => state.topic)
     useEffect(() => {
         window.scrollTo(0, 0)
         viewTopicApi()
         moduleListingApi()
         setLoader(true)
     }, [])
-    moduleData.map((item) => (
-        // setModuleId(item._id),
-        console.log(item._id, "moduleId")
-    ))
-    const { topic_Id } = useSelector(state => state.topic)
-
-    console.log(topic_Id, "id");
     let query_string = ""
     if (topic_Id) {
         query_string += "?id=" + topic_Id
     }
 
-    console.log(viewData, "viewData");
 
     async function viewTopicApi() {
         try {
             const result = await topicService.topicViewService(query_string)
-            console.log(result, "viewResult");
             if (result.data.Status) {
                 setViewData(result.data.data)
                 if (result.data.data.topicType === 'Induction') {
@@ -78,13 +69,8 @@ const ViewTopic = () => {
     if (viewData === null) {
         navigate("/topic")
     }
-    console.log(moduleData, "moduleData");
-    moduleData.map((item) => (
-        // setModuleId(item._id)
-        console.log(item._id, "moduleId")
-    ))
-    // var filteredKeywords = viewData.filter((item) => { return item.moduleId === value });
 
+    var filteModuleName = moduleData.filter((item) => { return item._id === viewData.moduleId });
     return (
         <>
             <div className="page-wrapper doctris-theme toggled">
@@ -106,8 +92,10 @@ const ViewTopic = () => {
                                                 <>
                                                     < div className="col-lg-6">
                                                         <div className="mb-4">
-                                                            <label htmlFor='module' className="cstm-label">Module Name</label>
-                                                            <p name="module" >{viewData.moduleId}</p>
+                                                            <label htmlFor='moduleName' className="cstm-label">Module Name</label>
+                                                            {filteModuleName.map((item) => (
+                                                                <p name="moduleName" >{item.moduleName}</p>
+                                                            ))}
                                                         </div>
                                                     </div>
                                                     <div className="col-lg-6">
@@ -125,7 +113,6 @@ const ViewTopic = () => {
                                                     <div className="col-lg-12">
                                                         <div className="mb-4">
                                                             <label htmlFor='Description' className="cstm-label">Description</label>
-                                                            {viewData.description !== "" && viewData.description !== null}
                                                             <p name="module" required="">{viewData.description || '-'}</p>
                                                         </div>
                                                     </div>
@@ -133,14 +120,14 @@ const ViewTopic = () => {
                                                         <>
                                                             <div className="col-lg-12">
                                                                 <div className="mb-4">
-                                                                    <label htmlFor='Description' className="cstm-label">Induction Name</label>
+                                                                    <label htmlFor='inductionName' className="cstm-label">Induction Name</label>
                                                                     <p name="module" required="">{viewData.inductionName || '-'}</p>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-12">
                                                                 <div className="mb-4">
-                                                                    <label htmlFor='Description' className="cstm-label">Induction Code</label>
-                                                                    <p name="module" required="">{viewData.inductionCode || '-'}</p>
+                                                                    <label htmlFor='inductionCode' className="cstm-label">Induction Code</label>
+                                                                    <p name="module" required="">I{viewData.inductionCode || '-'}</p>
                                                                 </div>
                                                             </div>
                                                         </>
@@ -149,14 +136,14 @@ const ViewTopic = () => {
                                                         <>
                                                             <div className="col-lg-12">
                                                                 <div className="mb-4">
-                                                                    <label htmlFor='Description' className="cstm-label">Technique sName</label>
+                                                                    <label htmlFor='techniquesname' className="cstm-label">Techniques Name</label>
                                                                     <p name="module" required="">{viewData.techniquesName || '-'}</p>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-12">
                                                                 <div className="mb-4">
-                                                                    <label htmlFor='Description' className="cstm-label">Techniques Code</label>
-                                                                    <p name="module" required="">{viewData.techniquesCode || '-'}</p>
+                                                                    <label htmlFor='techniquesCode' className="cstm-label">Techniques Code</label>
+                                                                    <p name="module" required="">T{viewData.techniquesCode || '-'}</p>
                                                                 </div>
                                                             </div>
                                                         </>
@@ -165,34 +152,34 @@ const ViewTopic = () => {
                                                         <>
                                                             <div className="col-lg-12">
                                                                 <div className="mb-4">
-                                                                    <label htmlFor='Description' className="cstm-label">Language Patterns Name</label>
+                                                                    <label htmlFor='languageName' className="cstm-label">Language Patterns Name</label>
                                                                     <p name="module" required="">{viewData.languagePatternsName || '-'}</p>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-12">
                                                                 <div className="mb-4">
-                                                                    <label htmlFor='Description' className="cstm-label">Language Patterns Code</label>
-                                                                    <p name="module" required="">{viewData.languagePatternsCode || '-'} </p>
+                                                                    <label htmlFor='languagecode' className="cstm-label">Language Patterns Code</label>
+                                                                    <p name="module" required="">L{viewData.languagePatternsCode || '-'} </p>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-12">
                                                                 <div className="mb-4">
-                                                                    <label htmlFor='Description' className="cstm-label">Language Patterns Defination</label>
+                                                                    <label htmlFor='defination' className="cstm-label">Language Patterns Defination</label>
                                                                     <p name="module" required="">{viewData.languagePatternsDefination || '-'}</p>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-12">
                                                                 <div className="mb-4">
-                                                                    <label htmlFor='Description' className="cstm-label">Language Patterns Example</label>
+                                                                    <label htmlFor='example' className="cstm-label">Language Patterns Example</label>
                                                                     <p name="module" required="">{viewData.languagePatternsExample || '-'}</p>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-12">
                                                                 <div className="mb-4">
-                                                                    <label htmlFor='Description' className="cstm-label">patternsType</label>
+                                                                    <label htmlFor='video' className="cstm-label">patternsType</label>
                                                                     {viewData !== null && viewData !== undefined && viewData.length !== 0 ?
                                                                         (viewData.patternsType).map((item) => (
-                                                                            console.log(item, "patternsType")
+                                                                            <p name="module" required="">{item}</p>
                                                                         ))
                                                                         :
                                                                         "-"
@@ -204,56 +191,61 @@ const ViewTopic = () => {
                                                     }
                                                     <div className="col-lg-12">
                                                         <div className="mb-4">
-                                                            <label htmlFor='moduleDiscription' className="cstm-label">Videos</label>
+                                                            <label htmlFor='image' className="cstm-label">Videos</label>
                                                             {viewData !== null && viewData !== undefined && viewData.length !== 0 ?
                                                                 (viewData.video).map((item) => (
-                                                                    console.log(URL + item, "image")
+                                                                    <video
+                                                                        controls
+                                                                        style={{ height: 200, width: 200 }}
+                                                                        src={URL + item.substr(7)}
+                                                                    />
                                                                 ))
                                                                 :
                                                                 <p>-</p>
 
-
                                                             }
                                                         </div>
                                                     </div>
                                                     <div className="col-lg-12">
                                                         <div className="mb-4">
-                                                            <label htmlFor='moduleDiscription' className="cstm-label">Images</label>
+                                                            <label htmlFor='audio' className="cstm-label">Images</label>
                                                             {viewData !== null && viewData !== undefined && viewData.length !== 0 ?
                                                                 (viewData.image).map((item) => (
-                                                                    console.log(URL + item, "image")
+                                                                    <img
+                                                                        src={URL + item.substr(7)}
+                                                                        style={{ height: 200, width: 200 }}
+                                                                    />
                                                                 ))
                                                                 :
                                                                 "-"
                                                             }
-                                                            {/* if (viewData !== null && viewData !== undefined && viewData.length !== 0) {
-                                                                (viewData.image).map((item) => (
-                                                                    console.log(item, "item")
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-lg-12">
+                                                        <div className="mb-4">
+                                                            <label htmlFor='audio' className="cstm-label">Audio</label>
+                                                            {viewData !== null && viewData !== undefined && viewData.length !== 0 ?
+                                                                (viewData.audio).map((item) => (
+                                                                    <audio
+                                                                    controls
+                                                                        src={URL + item.substr(7)}
+                                                                    />
                                                                 ))
-                                                            } */}
+                                                                :
+                                                                "-"
+                                                            }
                                                         </div>
                                                     </div>
                                                     <div className="col-lg-12">
                                                         <div className="mb-4">
-                                                            <label htmlFor='moduleDiscription' className="cstm-label">Audio</label>
-                                                            {/* {viewData.audio.map((item, i) => (
-                                                                <audio
-                                                                    controls
-                                                                    src={item || '-'}
-                                                                />
-                                                            ))} */}
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-lg-12">
-                                                        <div className="mb-4">
-                                                            <label htmlFor='moduleDiscription' className="cstm-label">Audio Suggestion</label>
-                                                            {/* {viewData.audioSuggestion.map((item, i) => (
-                                                                <audio
-                                                                    controls
-                                                                    src={item || '-'}
-                                                                />
-
-                                                            ))} */}
+                                                            <label htmlFor='audioSuggestion' className="cstm-label">Audio Suggestion</label>
+                                                            {viewData !== null && viewData !== undefined && viewData.length !== 0 ?
+                                                                (viewData.image).map((item) => (
+                                                                    console.log(URL + item.substr(7), "image")
+                                                                ))
+                                                                :
+                                                                "-"
+                                                            }
                                                         </div>
                                                     </div>
                                                 </>

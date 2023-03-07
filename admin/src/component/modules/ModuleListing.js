@@ -5,12 +5,14 @@ import { Modal } from 'react-bootstrap'
 import SweetAlert from 'react-bootstrap-sweetalert'
 import { Link } from 'react-router-dom'
 import moduleService from '../../service/module.service'
+import SearchIcon from '@mui/icons-material/Search';
 const ModuleListing = () => {
 
     const [loader, setLoader] = useState(false)
     const [popLoader, setPopLoader] = useState(false)
     const [filteredResults, setFilteredResults] = useState([]);
     const [searchInput, setSearchInput] = useState('');
+    const [message, setMessage] = useState("")
     //popup open close
     const [success, setSuccess] = useState(false)
     const [editsuccess, setEditSuccess] = useState(false)
@@ -148,7 +150,7 @@ const ModuleListing = () => {
     //view module popup open 
     const toggleViewOpen = (e, id) => {
 
-        if (viewData === null || viewData === undefined || viewData.length === 0) {
+        if (viewData === null || viewData === undefined || viewData.length === 0 || viewData === "") {
             setPopLoader(true)
         } else {
             setPopLoader(false)
@@ -167,7 +169,7 @@ const ModuleListing = () => {
     }
     //edit module popup open
     const toggleEditOpen = (e, id) => {
-        if (viewData === null || viewData === undefined || viewData.length === 0) {
+        if (viewData === null || viewData === undefined || viewData.length === 0 || viewData === "") {
             setPopLoader(true)
         } else {
             setPopLoader(false)
@@ -276,6 +278,7 @@ const ModuleListing = () => {
             if (result.data.Status) {
                 setLoader(false)
                 moduleListingApi()
+                setMessage(result.data.message)
                 setDeleteSuccess(true)
             }
         } catch (error) {
@@ -286,6 +289,7 @@ const ModuleListing = () => {
     useEffect(() => {
         window.scrollTo(0, 0)
         setLoader(true)
+        setPopLoader(true)
         moduleListingApi()
     }, [])
 
@@ -302,21 +306,24 @@ const ModuleListing = () => {
                                 <div className="col-md-12">
                                     <div className="card  rounded-md  border">
                                         <div className="d-flex justify-content-between align-items-center p-3 border-bottom">
-                                            <h4 className="mb-0">Year-Long Modules</h4>
                                             <div className="col-md-8">
                                                 <div className="row row ">
                                                     <div className="col-md-5">
-                                                        <i className="fi fi-rr-search cstm-search-ro"></i>
-                                                        <input
-                                                            name="name"
-                                                            onChange={(e) => OnClickSearch(e.target.value)}
-                                                            type="text"
-                                                            className="cstm-input-seacrh"
-                                                            placeholder="Search Module"
-                                                        />
+                                                        <h4 className="mb-0">Year-Long Modules</h4>
                                                     </div>
-
                                                 </div>
+                                            </div>
+                                            <SearchIcon />
+                                            <div className='row'>   
+                                                <i className="fi fi-rr-search cstm-search-ro"></i>
+                                                <input
+                                                    name="name"
+                                                    onChange={(e) => OnClickSearch(e.target.value)}
+                                                    type="text"
+                                                    className="cstm-input-seacrh"
+                                                    placeholder="Search Module"
+                                                />
+                                                {/* <i className="fi fi-rr-search cstm-search-ro"></i> */}
                                             </div>
 
                                             <div>
@@ -592,16 +599,14 @@ const ModuleListing = () => {
                                                                                         cancelBtnText="Discard"
                                                                                         confirmBtnText="Delete"
                                                                                         confirmBtnBsStyle="danger"
-                                                                                        title="Are you sure?"
+                                                                                        title="Are you sure to delete this module?"
                                                                                         onConfirm={(e) => handleDelete(e, item._id)}
                                                                                         onCancel={toggleDeleteClose}
                                                                                         focusCancelBtn
-                                                                                    >
-                                                                                        Are you sure to delete this module?
-                                                                                    </SweetAlert>
+                                                                                    />
                                                                                 }
                                                                                 {deleteSuccess &&
-                                                                                    <SweetAlert success title="Module Successfully Deleted" confirmBtnText="close" onConfirm={() => setDeleteSuccess(false)} onCancel={() => setDeleteSuccess(false)} />
+                                                                                    <SweetAlert success title={message} confirmBtnText="close" onConfirm={() => setDeleteSuccess(false)} onCancel={() => setDeleteSuccess(false)} />
                                                                                 }
                                                                             </td>
                                                                         </tr>

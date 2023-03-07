@@ -4,13 +4,14 @@ import moment from 'moment';
 import React, { useEffect, useState } from 'react'
 import SweetAlert from 'react-bootstrap-sweetalert';
 import { useDispatch } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import moduleService from '../../service/module.service';
 import topicService from '../../service/topic.service';
 
 const TopicListing = () => {
 
     const [loader, setLoader] = useState(false);
+    const [message, setMessage] = useState("")
     const [topicId, setTopicId] = useState("")
     const [deleteOpen, setDelete] = useState(false)
     const [listingTopicData, setListingTopicData] = useState([])
@@ -27,7 +28,6 @@ const TopicListing = () => {
     }, [])
 
     const toggleDeleteOpen = (e, id) => {
-        console.log(id, "id");
         setDelete(true)
         setTopicId(id)
     }
@@ -41,9 +41,9 @@ const TopicListing = () => {
         if (topicId) {
             query_string += "?id=" + topicId;
         }
-        console.log(query_string, "query");
         topicDeleteApi(query_string)
         setDelete(false)
+        setLoader(true)
     }
 
     async function topicListingApi() {
@@ -77,21 +77,23 @@ const TopicListing = () => {
                 setLoader(false)
                 topicListingApi()
                 moduleListingApi()
+                setMessage(result.data.message)
                 setDeleteSuccess(true)
             }
         } catch (error) {
             setDeleteFail(true)
+            setMessage(error.response.data.message)
+            console.log(error.response.data.message);
             console.log(error);
             console.log();
         }
     }
     const moduleFilter = (e) => {
-        const { name, value } = e.target
         let filterdata = [...initialToicData]
-        if (value === 'all') {
+        if (e.target.value === 'all') {
             setListingTopicData([...filterdata])
         } else {
-            var filteredKeywords = filterdata.filter((item) => { return item.moduleId === value });
+            var filteredKeywords = filterdata.filter((item) => { return item.moduleId === e.target.value });
             setListingTopicData([...filteredKeywords])
             setLoader(false)
         }
@@ -99,9 +101,9 @@ const TopicListing = () => {
 
 
     const onClickView = (e, id) => {
-        console.log(id, "viewId");
         dispatch({ type: "TOPIC_ID", payload: id })
     }
+
     return (
         <>
             <div className="page-wrapper doctris-theme toggled">
@@ -122,7 +124,7 @@ const TopicListing = () => {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="row row ">
+                                            <div className="row">
                                                 <select
                                                     className="cstm-input"
                                                     placeholder="select Module"
@@ -183,18 +185,17 @@ const TopicListing = () => {
                                                                                         cancelBtnText="Discard"
                                                                                         confirmBtnText="Delete"
                                                                                         confirmBtnBsStyle="danger"
-                                                                                        title="Are you sure?"
+                                                                                        title="Are you sure to delete this Topic?"
                                                                                         onConfirm={(e) => handleDelete(e, item._id)}
                                                                                         onCancel={toggleDeleteClose}
                                                                                         focusCancelBtn
-                                                                                    >
-                                                                                        Are you sure to delete this module?
-                                                                                    </SweetAlert>
+                                                                                    />
+
                                                                                 }
                                                                                 {deleteSuccess &&
                                                                                     <SweetAlert
                                                                                         success
-                                                                                        title="Topic Successfully Deleted"
+                                                                                        title={message}
                                                                                         confirmBtnText="close"
                                                                                         onConfirm={() => setDeleteSuccess(false)}
                                                                                         onCancel={() => setDeleteSuccess(false)}
@@ -203,12 +204,11 @@ const TopicListing = () => {
                                                                                 {deleteFail &&
                                                                                     <SweetAlert
                                                                                         danger
-                                                                                        title="Something went wrong"
+                                                                                        title={message}
                                                                                         confirmBtnText="close"
                                                                                         onConfirm={() => setDeleteFail(false)}
                                                                                         onCancel={() => setDeleteFail(false)}
                                                                                     />
-
                                                                                 }
                                                                             </td>
                                                                         </tr>

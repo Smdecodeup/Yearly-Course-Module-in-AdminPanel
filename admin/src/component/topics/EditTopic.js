@@ -1,6 +1,6 @@
 import { ArrowForwardIos, Image, MusicNote, YouTube } from '@material-ui/icons'
 import React, { useEffect, useRef, useState } from 'react'
-import Dropzone, { useDropzone } from 'react-dropzone'
+import Dropzone from 'react-dropzone'
 import { Link, useNavigate } from 'react-router-dom'
 import 'froala-editor/css/froala_style.min.css';
 import 'froala-editor/css/froala_editor.pkgd.min.css';
@@ -10,6 +10,7 @@ import topicService from '../../service/topic.service';
 import { useSelector } from 'react-redux';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import Multiselect from 'multiselect-react-dropdown'
 
 const EditTopic = () => {
 
@@ -62,7 +63,6 @@ const EditTopic = () => {
     const [audioSuggestionPrev, setAudioSuggestionPrev] = useState([])
     var audioSuggestionArray = [];
     var audioSuggestionExtArray = [];
-    const [files, setFiles] = ([])
     const [editData, setEditData] = useState([])
     const [loader, setLoader] = useState(false)
     const [viewData, setViewData] = useState({
@@ -70,8 +70,10 @@ const EditTopic = () => {
         topicName: '',
         topicType: '',
         description: '',
+        image: [],
+        video: [],
+        audio: []
     })
-    const [moduleData, setModuleData] = useState([])
     const [induction, setInduction] = useState(false)
     const [technique, setTechnique] = useState(false)
     const [language, setLanguage] = useState(false)
@@ -91,7 +93,7 @@ const EditTopic = () => {
         selectInductions: [],
         selectTechniques: [],
         patternsType: [],
-        languagePatternsExampl: ""
+        languagePatternsExample: ""
     })
     const [inductionError, setInductionError] = useState({
         inductionName: '',
@@ -105,7 +107,7 @@ const EditTopic = () => {
         languagePatternsName: '',
         languagePatternsCode: '',
         languagePatternsDefination: '',
-        languagePatternsExampl: '',
+        languagePatternsExample: '',
         selectInductions: '',
         selectTechniques: '',
         patternsType: '',
@@ -113,18 +115,8 @@ const EditTopic = () => {
     const [error, setError] = useState({
         module: '',
         topicName: '',
-        TopicType: '',
-        Description: '',
-        inductionName: '',
-        inductionCode: '',
-        Defination: '',
-        Example: '',
-        Techniques: '',
-        Induction: '',
-        TechniqueName: '',
-        TechniqueCode: '',
-        Pattern: '',
-        key: ""
+        topicType: '',
+        description: '',
     })
     const [topicListing, setTopicListing] = useState([])
     const navigate = useNavigate()
@@ -184,7 +176,7 @@ const EditTopic = () => {
         }
     }
 
-
+    const allMediaFiles = [...imageFiles, ...videoFiles, ...audioFiles, ...audioSuggestionFiles, ...signImageFiles]
     const formData = new FormData()
     formData.append("moduleId", viewData.moduleId || "")
     formData.append("topicName", viewData.topicName || "")
@@ -200,7 +192,10 @@ const EditTopic = () => {
     formData.append("selectInductions", langaugeData.selectInductions || [])
     formData.append("selectTechniques", langaugeData.selectTechniques || [])
     formData.append("patternsType", langaugeData.patternsType || [])
-    formData.append("languagePatternsExampl", langaugeData.languagePatternsExampl || "")
+    formData.append("languagePatternsExample", langaugeData.languagePatternsExample || "")
+    allMediaFiles.map((files) => (
+        formData.append("files", files || [])
+    ))
     async function topicEditApi() {
         try {
             const result = await topicService.topicEditService(viewData._id, formData)
@@ -235,13 +230,13 @@ const EditTopic = () => {
             isvalid = true
             topicError.topicName = "Please enter topic name."
         }
-        if (!viewData.TopicType) {
+        if (!viewData.topicType) {
             isvalid = true
-            topicError.TopicType = "Please select topic type."
+            topicError.topicType = "Please select topic type."
         }
         if (!viewData.key) {
             isvalid = true
-            topicError.key = "Please add key reminders.."
+            topicError.key = "Please add key reminders."
         }
         setError(topicError)
         return isvalid
@@ -277,9 +272,9 @@ const EditTopic = () => {
             isValid = true
             languageError.languagePatternsDefination = "Please enter language pattern Defination."
         }
-        if (!langaugeData.languagePatternsExampl) {
+        if (!langaugeData.languagePatternsExample) {
             isValid = true
-            languageError.languagePatternsExampl = "Please enter language pattern Example."
+            languageError.languagePatternsExample = "Please enter language pattern Example."
         }
         if (!langaugeData.patternsType) {
             isValid = true
@@ -318,7 +313,10 @@ const EditTopic = () => {
             topicEditApi()
             setSuccess(true)
         }
-        setViewData(viewData)
+        console.log('click');
+        // setViewData(viewData)
+        console.log(editData, "edit");
+        // console.log(viewData);
     }
     const onChangeHandle = (e) => {
         const { name, value } = e.target
@@ -372,8 +370,8 @@ const EditTopic = () => {
             case "languagePatternsDefination":
                 value === '' ? setLanguageErr({ ...languageErr, languagePatternsDefination: 'Please enter language patterns Defination.' }) : setLanguageErr({ ...languageErr, languagePatternsDefination: '' });
                 break;
-            case "languagePatternsExampl":
-                value === '' ? setLanguageErr({ ...languageErr, languagePatternsExampl: 'Please enter language patterns Example.' }) : setLanguageErr({ ...languageErr, languagePatternsExampl: '' });
+            case "languagePatternsExample":
+                value === '' ? setLanguageErr({ ...languageErr, languagePatternsExample: 'Please enter language patterns Example.' }) : setLanguageErr({ ...languageErr, languagePatternsExample: '' });
                 break;
             case "patternsType":
                 value === '' ? setLanguageErr({ ...languageErr, patternsType: 'Please enter language patterns Type.' }) : setLanguageErr({ ...languageErr, patternsType: '' });
@@ -391,8 +389,8 @@ const EditTopic = () => {
         const { name, value } = e.target
         setViewData({ ...viewData, [name]: value })
         switch (name) {
-            case "TopicType":
-                value === '' ? setError({ ...error, TopicType: 'Please select topic type.' }) : setError({ ...error, TopicType: '' });
+            case "topicType":
+                value === '' ? setError({ ...error, topicType: 'Please select topic type.' }) : setError({ ...error, topicType: '' });
                 break;
         }
         if (value === 'Induction') {
@@ -413,6 +411,11 @@ const EditTopic = () => {
             setLanguage(false)
         }
 
+    }
+    const onChangeInductionSelect = (selectedList, name) => {
+        setLanguageData({ ...langaugeData, [name]: selectedList })
+        console.log(name, "name");
+        console.log(selectedList, "selectedList");
     }
 
     if (viewData === null && viewData === undefined) {
@@ -663,7 +666,7 @@ const EditTopic = () => {
         setAudioSuggestionFiles([...fv]);
         setAudioSuggestionPrev([...audP]);
     }
-
+    var media_URL = "http://localhost:3000/"
     var Max_Files = 10
     return (
         <>
@@ -720,18 +723,20 @@ const EditTopic = () => {
                                                         <div className="mb-4">
                                                             <label htmlFor='topicType' className="cstm-label">Topic Type</label>
                                                             <select
+                                                                disabled
                                                                 onChange={onChangeselect}
                                                                 className="cstm-input"
-                                                                placeholder="select Topic "
+                                                                placeholder="select Topic"
                                                                 name="topicType"
                                                                 value={viewData.topicType}
+                                                                readOnly={true}
                                                                 required="">
                                                                 <option value="">select topic</option>
                                                                 {topicOption && topicOption.map((item) => (
                                                                     <option>{item}</option>
                                                                 ))}
                                                             </select>
-                                                            {error.TopicType && <span className="error-message"> {error.TopicType} </span>}
+                                                            {error.topicType && <span className="error-message"> {error.topicType} </span>}
                                                         </div>
                                                     </div>
                                                     <div className="col-lg-12">
@@ -745,7 +750,7 @@ const EditTopic = () => {
                                                                 placeholder="Write Description"
                                                                 name="description"
                                                                 required="" />
-                                                            {error.Description && <span className="error-message"> {error.Description} </span>}
+                                                            {error.description && <span className="error-message"> {error.description} </span>}
                                                         </div>
                                                     </div>
                                                     {induction &&
@@ -761,12 +766,13 @@ const EditTopic = () => {
                                                                         placeholder="Enter Induction Name"
                                                                         name="inductionName"
                                                                         required="" />
-                                                                    {error.inductionName && <span className="error-message"> {error.inductionName} </span>}
+                                                                    {inductionError.inductionName && <span className="error-message"> {inductionError.inductionName} </span>}
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-6">
                                                                 <div className="mb-4">
                                                                     <label htmlFor='induction' className="cstm-label">Induction Code</label>
+                                                                    <input value="I" readOnly={true} />
                                                                     <input
                                                                         type="text"
                                                                         onKeyPress={(event) => {
@@ -780,7 +786,7 @@ const EditTopic = () => {
                                                                         placeholder="Enter Induction Code"
                                                                         name="inductionCode"
                                                                         required="" />
-                                                                    {error.inductionCode && <span className="error-message"> {error.inductionCode} </span>}
+                                                                    {inductionError.inductionCode && <span className="error-message"> {inductionError.inductionCode} </span>}
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-12">
@@ -846,12 +852,13 @@ const EditTopic = () => {
                                                                         placeholder="Enter Technique Name"
                                                                         name="techniquesName"
                                                                         required="" />
-                                                                    {error.TechniqueName && <span className="error-message"> {error.TechniqueName} </span>}
+                                                                    {techniqueerr.techniquesName && <span className="error-message"> {techniqueerr.techniquesName} </span>}
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-6">
                                                                 <div className="mb-4">
                                                                     <label htmlFor='TechniqueCode' className="cstm-label">Technique Code</label>
+                                                                    <input value="T" readOnly={true} />
                                                                     <input
                                                                         type="text"
                                                                         onKeyPress={(event) => {
@@ -865,7 +872,7 @@ const EditTopic = () => {
                                                                         placeholder="Enter Technique Code"
                                                                         name="techniquesCode"
                                                                         required="" />
-                                                                    {error.TechniqueCode && <span className="error-message"> {error.TechniqueCode} </span>}
+                                                                    {techniqueerr.techniquesCode && <span className="error-message"> {techniqueerr.techniquesCode} </span>}
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-12">
@@ -931,12 +938,13 @@ const EditTopic = () => {
                                                                         placeholder="Enter language patterns name."
                                                                         name="languagePatternsName"
                                                                         required="" />
-                                                                    {error.languageName && <span className="error-message"> {error.languageName} </span>}
+                                                                    {languageErr.languagePatternsName && <span className="error-message"> {languageErr.languagePatternsName} </span>}
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-6">
                                                                 <div className="mb-4">
                                                                     <label htmlFor='languageCode' className="cstm-label">Language Patterns Code</label>
+                                                                    <input value="L" readOnly={true} />
                                                                     <input
                                                                         type="text"
                                                                         onKeyPress={(event) => {
@@ -950,7 +958,7 @@ const EditTopic = () => {
                                                                         placeholder="Enter language patterns code"
                                                                         name="languagePatternsCode"
                                                                         required="" />
-                                                                    {error.languageCode && <span className="error-message"> {error.languageCode} </span>}
+                                                                    {languageErr.languagePatternsCode && <span className="error-message"> {languageErr.languagePatternsCode} </span>}
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-12">
@@ -964,7 +972,7 @@ const EditTopic = () => {
                                                                         placeholder="Write Defination"
                                                                         name="languagePatternsDefination"
                                                                         required="" />
-                                                                    {error.Defination && <span className="error-message"> {error.Defination} </span>}
+                                                                    {languageErr.languagePatternsDefination && <span className="error-message"> {languageErr.languagePatternsDefination} </span>}
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-12">
@@ -978,7 +986,7 @@ const EditTopic = () => {
                                                                         placeholder="Write Example"
                                                                         name="languagePatternsExample"
                                                                         required="" />
-                                                                    {error.Example && <span className="error-message"> {error.Example} </span>}
+                                                                    {languageErr.languagePatternsExample && <span className="error-message"> {languageErr.languagePatternsExample} </span>}
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-12">
@@ -995,43 +1003,51 @@ const EditTopic = () => {
                                                                         <option>Pattern 1</option>
                                                                         <option>Pattern 1</option>
                                                                     </select>
-                                                                    {error.Pattern && <span className="error-message"> {error.Pattern} </span>}
+                                                                    {languageErr.patternsType && <span className="error-message"> {languageErr.patternsType} </span>}
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-6">
                                                                 <div className="mb-4">
                                                                     <label htmlFor='Techniques' className="cstm-label">Select Techniques</label>
-                                                                    <select
-                                                                        onChange={onChangeLanguage}
-                                                                        className="cstm-input"
-                                                                        placeholder="select Techniques"
-                                                                        name="selectTechniques"
-                                                                        value={langaugeData.selectTechniques}
-                                                                        required="">
-                                                                        <option value="">Select Techniques</option>
-                                                                        {filterTechniqueData.map((item) => (
-                                                                            <option>{item.techniquesName}</option>
-                                                                        ))}
-                                                                    </select>
-                                                                    {error.Techniques && <span className="error-message"> {error.Techniques} </span>}
+                                                                    <Multiselect
+                                                                        // name='selectTechniques'
+                                                                        placeholder='selectTechniques'
+                                                                        selectedValues={langaugeData.selectTechniques}
+                                                                        showCheckbox="true"
+                                                                        displayValue="selectTechniques"
+                                                                        onSelect={(e) => onChangeInductionSelect(e)}
+                                                                        onRemove={(e) => onChangeInductionSelect(e)}
+                                                                        options={
+                                                                            (filterTechniqueData.map((item) => (
+                                                                                {
+                                                                                    selectTechniques: (item.techniquesName)
+                                                                                }
+                                                                            )))
+                                                                        }
+                                                                    />
+                                                                    {languageErr.selectTechniques && <span className="error-message"> {languageErr.selectTechniques} </span>}
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-6">
                                                                 <div className="mb-4">
                                                                     <label htmlFor='Induction' className="cstm-label">Select Induction</label>
-                                                                    <select
-                                                                        onChange={onChangeLanguage}
-                                                                        className="cstm-input"
+                                                                    <Multiselect
+                                                                        name='selectInductions'
                                                                         placeholder="select Induction"
-                                                                        name="selectInductions"
-                                                                        value={langaugeData.selectInductions}
-                                                                        required="">
-                                                                        <option value="">select Induction</option>
-                                                                        {filterInductionData.map((item) => (
-                                                                            <option>{item.inductionName}</option>
-                                                                        ))}
-                                                                    </select>
-                                                                    {error.Induction && <span className="error-message"> {error.Induction} </span>}
+                                                                        selectedValues={langaugeData.selectInductions}
+                                                                        showCheckbox="true"
+                                                                        displayValue="selectInductions"
+                                                                        onSelect={(e) => onChangeInductionSelect(e)}
+                                                                        onRemove={(e) => onChangeInductionSelect(e)}
+                                                                        options={
+                                                                            (filterInductionData.map((item) => (
+                                                                                {
+                                                                                    selectInductions: (item.inductionName)
+                                                                                }
+                                                                            )))
+                                                                        }
+                                                                    />
+                                                                    {languageErr.selectInductions && <span className="error-message"> {languageErr.selectInductions} </span>}
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-12">
@@ -1185,6 +1201,32 @@ const EditTopic = () => {
                                                                         </span>
                                                                     </div>
                                                                 ))}
+                                                            {/* {viewData !== undefined && viewData !== null ?
+                                                                (viewData.image).map((item, index) => (
+                                                                    <div className="uploadimg uploadimgeffect row-1"
+                                                                        onDragStart={(e) => dragStart(e, index)}
+                                                                        onDragEnter={(e) => dragEnter(e, index)}
+                                                                        onDragEnd={drop}
+                                                                        key={index}
+                                                                        draggable>
+                                                                        <img src={media_URL + item.substr(7)} id={index}
+                                                                            style={{ width: 200, height: 200, }}
+                                                                            onClick={() => setIsOpen(true)}
+
+                                                                        />
+                                                                        <span className="viewImage-option">
+                                                                            <span>
+                                                                                {" "}
+                                                                                <i
+                                                                                    className="fi fi-rr-trash"
+                                                                                    aria-hidden="true"
+                                                                                    onClick={() => deleteImages(index, "image")}
+                                                                                ></i>
+                                                                            </span>
+                                                                        </span>
+                                                                    </div>
+                                                                )) : ""
+                                                            } */}
                                                         </div>
                                                     </div>
                                                     <div className="col-lg-12">
@@ -1287,7 +1329,7 @@ const EditTopic = () => {
                                                     </div>
                                                     {success &&
                                                         <SweetAlert
-                                                            success title="Create topic successfully"
+                                                            success title="edit topic successfully"
                                                             confirmBtnText="close"
                                                             onConfirm={successClose}
                                                         />

@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import logo from '../../assets/images/logo.png'
-import authService from "../../service/auth.service"
 const Login = () => {
 
     const { isLoggedIn } = useSelector(state => state.auth)
@@ -19,7 +18,11 @@ const Login = () => {
     const [message, setMessage] = useState()
     const dispatch = useDispatch()
     const emailRegex = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
-
+    useEffect(() => {
+        if (isLoggedIn) {
+            navigate('/module')
+        }
+    }, [])
     const validate = (loginData) => {
         let formErrors = {}
         let isValid = false
@@ -57,10 +60,6 @@ const Login = () => {
     const handleEmailOnchange = (e) => {
         const { name, value } = e.target
         setLoginData({ ...loginData, [name]: value })
-        switch (name) {
-            case "Email":
-            // value === "" ? setError({ ...error, Email: "Enter Email" }) : setError({ ...error, Email: "" }) ? value !== emailRegex.test(loginData.Email) : setError({ ...error, Email: "Enter Valid Email" }) ? value === emailRegex.test(loginData.Email) : setError({ ...error, Email: "" })
-        }
         if (!loginData.Email) {
             setError({ ...error, [name]: 'Enter Email.' })
         } else if (!emailRegex.test(loginData.Email)) {
@@ -69,36 +68,30 @@ const Login = () => {
             setError({ ...error, [name]: '' })
         }
     }
+    //login button onSubmit
     const handleLogin = (e) => {
         e.preventDefault()
-        if (validate(loginData)) {
+        if (!validate(loginData)) {
+            authUser()
         }
-        authUser()
-        setLoginData(loginData)
-
     }
 
     var API_URL = 'http://localhost:3000/Api/'
-
-    const authUser = () => {
-        return axios.post(API_URL + "users/Login", loginData)
-            .then((response) => {
-                if (response.data.Status) {
-                    navigate("/module")
-                    localStorage.setItem("auth", JSON.stringify(response.data.checkuser))
-                    localStorage.setItem("Authorization", response.data.token)
-                    localStorage.setItem("isLoggedIn", true)
-                    dispatch({ type: "LOGIN_SUCCESS", payload: response.data.checkuser })
-                }
-            }).catch((err) => {
-                setMessage(err.response.data.message);
-            })
-    }
-    useEffect(() => {
-        if (isLoggedIn) {
-            navigate('/module')
+    //login Api
+    const authUser = async () => {
+        try {
+            const response = await axios.post(API_URL + "users/Login", loginData)
+            if (response.data.Status) {
+                navigate("/module")
+                localStorage.setItem("auth", JSON.stringify(response.data.checkuser))
+                localStorage.setItem("Authorization", response.data.token)
+                localStorage.setItem("isLoggedIn", true)
+                dispatch({ type: "LOGIN_SUCCESS", payload: response.data.checkuser })
+            }
+        } catch (err) {
+            setMessage(err.response.data.message)
         }
-    }, [])
+    }
     return (
         <>
             <section className="bg-home d-flex bg-light align-items-center cstm-fm-all">
