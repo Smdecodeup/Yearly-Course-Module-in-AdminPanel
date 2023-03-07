@@ -1,5 +1,4 @@
-import { Image, MusicNote, YouTube } from '@material-ui/icons'
-import Multiselect from 'multiselect-react-dropdown'
+import { ArrowBack, Image, MusicNote, YouTube } from '@material-ui/icons'
 import React, { useEffect, useRef, useState } from 'react'
 import SweetAlert from 'react-bootstrap-sweetalert'
 import Dropzone, { useDropzone } from 'react-dropzone'
@@ -8,7 +7,7 @@ import moduleService from '../../service/module.service'
 import topicService from '../../service/topic.service'
 import { ArrowForwardIos } from '@material-ui/icons'
 import { Editor } from 'react-draft-wysiwyg'
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import Multiselect from 'multiselect-react-dropdown'
 
 
 const AddTopic = () => {
@@ -63,9 +62,11 @@ const AddTopic = () => {
 
     //topicListing
     const [topicListing, setTopicListing] = useState([])
+    //field open 
     const [induction, setInduction] = useState(false)
     const [technique, setTechnique] = useState(false)
     const [language, setLanguage] = useState(false)
+    //module list
     const [moduleList, setModuleList] = useState([])
     const [topicData, setTopicData] = useState({
         moduleId: '',
@@ -76,6 +77,7 @@ const AddTopic = () => {
         audioSuggestion: [],
         signLanguageimage: []
     })
+    //api data set
     const [createdData, setCreatedData] = useState([])
     const [inductionData, setInductionData] = useState({
         inductionName: '',
@@ -124,6 +126,7 @@ const AddTopic = () => {
         audioSuggestion: ""
     })
     const [success, setSuccess] = useState(false);
+    const [fail, setFail] = useState(false)
     const navigate = useNavigate()
     useEffect(() => {
         window.scrollTo(0, 0)
@@ -341,8 +344,6 @@ const AddTopic = () => {
 
     const onChangeInductionSelect = (selectedList, name) => {
         setLanguageData({ ...langaugeData, [name]: selectedList })
-        console.log(name, "name");
-        console.log(selectedList, "selectedList");
     }
     const inductionOption = filterInductionData.map((item) => (
         (item.inductionName)
@@ -376,7 +377,7 @@ const AddTopic = () => {
     formData.append("selectTechniques", langaugeData.selectTechniques || [])
     formData.append("patternsType", langaugeData.patternsType || [])
     formData.append("languagePatternsExample", langaugeData.languagePatternsExampl || "")
-    allMediaFiles.map((files, index) => (
+    allMediaFiles.map((files) => (
         formData.append("files", files || [])
     ))
     function createTopicApi() {
@@ -642,7 +643,6 @@ const AddTopic = () => {
     const videoAccept = {
         'video/mp4': []
     }
-    console.log(audioFiles,"audio");
     var Max_Files = 10
     return (
         <>
@@ -651,7 +651,7 @@ const AddTopic = () => {
                     <div className="container-fluid">
                         <div className="layout-specing">
                             <div className="d-flex justify-content-between align-items-center">
-                                <Link to="/topic"><ArrowBackIcon />back</Link>
+                                <Link to="/topic"><ArrowBack />back</Link>
                                 <div className="cstm-bre uppercase">dashboard <ArrowForwardIos fontSize='small' /> YEAR LONG COURSE<ArrowForwardIos fontSize='small' />
                                     TOPICS<ArrowForwardIos fontSize='small' /><Link to="/topic/add-topic">Add Topic</Link></div>
                             </div>
@@ -1296,6 +1296,14 @@ const AddTopic = () => {
                                                     success title="Create topic successfully"
                                                     confirmBtnText="close"
                                                     onConfirm={successClose}
+                                                />
+                                            }
+                                            {fail &&
+                                                <SweetAlert
+                                                    danger
+                                                    title="upload max 10 media files"
+                                                    confirmBtnText="close"
+                                                    onConfirm={() => setFail(false)}
                                                 />
                                             }
                                         </div>

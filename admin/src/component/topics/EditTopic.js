@@ -1,21 +1,17 @@
-import { ArrowForwardIos, Image, MusicNote, YouTube } from '@material-ui/icons'
+import { ArrowBack, ArrowForwardIos, Image, MusicNote, YouTube } from '@material-ui/icons'
 import React, { useEffect, useRef, useState } from 'react'
 import Dropzone from 'react-dropzone'
-import { Link, useNavigate } from 'react-router-dom'
-import 'froala-editor/css/froala_style.min.css';
-import 'froala-editor/css/froala_editor.pkgd.min.css';
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Editor } from 'react-draft-wysiwyg'
 import moduleService from '../../service/module.service';
 import topicService from '../../service/topic.service';
-import { useSelector } from 'react-redux';
 import SweetAlert from 'react-bootstrap-sweetalert';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Multiselect from 'multiselect-react-dropdown'
 
 const EditTopic = () => {
 
-    const { topic_Id } = useSelector(state => state.topic)
     const [success, setSuccess] = useState(false);
+    const [editFail, setEditFail] = useState(false)
     const [isOpen, setIsOpen] = useState(false)
     const [isSignOpen, setIsSignOpen] = useState(false)
     const [isOpenVideo, setIsOpenVideo] = useState(false)
@@ -120,6 +116,8 @@ const EditTopic = () => {
     })
     const [topicListing, setTopicListing] = useState([])
     const navigate = useNavigate()
+    const location = useLocation().search
+    const getId = new URLSearchParams(location).get("id")
     async function topicListingApi() {
         try {
             const result = await topicService.topicListingService()
@@ -141,8 +139,8 @@ const EditTopic = () => {
         }
     }
     let query_string = ""
-    if (topic_Id) {
-        query_string += "?id=" + topic_Id
+    if (getId) {
+        query_string += "?id=" + getId
     }
     async function viewTopicApi() {
         try {
@@ -178,7 +176,7 @@ const EditTopic = () => {
 
     const allMediaFiles = [...imageFiles, ...videoFiles, ...audioFiles, ...audioSuggestionFiles, ...signImageFiles]
     const formData = new FormData()
-    formData.append("moduleId", viewData.moduleId || "")
+    // formData.append("moduleId", viewData.moduleId || "")
     formData.append("topicName", viewData.topicName || "")
     formData.append("topicType", viewData.topicType || "")
     formData.append("description", viewData.description || "")
@@ -193,17 +191,21 @@ const EditTopic = () => {
     formData.append("selectTechniques", langaugeData.selectTechniques || [])
     formData.append("patternsType", langaugeData.patternsType || [])
     formData.append("languagePatternsExample", langaugeData.languagePatternsExample || "")
-    allMediaFiles.map((files) => (
-        formData.append("files", files || [])
-    ))
+    // allMediaFiles.map((files) => (
+    //     formData.append("files", files || [])
+    // ))
     async function topicEditApi() {
+        console.log(formData.append("topicType", viewData.topicType || ""), "formData");
+        console.log(viewData._id, "viewData._id");
         try {
             const result = await topicService.topicEditService(viewData._id, formData)
             if (result.data.Status) {
+                console.log(result.data.data, "result.data.data");
+                setSuccess(true)
                 setEditData(result.data.data)
             }
         } catch (error) {
-
+            setEditFail(true)
         }
     }
     useEffect(() => {
@@ -310,9 +312,8 @@ const EditTopic = () => {
     const handleEditSubmit = (e) => {
         e.preventDefault();
         if (!validate(viewData) || !validateTechnique(techniqueData) || !validateLanguage(langaugeData) || !validateInduction(inductionData)) {
-            topicEditApi()
-            setSuccess(true)
         }
+        topicEditApi()
         console.log('click');
         // setViewData(viewData)
         console.log(editData, "edit");
@@ -675,7 +676,7 @@ const EditTopic = () => {
                     <div className="container-fluid">
                         <div className="layout-specing">
                             <div className="d-flex justify-content-between align-items-center">
-                                <Link to="/topic"><ArrowBackIcon />back</Link>
+                                <Link to="/topic"><ArrowBack />back</Link>
                                 <div className="cstm-bre uppercase">dashboard<ArrowForwardIos fontSize='small' />YEAR LONG COURSE<ArrowForwardIos fontSize='small' />TOPICS<ArrowForwardIos fontSize='small' /><Link>Add Topic</Link></div>
                             </div>
                             <div className="row">
@@ -1153,6 +1154,36 @@ const EditTopic = () => {
                                                                         </span>
                                                                     </div>
                                                                 ))}
+                                                            {viewData !== undefined && viewData !== null ?
+                                                                (viewData.video).map((item, index) => (
+                                                                    <div className="uploadimg uploadimgeffect row-1"
+                                                                        onDragStart={(e) => dragStartVideo(e, index)}
+                                                                        onDragEnter={(e) => dragEnterVideo(e, index)}
+                                                                        onDragEnd={dropVideo}
+                                                                        key={index}
+                                                                        draggable>
+                                                                        <video
+                                                                            width="200"
+                                                                            height="200"
+                                                                            controls
+                                                                            src={media_URL + item.substr(7)}
+                                                                            id={index}
+                                                                            data-toggle="modal" data-target="#myModal-videoGallary"
+                                                                            onClick={() => setIsOpenVideo(true)}
+                                                                        />
+                                                                        <span className="viewImage-option">
+                                                                            <span>
+                                                                                {" "}
+                                                                                <i
+                                                                                    className="fi fi-rr-trash"
+                                                                                    aria-hidden="true"
+                                                                                    onClick={() => deleteVideos(index, "video")}
+                                                                                ></i>
+                                                                            </span>
+                                                                        </span>
+                                                                    </div>
+                                                                )) : ""
+                                                            }
                                                         </div>
                                                     </div>
                                                     <div className="col-lg-12">
@@ -1201,7 +1232,7 @@ const EditTopic = () => {
                                                                         </span>
                                                                     </div>
                                                                 ))}
-                                                            {/* {viewData !== undefined && viewData !== null ?
+                                                            {viewData !== undefined && viewData !== null ?
                                                                 (viewData.image).map((item, index) => (
                                                                     <div className="uploadimg uploadimgeffect row-1"
                                                                         onDragStart={(e) => dragStart(e, index)}
@@ -1226,7 +1257,7 @@ const EditTopic = () => {
                                                                         </span>
                                                                     </div>
                                                                 )) : ""
-                                                            } */}
+                                                            }
                                                         </div>
                                                     </div>
                                                     <div className="col-lg-12">
@@ -1268,6 +1299,25 @@ const EditTopic = () => {
                                                                         </div>
                                                                     </div>
                                                                 ))}
+                                                            {viewData !== undefined && viewData !== null ?
+                                                                (viewData.audio).map((item, index) => (
+                                                                    <div className="row-1 edit-Main-music">
+                                                                        <audio controls id={index} src={media_URL + item.substr(7)} />
+                                                                        <div className="edit-delete-icon">
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => deleteAudio(index, "audio")}
+                                                                                className="cstm-icon-btn cstm-delete"
+                                                                            >
+                                                                                <i
+                                                                                    className="fi fi-rr-trash"
+                                                                                    aria-hidden="true"
+                                                                                ></i>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                )) : ""
+                                                            }
                                                         </div>
                                                     </div>
                                                     <div className="col-lg-12">
@@ -1332,6 +1382,13 @@ const EditTopic = () => {
                                                             success title="edit topic successfully"
                                                             confirmBtnText="close"
                                                             onConfirm={successClose}
+                                                        />
+                                                    }
+                                                    {editFail &&
+                                                        <SweetAlert
+                                                            danger title="Something went wrong"
+                                                            confirmBtnText="close"
+                                                            onConfirm={() => setEditFail(false)}
                                                         />
                                                     }
                                                     <div className="row">

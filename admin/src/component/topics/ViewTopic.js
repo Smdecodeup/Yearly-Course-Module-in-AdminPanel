@@ -1,10 +1,8 @@
-import { ArrowForwardIos } from '@material-ui/icons'
+import { ArrowBack, ArrowForwardIos } from '@material-ui/icons'
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import moduleService from '../../service/module.service'
 import topicService from '../../service/topic.service'
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const ViewTopic = () => {
     const navigate = useNavigate()
@@ -14,18 +12,19 @@ const ViewTopic = () => {
     const [induction, setInduction] = useState(false)
     const [technique, setTechnique] = useState(false)
     const [language, setLanguage] = useState(false)
-    const { topic_Id } = useSelector(state => state.topic)
+    const location = useLocation().search
+    const getId = new URLSearchParams(location).get("id")
     useEffect(() => {
         window.scrollTo(0, 0)
         viewTopicApi()
         moduleListingApi()
         setLoader(true)
     }, [])
-    let query_string = ""
-    if (topic_Id) {
-        query_string += "?id=" + topic_Id
-    }
 
+    let query_string = ""
+    if (getId) {
+        query_string += "?id=" + getId
+    }
 
     async function viewTopicApi() {
         try {
@@ -39,13 +38,11 @@ const ViewTopic = () => {
                 }
                 if (result.data.data.topicType !== "Techniques") {
                     setTechnique(false)
-
                 } else {
                     setTechnique(true)
                 }
                 if (result.data.data.topicType === "Language Patterns") {
                     setLanguage(true)
-
                 } else {
                     setLanguage(false)
                 }
@@ -60,16 +57,16 @@ const ViewTopic = () => {
             const result = await moduleService.moduleListingService()
             if (result.data.Status) {
                 setModuleData(result.data.data)
+                setLoader(false)
             }
         } catch (error) {
-
+            setLoader(true)
         }
     }
     var URL = "http://localhost:3000/"
     if (viewData === null) {
         navigate("/topic")
     }
-
     var filteModuleName = moduleData.filter((item) => { return item._id === viewData.moduleId });
     return (
         <>
@@ -78,7 +75,7 @@ const ViewTopic = () => {
                     <div className="container-fluid">
                         <div className="layout-specing">
                             <div className="d-flex justify-content-between align-items-center">
-                                <Link to="/topic"><ArrowBackIcon />back</Link>
+                                <Link to="/topic"><ArrowBack />back</Link>
                                 <div className="cstm-bre uppercase">dashboard<ArrowForwardIos fontSize='small' />YEAR LONG COURSE<ArrowForwardIos fontSize='small' />TOPICS<ArrowForwardIos fontSize='small' /><Link>View Topic</Link></div>
                             </div>
                             <div className="row">
@@ -130,6 +127,21 @@ const ViewTopic = () => {
                                                                     <p name="module" required="">I{viewData.inductionCode || '-'}</p>
                                                                 </div>
                                                             </div>
+                                                            <div className="col-lg-12">
+                                                                <div className="mb-4">
+                                                                    <label htmlFor='signImage' className="cstm-label">Sign Language Images</label>
+                                                                    {viewData !== null && viewData !== undefined && viewData.length !== 0 ?
+                                                                        (viewData.signLanguageimage).map((item) => (
+                                                                            <img
+                                                                                src={URL + item.substr(7)}
+                                                                                style={{ height: 200, width: 200 }}
+                                                                            />
+                                                                        ))
+                                                                        :
+                                                                        <p name="signLanguageimage" required="">-</p>
+                                                                    }
+                                                                </div>
+                                                            </div>
                                                         </>
                                                     }
                                                     {technique &&
@@ -144,6 +156,21 @@ const ViewTopic = () => {
                                                                 <div className="mb-4">
                                                                     <label htmlFor='techniquesCode' className="cstm-label">Techniques Code</label>
                                                                     <p name="module" required="">T{viewData.techniquesCode || '-'}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-lg-12">
+                                                                <div className="mb-4">
+                                                                    <label htmlFor='signImage' className="cstm-label">Sign Language Images</label>
+                                                                    {viewData !== null && viewData !== undefined && viewData.length !== 0 ?
+                                                                        (viewData.signLanguageimage).map((item) => (
+                                                                            <img
+                                                                                src={URL + item.substr(7)}
+                                                                                style={{ height: 200, width: 200 }}
+                                                                            />
+                                                                        ))
+                                                                        :
+                                                                        <p name="signLanguageimage" required="">-</p>
+                                                                    }
                                                                 </div>
                                                             </div>
                                                         </>
@@ -176,7 +203,7 @@ const ViewTopic = () => {
                                                             </div>
                                                             <div className="col-lg-12">
                                                                 <div className="mb-4">
-                                                                    <label htmlFor='video' className="cstm-label">patternsType</label>
+                                                                    <label htmlFor='patternType' className="cstm-label">patternsType</label>
                                                                     {viewData !== null && viewData !== undefined && viewData.length !== 0 ?
                                                                         (viewData.patternsType).map((item) => (
                                                                             <p name="module" required="">{item}</p>
@@ -186,12 +213,27 @@ const ViewTopic = () => {
                                                                     }
                                                                 </div>
                                                             </div>
+                                                            <div className="col-lg-12">
+                                                                <div className="mb-4">
+                                                                    <label htmlFor='signImage' className="cstm-label">Sign Language Images</label>
+                                                                    {viewData !== null && viewData !== undefined && viewData.length !== 0 ?
+                                                                        (viewData.signLanguageimage).map((item) => (
+                                                                            <img
+                                                                                src={URL + item.substr(7)}
+                                                                                style={{ height: 200, width: 200 }}
+                                                                            />
+                                                                        ))
+                                                                        :
+                                                                        <p name="signLanguageimage" required="">-</p>
+                                                                    }
+                                                                </div>
+                                                            </div>
 
                                                         </>
                                                     }
                                                     <div className="col-lg-12">
                                                         <div className="mb-4">
-                                                            <label htmlFor='image' className="cstm-label">Videos</label>
+                                                            <label htmlFor='video' className="cstm-label">Videos</label>
                                                             {viewData !== null && viewData !== undefined && viewData.length !== 0 ?
                                                                 (viewData.video).map((item) => (
                                                                     <video
@@ -208,7 +250,7 @@ const ViewTopic = () => {
                                                     </div>
                                                     <div className="col-lg-12">
                                                         <div className="mb-4">
-                                                            <label htmlFor='audio' className="cstm-label">Images</label>
+                                                            <label htmlFor='image' className="cstm-label">Images</label>
                                                             {viewData !== null && viewData !== undefined && viewData.length !== 0 ?
                                                                 (viewData.image).map((item) => (
                                                                     <img
@@ -227,7 +269,7 @@ const ViewTopic = () => {
                                                             {viewData !== null && viewData !== undefined && viewData.length !== 0 ?
                                                                 (viewData.audio).map((item) => (
                                                                     <audio
-                                                                    controls
+                                                                        controls
                                                                         src={URL + item.substr(7)}
                                                                     />
                                                                 ))
@@ -241,7 +283,10 @@ const ViewTopic = () => {
                                                             <label htmlFor='audioSuggestion' className="cstm-label">Audio Suggestion</label>
                                                             {viewData !== null && viewData !== undefined && viewData.length !== 0 ?
                                                                 (viewData.image).map((item) => (
-                                                                    console.log(URL + item.substr(7), "image")
+                                                                    <audio
+                                                                        controls
+                                                                        src={URL + item.substr(7)}
+                                                                    />
                                                                 ))
                                                                 :
                                                                 "-"

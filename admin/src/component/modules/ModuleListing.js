@@ -5,7 +5,6 @@ import { Modal } from 'react-bootstrap'
 import SweetAlert from 'react-bootstrap-sweetalert'
 import { Link } from 'react-router-dom'
 import moduleService from '../../service/module.service'
-import SearchIcon from '@mui/icons-material/Search';
 const ModuleListing = () => {
 
     const [loader, setLoader] = useState(false)
@@ -46,7 +45,12 @@ const ModuleListing = () => {
         moduleName: '',
         moduleDescription: ''
     })
-
+    useEffect(() => {
+        window.scrollTo(0, 0)
+        setLoader(true)
+        setPopLoader(true)
+        moduleListingApi()
+    }, [])
     //validate input value
     const validate = (moduleData) => {
         let moduleError = {}
@@ -111,7 +115,6 @@ const ModuleListing = () => {
         if (!validateEdit(viewData)) {
             moduleEditAPi()
             setEdit(false)
-            setEditSuccess(true)
         }
         moduleListingApi()
     }
@@ -254,6 +257,7 @@ const ModuleListing = () => {
                 setLoader(false)
                 setEditData(result.data.data)
                 moduleListingApi()
+                setEditSuccess(true)
             }
         } catch (error) {
             setLoader(true)
@@ -286,12 +290,6 @@ const ModuleListing = () => {
         }
     }
 
-    useEffect(() => {
-        window.scrollTo(0, 0)
-        setLoader(true)
-        setPopLoader(true)
-        moduleListingApi()
-    }, [])
 
     return (
         <>
@@ -310,21 +308,19 @@ const ModuleListing = () => {
                                                 <div className="row row ">
                                                     <div className="col-md-5">
                                                         <h4 className="mb-0">Year-Long Modules</h4>
+                                                        <i className="fi fi-rr-search cstm-search-ro"></i>
+                                                        <input
+                                                            name="name"
+                                                            onChange={(e) => OnClickSearch(e.target.value)}
+                                                            type="text"
+                                                            className="cstm-input-seacrh"
+                                                            placeholder="Search Module"
+                                                        />
                                                     </div>
                                                 </div>
                                             </div>
-                                            <SearchIcon />
-                                            <div className='row'>   
-                                                <i className="fi fi-rr-search cstm-search-ro"></i>
-                                                <input
-                                                    name="name"
-                                                    onChange={(e) => OnClickSearch(e.target.value)}
-                                                    type="text"
-                                                    className="cstm-input-seacrh"
-                                                    placeholder="Search Module"
-                                                />
-                                                {/* <i className="fi fi-rr-search cstm-search-ro"></i> */}
-                                            </div>
+                                            {/* <i className="fi fi-rr-search cstm-search-ro"></i> */}
+
 
                                             <div>
                                                 <button onClick={(e) => toggleOpen(e)} className="cstm-btn">Create Module</button>
@@ -447,14 +443,13 @@ const ModuleListing = () => {
                                                                                                         <div className="mb-3">
                                                                                                             <label htmlFor='moduleName' className="cstm-label">Module Name</label>
                                                                                                             <input
-
                                                                                                                 type="text"
                                                                                                                 className="cstm-input"
                                                                                                                 placeholder="Enter Module Name"
                                                                                                                 name="moduleName"
                                                                                                                 value={viewData.moduleName}
-                                                                                                                onChange={(e) => onChangeEdit(e.target.value)}
-                                                                                                                required="" />
+                                                                                                                onChange={onChangeEdit}
+                                                                                                            />
                                                                                                             {editModuleerror.moduleName && <span className="error-message"> {editModuleerror.moduleName} </span>}
                                                                                                         </div>
                                                                                                         <div className="mb-3">

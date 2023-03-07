@@ -44,7 +44,6 @@ const Login = () => {
         return isValid
     }
 
-
     const handleLoginChange = (e) => {
         const { name, value } = e.target
         setLoginData({ ...loginData, [name]: value })

@@ -3,7 +3,6 @@ import { Rating } from '@mui/material';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react'
 import SweetAlert from 'react-bootstrap-sweetalert';
-import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import moduleService from '../../service/module.service';
 import topicService from '../../service/topic.service';
@@ -19,7 +18,7 @@ const TopicListing = () => {
     const [listingModuleData, setListingModuleData] = useState([])
     const [deleteSuccess, setDeleteSuccess] = useState(false)
     const [deleteFail, setDeleteFail] = useState(false)
-    const dispatch = useDispatch()
+    
     useEffect(() => {
         window.scrollTo(0, 0)
         topicListingApi()
@@ -81,6 +80,7 @@ const TopicListing = () => {
                 setDeleteSuccess(true)
             }
         } catch (error) {
+            setLoader(true)
             setDeleteFail(true)
             setMessage(error.response.data.message)
             console.log(error.response.data.message);
@@ -99,10 +99,6 @@ const TopicListing = () => {
         }
     }
 
-
-    const onClickView = (e, id) => {
-        dispatch({ type: "TOPIC_ID", payload: id })
-    }
 
     return (
         <>
@@ -175,8 +171,8 @@ const TopicListing = () => {
                                                                             </td>
                                                                             <td>{moment(item.date).format('Do MMM YYYY')}</td>
                                                                             <td>
-                                                                                <Link to="/topic/view-topic" onClick={(e) => onClickView(e, item._id)} className="cstm-eye"><i className="fi fi-rr-eye"></i></Link>
-                                                                                <Link to="/topic/edit-topic" onClick={(e) => onClickView(e, item._id)} className="cstm-chekmank"><i className="fi-rr-pencil"></i></Link>
+                                                                                <Link to={"/topic/view-topic" + "?id=" + item._id} className="cstm-eye"><i className="fi fi-rr-eye"></i></Link>
+                                                                                <Link to={"/topic/edit-topic" + "?id=" + item._id} className="cstm-chekmank"><i className="fi-rr-pencil"></i></Link>
                                                                                 <Link onClick={(e) => toggleDeleteOpen(e, item._id)} className="cstm-cross mrn-rt"><i className="fi fi-rr-trash"></i></Link>
                                                                                 {deleteOpen &&
                                                                                     <SweetAlert
