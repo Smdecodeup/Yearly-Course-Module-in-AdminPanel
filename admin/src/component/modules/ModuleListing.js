@@ -48,7 +48,6 @@ const ModuleListing = () => {
     useEffect(() => {
         window.scrollTo(0, 0)
         setLoader(true)
-        setPopLoader(true)
         moduleListingApi()
     }, [])
     //validate input value
@@ -139,7 +138,7 @@ const ModuleListing = () => {
             query_string += "?moduleId=" + moduleId;
         }
         deleteModuleApi(query_string)
-        setDelete(false)
+        setPopLoader(true)
     }
     //new module popup open
     const toggleOpen = () => {
@@ -200,7 +199,10 @@ const ModuleListing = () => {
         setDelete(false)
         setModuleId("")
     }
-
+    const toggleDeleteSuccessclose = () => {
+        setDelete(false)
+        setDeleteSuccess(false)
+    }
     const OnClickSearch = (searchValue) => {
         setSearchInput(searchValue)
         let filterData = [...listingData]
@@ -247,7 +249,6 @@ const ModuleListing = () => {
     //edit module api
     async function moduleEditAPi() {
         try {
-
             var bodyData = {
                 "moduleName": viewData.moduleName,
                 "moduleDescription": viewData.moduleDescription
@@ -284,12 +285,13 @@ const ModuleListing = () => {
                 moduleListingApi()
                 setMessage(result.data.message)
                 setDeleteSuccess(true)
+                setPopLoader(false)
             }
         } catch (error) {
+            setPopLoader(true)
             setLoader(true)
         }
     }
-
 
     return (
         <>
@@ -319,14 +321,11 @@ const ModuleListing = () => {
                                                     </div>
                                                 </div>
                                             </div>
-                                            {/* <i className="fi fi-rr-search cstm-search-ro"></i> */}
-
-
                                             <div>
                                                 <button onClick={(e) => toggleOpen(e)} className="cstm-btn">Create Module</button>
                                             </div>
                                             {isOpen &&
-                                                <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={isOpen} onHide={toggleClose}>
+                                                <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" className='modal' centered show={isOpen} onHide={toggleClose}>
                                                     <div className="modal-content">
                                                         <div className="modal-header border-0 p-4">
                                                             <h4 className="modal-title" id="exampleModalLabel1">Add Module</h4>
@@ -348,7 +347,7 @@ const ModuleListing = () => {
                                                             </div>
                                                             <div className="mb-3">
                                                                 <label htmlFor='moduleDescription' className="cstm-label">Module Description</label>
-                                                                <input
+                                                                <textarea
                                                                     type="text"
                                                                     value={moduleData.moduleDescription}
                                                                     onChange={onChangeModule}
@@ -371,7 +370,6 @@ const ModuleListing = () => {
                                             {success &&
                                                 <SweetAlert success title="Module Successfully Added" confirmBtnText="close" onConfirm={() => setSuccess(false)} onCancel={() => setSuccess(false)} />
                                             }
-
                                         </div>
                                         <div className="col-md-12 col-lg-12">
                                             {loader ?
@@ -402,7 +400,7 @@ const ModuleListing = () => {
                                                                             <td>
                                                                                 <Link onClick={(e) => toggleViewOpen(e, item._id)} className="cstm-eye"><i className="fi fi-rr-eye"></i></Link>
                                                                                 {viewOpen &&
-                                                                                    <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={viewOpen} onHide={toggleViewClose}>
+                                                                                    <Modal className='modal' size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={viewOpen} onHide={toggleViewClose}>
 
                                                                                         {popLoader ?
                                                                                             <div className="spinner-border"></div>
@@ -429,7 +427,7 @@ const ModuleListing = () => {
                                                                                 }
                                                                                 <Link onClick={(e) => toggleEditOpen(e, item._id)} className="cstm-chekmank"><i className="fi-rr-pencil"></i></Link>
                                                                                 {editOpen &&
-                                                                                    <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={editOpen} onHide={toggleEditClose}>
+                                                                                    <Modal className='modal' size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={editOpen} onHide={toggleEditClose}>
                                                                                         {popLoader ?
                                                                                             <div className="spinner-border"></div>
                                                                                             :
@@ -454,7 +452,7 @@ const ModuleListing = () => {
                                                                                                         </div>
                                                                                                         <div className="mb-3">
                                                                                                             <label htmlFor='moduleDescription' className="cstm-label">Module Description</label>
-                                                                                                            <input
+                                                                                                            <textarea
                                                                                                                 type="text"
                                                                                                                 value={viewData.moduleDescription}
                                                                                                                 onChange={onChangeEdit}
@@ -481,22 +479,38 @@ const ModuleListing = () => {
                                                                                 }
                                                                                 <Link onClick={(e) => toggleDeleteOpen(e, item._id)} className="cstm-cross mrn-rt"><i className="fi fi-rr-trash"></i></Link>
                                                                                 {deleteOpen &&
-                                                                                    <SweetAlert
-                                                                                        warning
-                                                                                        showCancel
-                                                                                        cancelBtnText="Discard"
-                                                                                        confirmBtnText="Delete"
-                                                                                        confirmBtnBsStyle="danger"
-                                                                                        title="Are you sure?"
-                                                                                        onConfirm={(e) => handleDelete(e, item._id)}
-                                                                                        onCancel={toggleDeleteClose}
-                                                                                        focusCancelBtn
-                                                                                    >
-                                                                                        Are you sure to delete this module?
-                                                                                    </SweetAlert>
-                                                                                }
-                                                                                {deleteSuccess &&
-                                                                                    <SweetAlert success title="Module Successfully Deleted" confirmBtnText="close" onConfirm={() => setDeleteSuccess(false)} onCancel={() => setDeleteSuccess(false)} />
+                                                                                    <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" className='modal' centered show={toggleDeleteOpen} onHide={toggleDeleteClose}>
+                                                                                        {popLoader ?
+                                                                                            <div className="spinner-border"></div>
+                                                                                            :
+                                                                                            (deleteSuccess ?
+                                                                                                <>
+                                                                                                    <h4>{message}</h4>
+                                                                                                    <div className="row">
+                                                                                                        <div className="col-lg-12">
+                                                                                                            <div className="mb-2">
+                                                                                                                <button className="mr-3 cstm-btn6" onClick={toggleDeleteSuccessclose}>Close</button>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </>
+                                                                                                :
+                                                                                                < div className="modal-content">
+                                                                                                    <div className="modal-header border-0 p-4">
+                                                                                                        <h4>Are you sure to delete this Module?</h4>
+                                                                                                    </div>
+                                                                                                    <div className="row">
+                                                                                                        <div className="col-lg-12">
+                                                                                                            <div className="mb-2">
+                                                                                                                <button className="mr-3 cstm-btn7" onClick={(e) => handleDelete(e, item._id)}>Delete</button>
+                                                                                                                <button className="mr-3 cstm-btn6" onClick={toggleDeleteClose}>Discard</button>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            )
+                                                                                        }
+                                                                                    </Modal>
                                                                                 }
                                                                             </td>
                                                                         </tr>
@@ -512,7 +526,7 @@ const ModuleListing = () => {
                                                                             <td>
                                                                                 <Link onClick={(e) => toggleViewOpen(e, item._id)} className="cstm-eye"><i className="fi fi-rr-eye"></i></Link>
                                                                                 {viewOpen &&
-                                                                                    <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={viewOpen} onHide={toggleViewClose}>
+                                                                                    <Modal size="lg" className='modal' aria-labelledby="contained-modal-title-vcenter" centered show={viewOpen} onHide={toggleViewClose}>
                                                                                         {popLoader ?
                                                                                             <div className="spinner-border"></div>
                                                                                             :
@@ -538,7 +552,7 @@ const ModuleListing = () => {
                                                                                 }
                                                                                 <Link onClick={(e) => toggleEditOpen(e, item._id)} className="cstm-chekmank"><i className="fi-rr-pencil"></i></Link>
                                                                                 {editOpen &&
-                                                                                    <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={editOpen} onHide={toggleEditClose}>
+                                                                                    <Modal size="lg" className='modal' aria-labelledby="contained-modal-title-vcenter" centered show={editOpen} onHide={toggleEditClose}>
                                                                                         {popLoader ?
                                                                                             <div className="spinner-border"></div>
                                                                                             :
@@ -562,7 +576,7 @@ const ModuleListing = () => {
                                                                                                     </div>
                                                                                                     <div className="mb-3">
                                                                                                         <label htmlFor='moduleDescription' className="cstm-label">Module Description</label>
-                                                                                                        <input
+                                                                                                        <textarea
                                                                                                             type="text"
                                                                                                             value={viewData.moduleDescription}
                                                                                                             onChange={onChangeEdit}
@@ -588,20 +602,38 @@ const ModuleListing = () => {
                                                                                 }
                                                                                 <Link onClick={(e) => toggleDeleteOpen(e, item._id)} className="cstm-cross mrn-rt"><i className="fi fi-rr-trash"></i></Link>
                                                                                 {deleteOpen &&
-                                                                                    <SweetAlert
-                                                                                        warning
-                                                                                        showCancel
-                                                                                        cancelBtnText="Discard"
-                                                                                        confirmBtnText="Delete"
-                                                                                        confirmBtnBsStyle="danger"
-                                                                                        title="Are you sure to delete this module?"
-                                                                                        onConfirm={(e) => handleDelete(e, item._id)}
-                                                                                        onCancel={toggleDeleteClose}
-                                                                                        focusCancelBtn
-                                                                                    />
-                                                                                }
-                                                                                {deleteSuccess &&
-                                                                                    <SweetAlert success title={message} confirmBtnText="close" onConfirm={() => setDeleteSuccess(false)} onCancel={() => setDeleteSuccess(false)} />
+                                                                                    <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" className='modal' centered show={toggleDeleteOpen} onHide={toggleDeleteClose}>
+                                                                                        {popLoader ?
+                                                                                            <div className="spinner-border"></div>
+                                                                                            :
+                                                                                            (deleteSuccess ?
+                                                                                                <>
+                                                                                                    <h4>{message}</h4>
+                                                                                                    <div className="row">
+                                                                                                        <div className="col-lg-12">
+                                                                                                            <div className="mb-2">
+                                                                                                                <button className="mr-3 cstm-btn6" onClick={toggleDeleteSuccessclose}>Close</button>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </>
+                                                                                                :
+                                                                                                < div className="modal-content">
+                                                                                                    <div className="modal-header border-0 p-4">
+                                                                                                        <h4>Are you sure to delete this Module?</h4>
+                                                                                                    </div>
+                                                                                                    <div className="row">
+                                                                                                        <div className="col-lg-12">
+                                                                                                            <div className="mb-2">
+                                                                                                                <button className="mr-3 cstm-btn7" onClick={(e) => handleDelete(e, item._id)}>Delete</button>
+                                                                                                                <button className="mr-3 cstm-btn6" onClick={toggleDeleteClose}>Discard</button>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            )
+                                                                                        }
+                                                                                    </Modal>
                                                                                 }
                                                                             </td>
                                                                         </tr>

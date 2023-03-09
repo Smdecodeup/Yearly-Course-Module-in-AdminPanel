@@ -2,6 +2,7 @@ import { ArrowForwardIos } from '@material-ui/icons';
 import { Rating } from '@mui/material';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react'
+import { Modal } from 'react-bootstrap';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import { Link } from 'react-router-dom';
 import moduleService from '../../service/module.service';
@@ -10,6 +11,7 @@ import topicService from '../../service/topic.service';
 const TopicListing = () => {
 
     const [loader, setLoader] = useState(false);
+    const [popLoader, setPopLoader] = useState(false);
     const [message, setMessage] = useState("")
     const [topicId, setTopicId] = useState("")
     const [deleteOpen, setDelete] = useState(false)
@@ -18,7 +20,7 @@ const TopicListing = () => {
     const [listingModuleData, setListingModuleData] = useState([])
     const [deleteSuccess, setDeleteSuccess] = useState(false)
     const [deleteFail, setDeleteFail] = useState(false)
-    
+
     useEffect(() => {
         window.scrollTo(0, 0)
         topicListingApi()
@@ -32,7 +34,12 @@ const TopicListing = () => {
     }
     const toggleDeleteClose = () => {
         setDelete(false)
+        setDeleteSuccess(false)
         setTopicId("")
+    }
+    const toggleDeleteSuccessclose = () => {
+        setDelete(false)
+        setDeleteSuccess(false)
     }
     const handleDelete = () => {
 
@@ -41,8 +48,8 @@ const TopicListing = () => {
             query_string += "?id=" + topicId;
         }
         topicDeleteApi(query_string)
-        setDelete(false)
-        setLoader(true)
+        // setDelete(false)
+        setPopLoader(true)
     }
 
     async function topicListingApi() {
@@ -50,11 +57,13 @@ const TopicListing = () => {
             const result = await topicService.topicListingService()
             if (result.data.Status) {
                 setLoader(false)
+                setPopLoader(false)
                 setInitialToicData(result.data.data)
                 setListingTopicData(result.data.data)
             }
         } catch (error) {
             setLoader(true)
+            setPopLoader(true)
         }
     }
     async function moduleListingApi() {
@@ -62,9 +71,11 @@ const TopicListing = () => {
             const result = await moduleService.moduleListingService()
             if (result.data.Status === true) {
                 setLoader(false)
+                setPopLoader(false)
                 setListingModuleData(result.data.data)
             }
         } catch (error) {
+            setPopLoader(true)
             setLoader(true)
         }
     }
@@ -74,6 +85,7 @@ const TopicListing = () => {
             const result = await topicService.topicDeleteService(id)
             if (result.data.Status) {
                 setLoader(false)
+                setPopLoader(false)
                 topicListingApi()
                 moduleListingApi()
                 setMessage(result.data.message)
@@ -81,11 +93,9 @@ const TopicListing = () => {
             }
         } catch (error) {
             setLoader(true)
+            setPopLoader(true)
             setDeleteFail(true)
             setMessage(error.response.data.message)
-            console.log(error.response.data.message);
-            console.log(error);
-            console.log();
         }
     }
     const moduleFilter = (e) => {
@@ -171,31 +181,48 @@ const TopicListing = () => {
                                                                             </td>
                                                                             <td>{moment(item.date).format('Do MMM YYYY')}</td>
                                                                             <td>
-                                                                                <Link to={"/topic/view-topic" + "?id=" + item._id} className="cstm-eye"><i className="fi fi-rr-eye"></i></Link>
-                                                                                <Link to={"/topic/edit-topic" + "?id=" + item._id} className="cstm-chekmank"><i className="fi-rr-pencil"></i></Link>
-                                                                                <Link onClick={(e) => toggleDeleteOpen(e, item._id)} className="cstm-cross mrn-rt"><i className="fi fi-rr-trash"></i></Link>
+                                                                                <Link to={"/topic/view-topic" + "?id=" + item._id} className="cstm-eye">
+                                                                                    <i className="fi fi-rr-eye" />
+                                                                                </Link>
+                                                                                <Link to={"/topic/edit-topic" + "?id=" + item._id} className="cstm-chekmank">
+                                                                                    <i className="fi-rr-pencil" />
+                                                                                </Link>
+                                                                                <Link onClick={(e) => toggleDeleteOpen(e, item._id)} className="cstm-cross mrn-rt">
+                                                                                    <i className="fi fi-rr-trash" />
+                                                                                </Link>
                                                                                 {deleteOpen &&
-                                                                                    <SweetAlert
-                                                                                        warning
-                                                                                        showCancel
-                                                                                        cancelBtnText="Discard"
-                                                                                        confirmBtnText="Delete"
-                                                                                        confirmBtnBsStyle="danger"
-                                                                                        title="Are you sure to delete this Topic?"
-                                                                                        onConfirm={(e) => handleDelete(e, item._id)}
-                                                                                        onCancel={toggleDeleteClose}
-                                                                                        focusCancelBtn
-                                                                                    />
-
-                                                                                }
-                                                                                {deleteSuccess &&
-                                                                                    <SweetAlert
-                                                                                        success
-                                                                                        title={message}
-                                                                                        confirmBtnText="close"
-                                                                                        onConfirm={() => setDeleteSuccess(false)}
-                                                                                        onCancel={() => setDeleteSuccess(false)}
-                                                                                    />
+                                                                                    <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" className='modal' centered show={toggleDeleteOpen} onHide={toggleDeleteClose}>
+                                                                                        {popLoader ?
+                                                                                            <div className="spinner-border"></div>
+                                                                                            :
+                                                                                            (deleteSuccess ?
+                                                                                                <>
+                                                                                                    <h4>{message}</h4>
+                                                                                                    <div className="row">
+                                                                                                        <div className="col-lg-12">
+                                                                                                            <div className="mb-2">
+                                                                                                                <button className="mr-3 cstm-btn6" onClick={toggleDeleteSuccessclose}>Close</button>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </>
+                                                                                                :
+                                                                                                < div className="modal-content">
+                                                                                                    <div className="modal-header border-0 p-4">
+                                                                                                        <h4>Are you sure to delete this Topic?</h4>
+                                                                                                    </div>
+                                                                                                    <div className="row">
+                                                                                                        <div className="col-lg-12">
+                                                                                                            <div className="mb-2">
+                                                                                                                <button className="mr-3 cstm-btn7" onClick={(e) => handleDelete(e, item._id)}>Delete</button>
+                                                                                                                <button className="mr-3 cstm-btn6" onClick={toggleDeleteClose}>Discard</button>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            )
+                                                                                        }
+                                                                                    </Modal>
                                                                                 }
                                                                                 {deleteFail &&
                                                                                     <SweetAlert

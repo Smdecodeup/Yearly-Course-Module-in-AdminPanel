@@ -98,19 +98,19 @@ const ViewTopic = () => {
                                                     <div className="col-lg-6">
                                                         <div className="mb-4">
                                                             <label htmlFor='topicName' className="cstm-label">Topic Name</label>
-                                                            <p name="module" required="">{viewData.topicName || '-'}</p>
+                                                            <p>{viewData.topicName || '-'}</p>
                                                         </div>
                                                     </div>
                                                     <div className="col-lg-12">
                                                         <div className="mb-4">
                                                             <label htmlFor='TopicType' className="cstm-label">Topic Type</label>
-                                                            <p name="module" required="">{viewData.topicType || '-'}</p>
+                                                            <p>{viewData.topicType || '-'}</p>
                                                         </div>
                                                     </div>
                                                     <div className="col-lg-12">
                                                         <div className="mb-4">
                                                             <label htmlFor='Description' className="cstm-label">Description</label>
-                                                            <p name="module" required="">{viewData.description || '-'}</p>
+                                                            <p>{viewData.description || '-'}</p>
                                                         </div>
                                                     </div>
                                                     {induction &&
@@ -118,16 +118,16 @@ const ViewTopic = () => {
                                                             <div className="col-lg-12">
                                                                 <div className="mb-4">
                                                                     <label htmlFor='inductionName' className="cstm-label">Induction Name</label>
-                                                                    <p name="module" required="">{viewData.inductionName || '-'}</p>
+                                                                    <p>{viewData.inductionName || '-'}</p>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-12">
                                                                 <div className="mb-4">
                                                                     <label htmlFor='inductionCode' className="cstm-label">Induction Code</label>
-                                                                    <p name="module" required="">I{viewData.inductionCode || '-'}</p>
+                                                                    <p>I{viewData.inductionCode || '-'}</p>
                                                                 </div>
                                                             </div>
-                                                            <div className="col-lg-12">
+                                                            {/* <div className="col-lg-12">
                                                                 <div className="mb-4">
                                                                     <label htmlFor='signImage' className="cstm-label">Sign Language Images</label>
                                                                     {viewData !== null && viewData !== undefined && viewData.length !== 0 ?
@@ -138,10 +138,10 @@ const ViewTopic = () => {
                                                                             />
                                                                         ))
                                                                         :
-                                                                        <p name="signLanguageimage" required="">-</p>
+                                                                        <p>-</p>
                                                                     }
                                                                 </div>
-                                                            </div>
+                                                            </div> */}
                                                         </>
                                                     }
                                                     {technique &&
@@ -149,16 +149,16 @@ const ViewTopic = () => {
                                                             <div className="col-lg-12">
                                                                 <div className="mb-4">
                                                                     <label htmlFor='techniquesname' className="cstm-label">Techniques Name</label>
-                                                                    <p name="module" required="">{viewData.techniquesName || '-'}</p>
+                                                                    <p>{viewData.techniquesName || '-'}</p>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-12">
                                                                 <div className="mb-4">
                                                                     <label htmlFor='techniquesCode' className="cstm-label">Techniques Code</label>
-                                                                    <p name="module" required="">T{viewData.techniquesCode || '-'}</p>
+                                                                    <p>T{viewData.techniquesCode || '-'}</p>
                                                                 </div>
                                                             </div>
-                                                            <div className="col-lg-12">
+                                                            {/* <div className="col-lg-12">
                                                                 <div className="mb-4">
                                                                     <label htmlFor='signImage' className="cstm-label">Sign Language Images</label>
                                                                     {viewData !== null && viewData !== undefined && viewData.length !== 0 ?
@@ -169,10 +169,10 @@ const ViewTopic = () => {
                                                                             />
                                                                         ))
                                                                         :
-                                                                        <p name="signLanguageimage" required="">-</p>
+                                                                        <p>-</p>
                                                                     }
                                                                 </div>
-                                                            </div>
+                                                            </div> */}
                                                         </>
                                                     }
                                                     {language &&
@@ -180,25 +180,25 @@ const ViewTopic = () => {
                                                             <div className="col-lg-12">
                                                                 <div className="mb-4">
                                                                     <label htmlFor='languageName' className="cstm-label">Language Patterns Name</label>
-                                                                    <p name="module" required="">{viewData.languagePatternsName || '-'}</p>
+                                                                    <p>{viewData.languagePatternsName || '-'}</p>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-12">
                                                                 <div className="mb-4">
                                                                     <label htmlFor='languagecode' className="cstm-label">Language Patterns Code</label>
-                                                                    <p name="module" required="">L{viewData.languagePatternsCode || '-'} </p>
+                                                                    <p>L{viewData.languagePatternsCode || '-'} </p>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-12">
                                                                 <div className="mb-4">
                                                                     <label htmlFor='defination' className="cstm-label">Language Patterns Defination</label>
-                                                                    <p name="module" required="">{viewData.languagePatternsDefination || '-'}</p>
+                                                                    <p>{viewData.languagePatternsDefination || '-'}</p>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-12">
                                                                 <div className="mb-4">
                                                                     <label htmlFor='example' className="cstm-label">Language Patterns Example</label>
-                                                                    <p name="module" required="">{viewData.languagePatternsExample || '-'}</p>
+                                                                    <p>{viewData.languagePatternsExample || '-'}</p>
                                                                 </div>
                                                             </div>
                                                             <div className="col-lg-12">
@@ -206,14 +206,14 @@ const ViewTopic = () => {
                                                                     <label htmlFor='patternType' className="cstm-label">patternsType</label>
                                                                     {viewData !== null && viewData !== undefined && viewData.length !== 0 ?
                                                                         (viewData.patternsType).map((item) => (
-                                                                            <p name="module" required="">{item}</p>
+                                                                            <p>{item}</p>
                                                                         ))
                                                                         :
                                                                         "-"
                                                                     }
                                                                 </div>
                                                             </div>
-                                                            <div className="col-lg-12">
+                                                            {/* <div className="col-lg-12">
                                                                 <div className="mb-4">
                                                                     <label htmlFor='signImage' className="cstm-label">Sign Language Images</label>
                                                                     {viewData !== null && viewData !== undefined && viewData.length !== 0 ?
@@ -227,8 +227,7 @@ const ViewTopic = () => {
                                                                         <p name="signLanguageimage" required="">-</p>
                                                                     }
                                                                 </div>
-                                                            </div>
-
+                                                            </div> */}
                                                         </>
                                                     }
                                                     <div className="col-lg-12">
@@ -278,7 +277,7 @@ const ViewTopic = () => {
                                                             }
                                                         </div>
                                                     </div>
-                                                    <div className="col-lg-12">
+                                                    {/* <div className="col-lg-12">
                                                         <div className="mb-4">
                                                             <label htmlFor='audioSuggestion' className="cstm-label">Audio Suggestion</label>
                                                             {viewData !== null && viewData !== undefined && viewData.length !== 0 ?
@@ -292,7 +291,7 @@ const ViewTopic = () => {
                                                                 "-"
                                                             }
                                                         </div>
-                                                    </div>
+                                                    </div> */}
                                                 </>
                                             }
                                         </div>

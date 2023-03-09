@@ -1,4 +1,4 @@
-import { ArrowBack, ArrowForwardIos, Image, MusicNote, YouTube } from '@material-ui/icons'
+import { ArrowBack, ArrowForwardIos, Image, InsertDriveFile, MusicNote, YouTube } from '@material-ui/icons'
 import React, { useEffect, useRef, useState } from 'react'
 import Dropzone from 'react-dropzone'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
@@ -66,13 +66,18 @@ const EditTopic = () => {
         topicName: '',
         topicType: '',
         description: '',
+    })
+    const [mediaData, setMediaData] = useState({
         image: [],
         video: [],
-        audio: []
+        audio: [],
+        audioSuggestion: []
     })
+    //field open close
     const [induction, setInduction] = useState(false)
     const [technique, setTechnique] = useState(false)
     const [language, setLanguage] = useState(false)
+    //module api data 
     const [moduleList, setModuleList] = useState([])
     const [inductionData, setInductionData] = useState({
         inductionName: '',
@@ -114,8 +119,11 @@ const EditTopic = () => {
         topicType: '',
         description: '',
     })
+    //topic api data
     const [topicListing, setTopicListing] = useState([])
+    //to navigate
     const navigate = useNavigate()
+    //take id from listing to call api of that data
     const location = useLocation().search
     const getId = new URLSearchParams(location).get("id")
     async function topicListingApi() {
@@ -147,6 +155,7 @@ const EditTopic = () => {
             const result = await topicService.topicViewService(query_string)
             if (result.data.Status) {
                 setViewData(result.data.data)
+                setMediaData(result.data.data)
                 setInductionData(result.data.data)
                 setTechniqueData(result.data.data)
                 setLanguageData(result.data.data)
@@ -174,9 +183,9 @@ const EditTopic = () => {
         }
     }
 
-    const allMediaFiles = [...imageFiles, ...videoFiles, ...audioFiles, ...audioSuggestionFiles, ...signImageFiles]
+    const allMediaFiles = [...imageFiles, ...videoFiles, ...audioFiles, ...audioSuggestionFiles, ...signImageFiles, ...mediaData.image, ...mediaData.video, ...mediaData.audio]
     const formData = new FormData()
-    // formData.append("moduleId", viewData.moduleId || "")
+    formData.append("moduleId", viewData.moduleId || "")
     formData.append("topicName", viewData.topicName || "")
     formData.append("topicType", viewData.topicType || "")
     formData.append("description", viewData.description || "")
@@ -191,20 +200,20 @@ const EditTopic = () => {
     formData.append("selectTechniques", langaugeData.selectTechniques || [])
     formData.append("patternsType", langaugeData.patternsType || [])
     formData.append("languagePatternsExample", langaugeData.languagePatternsExample || "")
-    // allMediaFiles.map((files) => (
-    //     formData.append("files", files || [])
-    // ))
+    allMediaFiles.map((files) => (
+        formData.append("files", files || [])
+    ))
     async function topicEditApi() {
-        console.log(formData.append("topicType", viewData.topicType || ""), "formData");
-        console.log(viewData._id, "viewData._id");
         try {
             const result = await topicService.topicEditService(viewData._id, formData)
             if (result.data.Status) {
-                console.log(result.data.data, "result.data.data");
                 setSuccess(true)
                 setEditData(result.data.data)
+                setLoader(false)
             }
         } catch (error) {
+            setLoader(true)
+            console.log(error, "error");
             setEditFail(true)
         }
     }
@@ -292,7 +301,6 @@ const EditTopic = () => {
         }
         setLanguageErr(languageError)
         return isValid
-
     }
     const validateInduction = (inductionData) => {
         let inductionErr = {}
@@ -312,12 +320,10 @@ const EditTopic = () => {
     const handleEditSubmit = (e) => {
         e.preventDefault();
         if (!validate(viewData) || !validateTechnique(techniqueData) || !validateLanguage(langaugeData) || !validateInduction(inductionData)) {
+            topicEditApi()
+            setLoader(true)
+            window.scrollTo(0, 0)
         }
-        topicEditApi()
-        console.log('click');
-        // setViewData(viewData)
-        console.log(editData, "edit");
-        // console.log(viewData);
     }
     const onChangeHandle = (e) => {
         const { name, value } = e.target
@@ -399,11 +405,11 @@ const EditTopic = () => {
         } else {
             setInduction(false)
         }
-        if (value !== "Techniques") {
-            setTechnique(false)
+        if (value === "Techniques") {
+            setTechnique(true)
 
         } else {
-            setTechnique(true)
+            setTechnique(false)
         }
         if (value === "Language Patterns") {
             setLanguage(true)
@@ -426,8 +432,8 @@ const EditTopic = () => {
         setSuccess(false)
         navigate("/topic")
     }
-    const filterInductionData = topicListing.filter((item) => (item.inductionName !== null && item.inductionName !== ""))
-    const filterTechniqueData = topicListing.filter((item) => (item.techniquesName !== null && item.techniquesName !== ""))
+    const filterInductionData = topicListing.filter((item) => (item.inductionName !== undefined && item.inductionName !== null && item.inductionName !== ""))
+    const filterTechniqueData = topicListing.filter((item) => (item.techniquesName !== undefined && item.techniquesName !== null && item.techniquesName !== ""))
 
     const handleImageChange = (e) => {
         var files = e;
@@ -480,6 +486,13 @@ const EditTopic = () => {
         dragFinalImage.current = null;
         dragOverFinalImage.current = null;
         setImageFiles(copyFinalImages)
+    }
+    function deleteViewImage(e) {
+        console.log(e, "e");
+        const imgFilter = (mediaData.image).filter((item, index) => index !== e);
+        console.log(imgFilter, "imgFilter");
+        setViewData(imgFilter)
+        console.log(mediaData.image, "image");
     }
     const deleteImages = (e) => {
         const imgp = imagesPrev.filter((item, index) => index !== e);
@@ -667,6 +680,16 @@ const EditTopic = () => {
         setAudioSuggestionFiles([...fv]);
         setAudioSuggestionPrev([...audP]);
     }
+    const imageAccept = {
+        'image/jpeg': [],
+        'image/png': []
+    }
+    const audioAccept = {
+        'audio/mp3': []
+    }
+    const videoAccept = {
+        'video/mp4': []
+    }
     var media_URL = "http://localhost:3000/"
     var Max_Files = 10
     return (
@@ -743,11 +766,11 @@ const EditTopic = () => {
                                                     <div className="col-lg-12">
                                                         <div className="mb-4">
                                                             <label htmlFor='Description' className="cstm-label">Description</label>
-                                                            <input
+                                                            <textarea
                                                                 type="text"
                                                                 value={viewData.description}
                                                                 onChange={onChangeHandle}
-                                                                className="cstm-input"
+                                                                className="cstm-textarea"
                                                                 placeholder="Write Description"
                                                                 name="description"
                                                                 required="" />
@@ -798,7 +821,7 @@ const EditTopic = () => {
                                                                         name="images"
                                                                         maxFiles={Max_Files}
                                                                         multiple={true}
-                                                                        accept="image/png, image/jpeg"
+                                                                        accept={imageAccept}
                                                                         maxSize="3145728"
                                                                     >
                                                                         {({ getRootProps, getInputProps }) => (
@@ -884,7 +907,7 @@ const EditTopic = () => {
                                                                         name="images"
                                                                         maxFiles={Max_Files}
                                                                         multiple={true}
-                                                                        accept="image/png, image/jpeg"
+                                                                        accept={imageAccept}
                                                                         maxSize="3145728"
                                                                     >
                                                                         {({ getRootProps, getInputProps }) => (
@@ -936,7 +959,7 @@ const EditTopic = () => {
                                                                         value={langaugeData.languagePatternsName}
                                                                         onChange={onChangeLanguage}
                                                                         className="cstm-input"
-                                                                        placeholder="Enter language patterns name."
+                                                                        placeholder="Enter language patterns name"
                                                                         name="languagePatternsName"
                                                                         required="" />
                                                                     {languageErr.languagePatternsName && <span className="error-message"> {languageErr.languagePatternsName} </span>}
@@ -965,11 +988,11 @@ const EditTopic = () => {
                                                             <div className="col-lg-12">
                                                                 <div className="mb-4">
                                                                     <label htmlFor='Defination' className="cstm-label">Language Patterns Defination</label>
-                                                                    <input
+                                                                    <textarea
                                                                         type="text"
                                                                         value={langaugeData.languagePatternsDefination}
                                                                         onChange={onChangeLanguage}
-                                                                        className="cstm-input"
+                                                                        className="cstm-textarea"
                                                                         placeholder="Write Defination"
                                                                         name="languagePatternsDefination"
                                                                         required="" />
@@ -979,11 +1002,11 @@ const EditTopic = () => {
                                                             <div className="col-lg-12">
                                                                 <div className="mb-4">
                                                                     <label htmlFor='Example' className="cstm-label">Language Patterns Example</label>
-                                                                    <input
+                                                                    <textarea
                                                                         type="text"
                                                                         value={langaugeData.languagePatternsExample}
                                                                         onChange={onChangeLanguage}
-                                                                        className="cstm-input"
+                                                                        className="cstm-textarea"
                                                                         placeholder="Write Example"
                                                                         name="languagePatternsExample"
                                                                         required="" />
@@ -1059,7 +1082,7 @@ const EditTopic = () => {
                                                                         name="images"
                                                                         maxFiles={Max_Files}
                                                                         multiple={true}
-                                                                        accept="image/png, image/jpeg"
+                                                                        accept={imageAccept}
                                                                         maxSize="3145728"
                                                                     >
                                                                         {({ getRootProps, getInputProps }) => (
@@ -1087,7 +1110,6 @@ const EditTopic = () => {
                                                                                 />
                                                                                 <span className="viewImage-option">
                                                                                     <span>
-                                                                                        {" "}
                                                                                         <i
                                                                                             className="fi fi-rr-trash"
                                                                                             aria-hidden="true"
@@ -1105,8 +1127,8 @@ const EditTopic = () => {
                                                         <div className="mb-4">
                                                             <label htmlFor='video' className="cstm-label">Upload Videos</label>
                                                             <Dropzone
-                                                                accept='video/mp4'
-                                                                name="image_video"
+                                                                accept={videoAccept}
+                                                                name="video"
                                                                 multiple={true}
                                                                 maxSize="10485760"
                                                                 onDrop={(e) => handleVideoChange(e)}
@@ -1125,6 +1147,7 @@ const EditTopic = () => {
                                                                 )}
                                                             </Dropzone>
                                                             <span className='error-message'>{error.video}</span>
+
                                                             {videosPrev &&
                                                                 videosPrev.map((url, index) => (
                                                                     <div className="uploadimg uploadimgeffect row-1"
@@ -1154,8 +1177,8 @@ const EditTopic = () => {
                                                                         </span>
                                                                     </div>
                                                                 ))}
-                                                            {viewData !== undefined && viewData !== null ?
-                                                                (viewData.video).map((item, index) => (
+                                                            {mediaData !== undefined && mediaData !== null ?
+                                                                (mediaData.video).map((item, index) => (
                                                                     <div className="uploadimg uploadimgeffect row-1"
                                                                         onDragStart={(e) => dragStartVideo(e, index)}
                                                                         onDragEnter={(e) => dragEnterVideo(e, index)}
@@ -1173,7 +1196,6 @@ const EditTopic = () => {
                                                                         />
                                                                         <span className="viewImage-option">
                                                                             <span>
-                                                                                {" "}
                                                                                 <i
                                                                                     className="fi fi-rr-trash"
                                                                                     aria-hidden="true"
@@ -1193,7 +1215,7 @@ const EditTopic = () => {
                                                                 onDrop={(e) => handleImageChange(e)}
                                                                 name="images"
                                                                 multiple={true}
-                                                                accept="image/png, image/jpeg"
+                                                                accept={imageAccept}
                                                                 maxSize="3145728"
                                                                 maxFiles={Max_Files}
                                                             >
@@ -1215,6 +1237,7 @@ const EditTopic = () => {
                                                                         onDragEnd={drop}
                                                                         key={index}
                                                                         draggable>
+                                                                        {index + 1}
                                                                         <img src={url} id={index}
                                                                             style={{ width: 200, height: 200, }}
                                                                             onClick={() => setIsOpen(true)}
@@ -1222,7 +1245,6 @@ const EditTopic = () => {
                                                                         />
                                                                         <span className="viewImage-option">
                                                                             <span>
-                                                                                {" "}
                                                                                 <i
                                                                                     className="fi fi-rr-trash"
                                                                                     aria-hidden="true"
@@ -1232,14 +1254,10 @@ const EditTopic = () => {
                                                                         </span>
                                                                     </div>
                                                                 ))}
-                                                            {viewData !== undefined && viewData !== null ?
-                                                                (viewData.image).map((item, index) => (
-                                                                    <div className="uploadimg uploadimgeffect row-1"
-                                                                        onDragStart={(e) => dragStart(e, index)}
-                                                                        onDragEnter={(e) => dragEnter(e, index)}
-                                                                        onDragEnd={drop}
-                                                                        key={index}
-                                                                        draggable>
+                                                            {mediaData !== undefined && mediaData !== null ?
+                                                                (mediaData.image).map((item, index) => (
+                                                                    <div className="uploadimg uploadimgeffect row-1">
+                                                                        {index + 1}
                                                                         <img src={media_URL + item.substr(7)} id={index}
                                                                             style={{ width: 200, height: 200, }}
                                                                             onClick={() => setIsOpen(true)}
@@ -1247,11 +1265,10 @@ const EditTopic = () => {
                                                                         />
                                                                         <span className="viewImage-option">
                                                                             <span>
-                                                                                {" "}
                                                                                 <i
                                                                                     className="fi fi-rr-trash"
                                                                                     aria-hidden="true"
-                                                                                    onClick={() => deleteImages(index, "image")}
+                                                                                    onClick={() => deleteViewImage(index, "image")}
                                                                                 ></i>
                                                                             </span>
                                                                         </span>
@@ -1299,8 +1316,8 @@ const EditTopic = () => {
                                                                         </div>
                                                                     </div>
                                                                 ))}
-                                                            {viewData !== undefined && viewData !== null ?
-                                                                (viewData.audio).map((item, index) => (
+                                                            {mediaData !== undefined && mediaData !== null ?
+                                                                (mediaData.audio).map((item, index) => (
                                                                     <div className="row-1 edit-Main-music">
                                                                         <audio controls id={index} src={media_URL + item.substr(7)} />
                                                                         <div className="edit-delete-icon">

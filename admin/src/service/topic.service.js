@@ -27,7 +27,6 @@ const topicViewService = (id) => {
 }
 
 const topicEditService = (id, data) => {
-    console.log(data,"dataapi");
     return axios.post(API_URL + "/editTopic?id=" + id, data, {
         headers: authHeader()
     })

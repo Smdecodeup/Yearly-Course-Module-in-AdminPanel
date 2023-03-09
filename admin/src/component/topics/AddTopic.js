@@ -231,6 +231,7 @@ const AddTopic = () => {
             setSuccess(true)
         }
     }
+
     const onChangeHandle = (e) => {
         const { name, value } = e.target
         setTopicData({ ...topicData, [name]: value })
@@ -327,9 +328,6 @@ const AddTopic = () => {
             setLanguage(false)
         }
     }
-    const handleBack = () => {
-        navigate('/topic')
-    }
     async function moduleListingApi() {
         try {
             const result = await moduleService.moduleListingService()
@@ -344,10 +342,9 @@ const AddTopic = () => {
 
     const onChangeInductionSelect = (selectedList, name) => {
         setLanguageData({ ...langaugeData, [name]: selectedList })
+        console.log(name, "name");
+        console.log(selectedList, "selectedList ");
     }
-    const inductionOption = filterInductionData.map((item) => (
-        (item.inductionName)
-    ))
     const filterTechniqueData = topicListing.filter((item) => (item.techniquesName !== null && item.techniquesName !== ""))
     async function topicListingApi() {
         try {
@@ -715,11 +712,11 @@ const AddTopic = () => {
                                             <div className="col-lg-12">
                                                 <div className="mb-4">
                                                     <label htmlFor='description' className="cstm-label">Description</label>
-                                                    <input
+                                                    <textarea
                                                         type="text"
                                                         value={topicData.description}
                                                         onChange={onChangeHandle}
-                                                        className="cstm-input"
+                                                        className="cstm-textarea"
                                                         placeholder="Write Description"
                                                         name="description"
                                                         required="" />
@@ -908,7 +905,7 @@ const AddTopic = () => {
                                                                 value={langaugeData.languagePatternsName}
                                                                 onChange={onChangeLanguage}
                                                                 className="cstm-input"
-                                                                placeholder="Enter language patterns name."
+                                                                placeholder="Enter language patterns name"
                                                                 name="languagePatternsName"
                                                                 required="" />
                                                             {languageErr.languagePatternsName && <span className="error-message"> {languageErr.languagePatternsName} </span>}
@@ -937,11 +934,11 @@ const AddTopic = () => {
                                                     <div className="col-lg-12">
                                                         <div className="mb-4">
                                                             <label htmlFor='Defination' className="cstm-label">Language Patterns Defination</label>
-                                                            <input
+                                                            <textarea
                                                                 type="text"
                                                                 value={langaugeData.languagePatternsDefination}
                                                                 onChange={onChangeLanguage}
-                                                                className="cstm-input"
+                                                                className="cstm-textarea"
                                                                 placeholder="Write Defination"
                                                                 name="languagePatternsDefination"
                                                                 required="" />
@@ -951,11 +948,11 @@ const AddTopic = () => {
                                                     <div className="col-lg-12">
                                                         <div className="mb-4">
                                                             <label htmlFor='languagePatternsExampl' className="cstm-label">Language Patterns Example</label>
-                                                            <input
+                                                            <textarea
                                                                 type="text"
                                                                 value={langaugeData.languagePatternsExampl}
                                                                 onChange={onChangeLanguage}
-                                                                className="cstm-input"
+                                                                className="cstm-textarea"
                                                                 placeholder="Write Example"
                                                                 name="languagePatternsExampl"
                                                                 required="" />
@@ -990,7 +987,7 @@ const AddTopic = () => {
                                                         <div className="mb-4">
                                                             <label htmlFor='Techniques' className="cstm-label">Select Techniques</label>
                                                             <Multiselect
-                                                                // name='selectTechniques'
+                                                                name='selectTechniques'
                                                                 placeholder='selectTechniques'
                                                                 selectedValues={langaugeData.selectTechniques}
                                                                 showCheckbox="true"

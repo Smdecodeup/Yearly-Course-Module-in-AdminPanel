@@ -18,11 +18,62 @@ h2,
 	font-weight: 600
 }
 
+.modal-backdrop {
+	background-color: rgba(255, 255, 255, 0.486);
+	color: #fff;
+	/* opacity: 0.5; */
+	/* background: rgba(255, 255, 255, 0.733); */
+}
+.modal {
+    --bs-modal-zindex: 1055;
+    --bs-modal-width: 500px;
+    --bs-modal-padding: 1rem;
+    --bs-modal-margin: 0.5rem;
+    --bs-modal-color: ;
+    --bs-modal-bg: #fff;
+    --bs-modal-border-color: var(--bs-border-color-translucent);
+    --bs-modal-border-width: 1px;
+    --bs-modal-border-radius: 0.5rem;
+    --bs-modal-box-shadow: 0 0.125rem 0.25remrgba(0, 0, 0, 0.075);
+    --bs-modal-inner-border-radius: calc(0.5rem - 1px);
+    --bs-modal-header-padding-x: 1rem;
+    --bs-modal-header-padding-y: 1rem;
+    --bs-modal-header-padding: 1rem 1rem;
+    --bs-modal-header-border-color: var(--bs-border-color);
+    --bs-modal-header-border-width: 1px;
+    --bs-modal-title-line-height: 1.5;
+    --bs-modal-footer-gap: 0.5rem;
+    --bs-modal-footer-bg: ;
+    --bs-modal-footer-border-color: var(--bs-border-color);
+    --bs-modal-footer-border-width: 1px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: var(--bs-modal-zindex);
+    display: none;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    outline: 0;
+}
 h3,
+
 .h3 {
 	font-size: 24px;
 	line-height: 1.5;
 	font-weight: 600
+}
+
+.cstm-textarea {
+	display: block;
+	height: 164px;
+	width: 100%;
+	padding: 16px 24px;
+	font-weight: 400;
+	font-size: 16px;
+	border: 1px solid #EEEEEE;
+	border-radius: 10px;
 }
 
 h4,
